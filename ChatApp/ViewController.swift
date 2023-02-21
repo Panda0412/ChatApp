@@ -8,6 +8,8 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    var isLoggingNeeded = CommandLine.arguments.contains { $0 == "isLoggingNeeded" }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +47,9 @@ class ViewController: UIViewController {
     }
     
     func printMethodName(_ method: String = #function) {
-        print("Called method: \(method)")
+        if isLoggingNeeded {
+            print("Called method: \(method)")
+        }
     }
 }
 

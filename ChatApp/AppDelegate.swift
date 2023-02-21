@@ -12,6 +12,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     var stateLabel = UILabel()
+    var isLoggingNeeded = CommandLine.arguments.contains { $0 == "isLoggingNeeded" }
     
     let green = UIColor(red: 0.49, green: 0.74, blue: 0.47, alpha: 1.00)
     let yellow = UIColor(red: 0.97, green: 0.85, blue: 0.44, alpha: 1.00)
@@ -19,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
-        print("\(#function): Not-running → Inavtive")
+        printAppState(from: "Not-running", to: "Inavtive")
 
         return true
     }
@@ -42,34 +43,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
-        print("\(#function): Inavtive → Active")
-        
+        printAppState(from: "Inavtive", to: "Active")
+
         window?.rootViewController?.view.backgroundColor = green
         stateLabel.text = "Active"
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
-        print("\(#function): Active → Inavtive")
-        
+        printAppState(from: "Active", to: "Inavtive")
+
         window?.rootViewController?.view.backgroundColor = yellow
         stateLabel.text = "Inactive"
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
-        print("\(#function): Inavtive → Background")
-        
+        printAppState(from: "Inavtive", to: "Background")
+
         window?.rootViewController?.view.backgroundColor = blue
         stateLabel.text = "Background"
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
-        print("\(#function): Background → Inavtive")
-        
+        printAppState(from: "Background", to: "Inavtive")
+
         window?.rootViewController?.view.backgroundColor = yellow
         stateLabel.text = "Inactive"
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        print("\(#function): Background → Not-running")
+        printAppState(from: "Background", to: "Not-running")
+    }
+    
+    func printAppState(_ method: String = #function, from: String, to: String) {
+        if isLoggingNeeded {
+            print("\(method): \(from) → \(to)")
+        }
     }
 }
