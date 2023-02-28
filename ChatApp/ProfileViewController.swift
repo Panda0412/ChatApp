@@ -47,11 +47,26 @@ class ProfileViewController: UIViewController {
         return avatarLabel
     }()
     
+    private lazy var avatarImageView: UIImageView = {
+        let avatar = UIImageView()
+        
+        avatar.layer.cornerRadius = 75
+        avatar.layer.masksToBounds = true
+        
+        return avatar
+    }()
+    
     private lazy var addPhotoButton: UIButton = {
         let button = UIButton()
         
         button.setTitle("Add Photo", for: .normal)
         button.setTitleColor(.systemBlue, for: .normal)
+        
+        button.addTarget(
+            self,
+            action: #selector(presentAddPhotoActionSheet),
+            for: .touchUpInside
+        )
         
         return button
     }()
@@ -98,6 +113,22 @@ class ProfileViewController: UIViewController {
         return stack
     }()
     
+    private lazy var avatarActionSheet: UIAlertController = {
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+                
+        let makePhotoAction = UIAlertAction(title: "Сделать фото", style: .default) { [self] (action) in
+            addAvatar(withCamera: true)
+        }
+        let openPhotoLibraryAction = UIAlertAction(title: "Выбрать из галереи", style: .default) { [self] (action) in
+            addAvatar()
+        }
+        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel)
+        
+        [makePhotoAction, openPhotoLibraryAction, cancelAction].forEach { actionSheet.addAction($0) }
+        
+        return actionSheet
+    }()
+    
     // MARK: - Lifecicle
     
     init() {
@@ -134,6 +165,7 @@ class ProfileViewController: UIViewController {
         
         [avatarView,
          avatarLabel,
+         avatarImageView,
          addPhotoButton,
          infoBlockView,
          nicknameLabel,
@@ -155,7 +187,9 @@ class ProfileViewController: UIViewController {
             avatarView.heightAnchor.constraint(equalToConstant: 150),
             avatarView.widthAnchor.constraint(equalTo: avatarView.heightAnchor),
             avatarLabel.centerXAnchor.constraint(equalTo: avatarView.centerXAnchor),
-            avatarLabel.centerYAnchor.constraint(equalTo: avatarView.centerYAnchor)
+            avatarLabel.centerYAnchor.constraint(equalTo: avatarView.centerYAnchor),
+            avatarImageView.heightAnchor.constraint(equalToConstant: 150),
+            avatarImageView.widthAnchor.constraint(equalToConstant: 150)
         ])
     }
     
@@ -163,7 +197,34 @@ class ProfileViewController: UIViewController {
         dismiss(animated: true)
     }
     
+    @objc private func presentAddPhotoActionSheet() {
+        present(avatarActionSheet, animated: true)
+    }
+    
+    private func addAvatar(withCamera: Bool = false) {
+        let picker = UIImagePickerController()
+        picker.allowsEditing = true
+        picker.delegate = self
+        if withCamera {
+            picker.sourceType = .camera
+        }
+        present(picker, animated: true)
+    }
+    
     func printAddPhotoButtonFrame(_ method: String = #function) {
         print(method, addPhotoButton.frame)
+    }
+}
+
+extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        dismiss(animated: true)
+        
+        guard let avatar = info[.editedImage] as? UIImage else { return }
+        avatarLabel.removeFromSuperview()
+        
+        avatarImageView.image = avatar
+        avatarView.addSubview(avatarImageView)
     }
 }
