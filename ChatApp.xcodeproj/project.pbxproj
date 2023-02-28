@@ -12,6 +12,7 @@
 		CDAE912329A3996C002F2452 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CDAE912129A3996C002F2452 /* Main.storyboard */; };
 		CDAE912529A3996D002F2452 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CDAE912429A3996D002F2452 /* Assets.xcassets */; };
 		CDAE912829A3996D002F2452 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CDAE912629A3996D002F2452 /* LaunchScreen.storyboard */; };
+		CDDDAFCA29AD11D2006ED745 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDDAFC929AD11D2006ED745 /* ProfileViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		CDAE912429A3996D002F2452 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CDAE912729A3996D002F2452 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CDAE912929A3996D002F2452 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CDDDAFC929AD11D2006ED745 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				CDAE912429A3996D002F2452 /* Assets.xcassets */,
 				CDAE912629A3996D002F2452 /* LaunchScreen.storyboard */,
 				CDAE912929A3996D002F2452 /* Info.plist */,
+				CDDDAFC929AD11D2006ED745 /* ProfileViewController.swift */,
 			);
 			path = ChatApp;
 			sourceTree = "<group>";
@@ -135,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDDDAFCA29AD11D2006ED745 /* ProfileViewController.swift in Sources */,
 				CDAE912029A3996C002F2452 /* ViewController.swift in Sources */,
 				CDAE911C29A3996C002F2452 /* AppDelegate.swift in Sources */,
 			);
