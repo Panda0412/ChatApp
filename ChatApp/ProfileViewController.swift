@@ -20,7 +20,7 @@ class ProfileViewController: UIViewController {
         
         let colorTop = CGColor(red: 0.95, green: 0.62, blue: 0.71, alpha: 1.00)
         let colorBottom = CGColor(red: 0.93, green: 0.48, blue: 0.58, alpha: 1.00)
-                        
+        
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [colorTop, colorBottom]
         gradientLayer.locations = [0, 1]
@@ -99,11 +99,28 @@ class ProfileViewController: UIViewController {
     }()
     
     // MARK: - Lifecicle
-
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        // view ещё не создана
+        printAddPhotoButtonFrame()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        // view создана, но размеры пока не актуальны
+        printAddPhotoButtonFrame()
+
         configureUI()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        // view уже находится в иерархии отображения (view hierarchy) и имеет актуальные размеры
+        printAddPhotoButtonFrame()
     }
     
     // MARK: - Helpers
@@ -144,5 +161,9 @@ class ProfileViewController: UIViewController {
     
     @objc private func closeModal() {
         dismiss(animated: true)
+    }
+    
+    func printAddPhotoButtonFrame(_ method: String = #function) {
+        print(method, addPhotoButton.frame)
     }
 }
