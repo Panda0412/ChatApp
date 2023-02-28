@@ -9,6 +9,8 @@ import UIKit
 
 class ProfileViewController: UIViewController {
     
+    private var nicknameText: String = "Anastasiia Bugaeva"
+    
     // MARK: - UI Elements
     
     private lazy var avatarView: UIView = {
@@ -32,7 +34,9 @@ class ProfileViewController: UIViewController {
     private lazy var avatarLabel: UILabel = {
         let avatarLabel = UILabel()
         
-        avatarLabel.text = "SJ"
+        let nicknameArr = nicknameText.split(separator: " ").map{ $0.first ?? " " }
+        avatarLabel.text = String(nicknameArr[0...min(1, nicknameArr.count - 1)])
+        
         if let descriptor = UIFont.systemFont(ofSize: 55, weight: .bold).fontDescriptor.withDesign(.rounded) {
             avatarLabel.font = UIFont(descriptor: descriptor, size: 55)
         } else {
@@ -65,9 +69,10 @@ class ProfileViewController: UIViewController {
     private lazy var nicknameLabel: UILabel = {
         let nickname = UILabel()
         
-        nickname.text = "Stephen Johnson"
+        nickname.text = nicknameText
         nickname.textColor = .label
-        
+        nickname.font = UIFont.preferredFont(forTextStyle: .headline).withSize(22)
+                
         return nickname
     }()
     
@@ -78,7 +83,8 @@ class ProfileViewController: UIViewController {
         description.textColor = .secondaryLabel
         description.numberOfLines = 0
         description.textAlignment = .center
-        
+        description.font = UIFont.preferredFont(forTextStyle: .body)
+                
         return description
     }()
     
