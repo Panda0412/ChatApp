@@ -129,6 +129,16 @@ class ProfileViewController: UIViewController {
         return actionSheet
     }()
     
+    private lazy var cameraAlert: UIAlertController = {
+        let alert = UIAlertController(title: "Ошибка", message: "Камера недоступна", preferredStyle: .alert)
+        
+        let dismissAction = UIAlertAction(title: "OK", style: .default)
+        
+        alert.addAction(dismissAction)
+
+        return alert
+    }()
+    
     // MARK: - Lifecicle
     
     init() {
@@ -206,6 +216,10 @@ class ProfileViewController: UIViewController {
         picker.allowsEditing = true
         picker.delegate = self
         if withCamera {
+            guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+                present(cameraAlert, animated: true)
+                return
+            }
             picker.sourceType = .camera
         }
         present(picker, animated: true)
