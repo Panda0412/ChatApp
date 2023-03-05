@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CD05BB7429B4D31800B77E86 /* ConversationsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD05BB7329B4D31800B77E86 /* ConversationsListViewController.swift */; };
+		CD05BB7829B4D78A00B77E86 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD05BB7729B4D78A00B77E86 /* AvatarView.swift */; };
 		CDAE911C29A3996C002F2452 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDAE911B29A3996C002F2452 /* AppDelegate.swift */; };
 		CDAE912029A3996C002F2452 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDAE911F29A3996C002F2452 /* ViewController.swift */; };
 		CDAE912329A3996C002F2452 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CDAE912129A3996C002F2452 /* Main.storyboard */; };
@@ -16,6 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CD05BB7329B4D31800B77E86 /* ConversationsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListViewController.swift; sourceTree = "<group>"; };
+		CD05BB7729B4D78A00B77E86 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
 		CDAE911829A3996C002F2452 /* ChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDAE911B29A3996C002F2452 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CDAE911F29A3996C002F2452 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -37,6 +41,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CD05BB7529B4D74100B77E86 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				CDDDAFC929AD11D2006ED745 /* ProfileViewController.swift */,
+				CD05BB7329B4D31800B77E86 /* ConversationsListViewController.swift */,
+				CDAE911F29A3996C002F2452 /* ViewController.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		CD05BB7629B4D76000B77E86 /* UIElements */ = {
+			isa = PBXGroup;
+			children = (
+				CD05BB7729B4D78A00B77E86 /* AvatarView.swift */,
+			);
+			path = UIElements;
+			sourceTree = "<group>";
+		};
 		CDAE910F29A3996C002F2452 = {
 			isa = PBXGroup;
 			children = (
@@ -56,13 +78,13 @@
 		CDAE911A29A3996C002F2452 /* ChatApp */ = {
 			isa = PBXGroup;
 			children = (
+				CD05BB7529B4D74100B77E86 /* Views */,
+				CD05BB7629B4D76000B77E86 /* UIElements */,
 				CDAE911B29A3996C002F2452 /* AppDelegate.swift */,
-				CDAE911F29A3996C002F2452 /* ViewController.swift */,
 				CDAE912129A3996C002F2452 /* Main.storyboard */,
 				CDAE912429A3996D002F2452 /* Assets.xcassets */,
 				CDAE912629A3996D002F2452 /* LaunchScreen.storyboard */,
 				CDAE912929A3996D002F2452 /* Info.plist */,
-				CDDDAFC929AD11D2006ED745 /* ProfileViewController.swift */,
 			);
 			path = ChatApp;
 			sourceTree = "<group>";
@@ -139,7 +161,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDDDAFCA29AD11D2006ED745 /* ProfileViewController.swift in Sources */,
+				CD05BB7429B4D31800B77E86 /* ConversationsListViewController.swift in Sources */,
 				CDAE912029A3996C002F2452 /* ViewController.swift in Sources */,
+				CD05BB7829B4D78A00B77E86 /* AvatarView.swift in Sources */,
 				CDAE911C29A3996C002F2452 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
