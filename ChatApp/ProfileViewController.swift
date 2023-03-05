@@ -141,27 +141,10 @@ class ProfileViewController: UIViewController {
     
     // MARK: - Lifecicle
     
-    init() {
-        super.init(nibName: nil, bundle: nil)
-        // view ещё не создана
-        printAddPhotoButtonFrame()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // view создана, но размеры пока не актуальны
-        printAddPhotoButtonFrame()
 
         configureUI()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        // view уже находится в иерархии отображения (view hierarchy) и имеет актуальные размеры
-        printAddPhotoButtonFrame()
     }
     
     // MARK: - Helpers
@@ -223,10 +206,6 @@ class ProfileViewController: UIViewController {
             picker.sourceType = .camera
         }
         present(picker, animated: true)
-    }
-    
-    func printAddPhotoButtonFrame(_ method: String = #function) {
-        print(method, addPhotoButton.frame)
     }
 }
 
