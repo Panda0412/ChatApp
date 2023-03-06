@@ -7,16 +7,25 @@
 
 import UIKit
 
+private enum Constants {
+    static let avatarSize: CGFloat = 150
+    static let nickname = "Anastasiia Bugaeva"
+}
+
 class ProfileViewController: UIViewController {
     
-    private var nicknameText: String = "Anastasiia Bugaeva"
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        setupUI()
+    }
     
     // MARK: - UI Elements
     
     private lazy var avatarView: AvatarView = {
         let avatar = AvatarView()
         
-        let avatarData = AvatarModel(size: 150, nickname: "Anastasiia Bugaeva")
+        let avatarData = AvatarModel(size: Constants.avatarSize, nickname: Constants.nickname)
         avatar.configure(with: avatarData)
         
         return avatar
@@ -50,7 +59,7 @@ class ProfileViewController: UIViewController {
     private lazy var nicknameLabel: UILabel = {
         let nickname = UILabel()
         
-        nickname.text = nicknameText
+        nickname.text = Constants.nickname
         nickname.textColor = .label
         nickname.font = UIFont.preferredFont(forTextStyle: .headline).withSize(22)
                 
@@ -105,17 +114,9 @@ class ProfileViewController: UIViewController {
         return alert
     }()
     
-    // MARK: - Lifecicle
+    // MARK: - Setup
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        configureUI()
-    }
-    
-    // MARK: - Helpers
-    
-    func configureUI() {
+    private func setupUI() {
         view.backgroundColor = .systemBackground
         title = "My profile"
         
@@ -128,21 +129,23 @@ class ProfileViewController: UIViewController {
          nicknameLabel,
          descriptionLabel,
          stackView].forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
-                
+        
         [nicknameLabel, descriptionLabel].forEach { infoBlockView.addArrangedSubview($0) }
         
-        view.addSubview(stackView)
-        
         [avatarView, addPhotoButton, infoBlockView].forEach { stackView.addArrangedSubview($0) }
+        
+        view.addSubview(stackView)
         
         NSLayoutConstraint.activate([
             stackView.leftAnchor.constraint(equalTo: view.leftAnchor),
             stackView.topAnchor.constraint(equalTo: view.topAnchor, constant: (navigationController?.navigationBar.frame.height ?? 0) + 32),
             stackView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            avatarView.heightAnchor.constraint(equalToConstant: 150),
-            avatarView.widthAnchor.constraint(equalTo: avatarView.heightAnchor),
+            avatarView.heightAnchor.constraint(equalToConstant: Constants.avatarSize),
+            avatarView.widthAnchor.constraint(equalToConstant: Constants.avatarSize),
         ])
     }
+    
+    // MARK: - Helpers
     
     @objc private func closeModal() {
         dismiss(animated: true)
@@ -156,6 +159,7 @@ class ProfileViewController: UIViewController {
         let picker = UIImagePickerController()
         picker.allowsEditing = true
         picker.delegate = self
+        
         if withCamera {
             guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
                 present(cameraAlert, animated: true)
@@ -163,9 +167,12 @@ class ProfileViewController: UIViewController {
             }
             picker.sourceType = .camera
         }
+        
         present(picker, animated: true)
     }
 }
+
+// MARK: - Delegate
 
 extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
