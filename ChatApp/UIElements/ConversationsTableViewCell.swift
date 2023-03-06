@@ -41,6 +41,8 @@ class ConversationsTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     private lazy var avatarView = AvatarView()
     
     private lazy var onlineIndicator: UIView = {
+        // Да, я пробовала через бордер, но выглядело очень криво, из-под бордера торчали зелёные пиксели по краям, пришлось переделать на две вьюшки
+        
         let indicatorView = UIView()
         let indicator = UIView()
 

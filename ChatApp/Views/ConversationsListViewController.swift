@@ -104,8 +104,8 @@ class ConversationsListViewController: UIViewController {
                     onlineConversations.append(ConversationItem(nickname: "Panda0412", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.", date: time, isOnline: true, hasUnreadMessages: false))
                     historyConversations.append(ConversationItem(nickname: "Panda0412", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.", date: time, isOnline: false, hasUnreadMessages: false))
                 case 2:
-                    onlineConversations.append(ConversationItem(nickname: "Dmitrii Puzyrev", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.", date: time, isOnline: true, hasUnreadMessages: true))
-                    historyConversations.append(ConversationItem(nickname: "Dmitrii Puzyrev", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.", date: time, isOnline: false, hasUnreadMessages: true))
+                    onlineConversations.append(ConversationItem(nickname: "Dmitry Puzyrev", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.", date: time, isOnline: true, hasUnreadMessages: true))
+                    historyConversations.append(ConversationItem(nickname: "Dmitry Puzyrev", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.", date: time, isOnline: false, hasUnreadMessages: true))
                 default:
                     onlineConversations.append(ConversationItem(nickname: Constants.nickname, message: "Hello world!", date: time, isOnline: true, hasUnreadMessages: false))
                     historyConversations.append(ConversationItem(nickname: Constants.nickname, message: "Hello world!", date: time, isOnline: false, hasUnreadMessages: false))
