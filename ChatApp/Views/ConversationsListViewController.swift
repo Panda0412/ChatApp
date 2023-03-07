@@ -136,6 +136,14 @@ final class DataSource: UITableViewDiffableDataSource<ConversationSections, Conv
             
             cell.configure(with: model)
             
+            let isLastCellInSection = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
+        
+            if isLastCellInSection {
+                cell.separatorInset = UIEdgeInsets(top: 0, left: cell.frame.width, bottom: 0, right: 0)
+            } else {
+                cell.separatorInset = UIEdgeInsets(top: 0, left: 73, bottom: 0, right: 0)
+            }
+            
             return cell
         }
     }

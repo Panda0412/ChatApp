@@ -124,8 +124,6 @@ class ConversationsTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     }
     
     private func setupUI() {
-        separatorInset = UIEdgeInsets(top: 0, left: Constants.padding + Constants.avatarSize + Constants.spacing, bottom: 0, right: 0)
-                
         [avatarView,
          messageBlockView,
          nameLabel,
