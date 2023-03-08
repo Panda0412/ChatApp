@@ -44,3 +44,23 @@ struct ConversationCellModel {
     let isOnline: Bool
     let hasUnreadMessages: Bool
 }
+
+// MARK: - Chat Table
+
+struct MessageSection: Hashable {
+    let date: Date
+    let messages: [MessageItem]
+}
+
+struct MessageItem: Hashable {
+    let id = UUID()
+    let message: String
+    let date: Date
+    let isIncoming: Bool
+}
+
+struct MessageCellModel {
+    let message: String
+    let date: Date
+    let isIncoming: Bool
+}

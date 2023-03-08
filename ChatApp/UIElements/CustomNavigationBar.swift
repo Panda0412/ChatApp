@@ -27,9 +27,7 @@ class CustomNavigationBar: UIView {
         [custumNavBar, backButton, avatar, nicknameLabel, separatorLine].forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
         
         [avatar, nicknameLabel, separatorLine].forEach { custumNavBar.addSubview($0) }
-        
-        backButton.backgroundColor = .gray
-                
+                        
         addSubview(custumNavBar)
 
         NSLayoutConstraint.activate([

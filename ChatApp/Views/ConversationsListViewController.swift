@@ -34,7 +34,7 @@ class ConversationsListViewController: UIViewController {
     private var onlineConversations: [ConversationItem] = []
     private var historyConversations: [ConversationItem] = []
     
-    private lazy var dataSource = DataSource(conversationsTableView)
+    private lazy var dataSource = ConversationsListDataSource(conversationsTableView)
     
     // MARK: - UI Elements
     
@@ -126,7 +126,7 @@ class ConversationsListViewController: UIViewController {
 
 // MARK: - Data source
 
-final class DataSource: UITableViewDiffableDataSource<ConversationSections, ConversationItem> {
+final class ConversationsListDataSource: UITableViewDiffableDataSource<ConversationSections, ConversationItem> {
     init(_ tableView: UITableView) {
         super.init(tableView: tableView) { tableView, indexPath, itemIdentifier in
             guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath) as? ConversationsListTableViewCell else {
