@@ -56,6 +56,7 @@ class ConversationsListViewController: UIViewController {
         view.backgroundColor = .systemBackground
         title = "Chat"
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.backButtonTitle = ""
         
         avatarButton.addTarget(self, action: #selector(openProfile), for: .touchUpInside)
         
@@ -75,7 +76,7 @@ class ConversationsListViewController: UIViewController {
             conversationsTableView.leftAnchor.constraint(equalTo: view.leftAnchor)
         ])
         
-        conversationsTableView.register(ConversationsTableViewCell.self, forCellReuseIdentifier: Constants.cellIdentifier)
+        conversationsTableView.register(ConversationsListTableViewCell.self, forCellReuseIdentifier: Constants.cellIdentifier)
         conversationsTableView.delegate = self
     }
     
@@ -128,7 +129,7 @@ class ConversationsListViewController: UIViewController {
 final class DataSource: UITableViewDiffableDataSource<ConversationSections, ConversationItem> {
     init(_ tableView: UITableView) {
         super.init(tableView: tableView) { tableView, indexPath, itemIdentifier in
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath) as? ConversationsTableViewCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath) as? ConversationsListTableViewCell else {
                 return UITableViewCell()
             }
 
@@ -171,6 +172,11 @@ extension ConversationsListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        let conversationScreen = ConversationViewController()
+        conversationScreen.title = dataSource.itemIdentifier(for: indexPath)?.nickname
+                
+        navigationController?.pushViewController(conversationScreen, animated: true)
     }
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {

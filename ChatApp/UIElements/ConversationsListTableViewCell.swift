@@ -17,7 +17,7 @@ private enum Constants {
     static let largeTextFontSize: CGFloat = 17
 }
 
-class ConversationsTableViewCell: UITableViewCell, ConfigurableViewProtocol {
+class ConversationsListTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     
     // MARK: - Init
 
