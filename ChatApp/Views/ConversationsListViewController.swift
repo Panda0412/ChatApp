@@ -119,7 +119,10 @@ class ConversationsListViewController: UIViewController {
     }
     
     @objc private func openProfile() {
-        let profileNavigation = UINavigationController(rootViewController: ProfileViewController())
+        let profile = ProfileViewController()
+        profile.configure(with: UserProfileViewModel(nickname: Constants.nickname, description: "iOS Junior dev"))
+        
+        let profileNavigation = UINavigationController(rootViewController: profile)
         present(profileNavigation, animated: true)
     }
 }

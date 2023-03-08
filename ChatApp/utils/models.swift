@@ -21,6 +21,20 @@ struct AvatarModel {
     }
 }
 
+// MARK: - Profile View
+
+struct UserProfileViewModel {
+    let nickname: String
+    let description: String?
+    let image: UIImage?
+    
+    init(nickname: String, description: String? = nil, image: UIImage? = nil) {
+        self.nickname = nickname
+        self.description = description
+        self.image = image
+    }
+}
+
 // MARK: - Conversations Table
 
 enum ConversationSections: Hashable, CaseIterable {

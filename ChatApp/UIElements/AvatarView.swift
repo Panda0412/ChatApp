@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AvatarView: UIView {
+class AvatarView: UIView, ConfigurableViewProtocol {
     
     // MARK: - UI Elements
     

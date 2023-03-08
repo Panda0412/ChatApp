@@ -33,7 +33,6 @@ class ConversationsListTableViewCell: UITableViewCell, ConfigurableViewProtocol 
     
     // MARK: - Properties
     
-    typealias ConfigurationModel = ConversationCellModel
     let dateFormatter = DateFormatter()
 
     // MARK: - UI Elements

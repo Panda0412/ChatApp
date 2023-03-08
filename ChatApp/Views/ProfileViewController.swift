@@ -9,10 +9,9 @@ import UIKit
 
 private enum Constants {
     static let avatarSize: CGFloat = 150
-    static let nickname = "Anastasiia Bugaeva"
 }
 
-class ProfileViewController: UIViewController {
+class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,12 +19,16 @@ class ProfileViewController: UIViewController {
         setupUI()
     }
     
+    // MARK: - Properties
+    
+    private var nickname = ""
+    
     // MARK: - UI Elements
     
     private lazy var avatarView: AvatarView = {
         let avatar = AvatarView()
         
-        let avatarData = AvatarModel(size: Constants.avatarSize, nickname: Constants.nickname)
+        let avatarData = AvatarModel(size: Constants.avatarSize, nickname: nickname)
         avatar.configure(with: avatarData)
         
         return avatar
@@ -59,7 +62,7 @@ class ProfileViewController: UIViewController {
     private lazy var nicknameLabel: UILabel = {
         let nickname = UILabel()
         
-        nickname.text = Constants.nickname
+        nickname.text = self.nickname
         nickname.textColor = .label
         nickname.font = UIFont.preferredFont(forTextStyle: .headline).withSize(22)
                 
@@ -169,6 +172,16 @@ class ProfileViewController: UIViewController {
         }
         
         present(picker, animated: true)
+    }
+    
+    func configure(with model: UserProfileViewModel) {
+        nickname = model.nickname
+        if let description = model.description {
+            descriptionLabel.text = description
+        }
+        if let avatar = model.image {
+            avatarView.setAvatarImage(image: avatar)
+        }
     }
 }
 

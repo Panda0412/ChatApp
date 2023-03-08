@@ -30,7 +30,6 @@ class ConversationTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     
     // MARK: - Properties
     
-    typealias ConfigurationModel = MessageCellModel
     let dateFormatter = DateFormatter()
     
     // MARK: - UI Elements
