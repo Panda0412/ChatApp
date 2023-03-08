@@ -19,9 +19,6 @@ class ConversationViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.navigationController?.interactivePopGestureRecognizer?.delegate = self
-        nickname = navigationItem.title ?? ""
         
         generateSomeData()
         
@@ -33,6 +30,10 @@ class ConversationViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {        
+        navigationController?.setNavigationBarHidden(true, animated: true)
     }
 
     override func viewDidLayoutSubviews() {
@@ -132,9 +133,9 @@ class ConversationViewController: UIViewController {
     // MARK: - Setup
     
     private func setupNavigationBar() {
-        navigationItem.largeTitleDisplayMode = .never
-        navigationItem.title = ""
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: #selector(goBack))
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
+        
+        nickname = navigationItem.title ?? ""
         
         backButton.addTarget(self, action: #selector(goBack), for: .touchUpInside)
                         
@@ -162,6 +163,8 @@ class ConversationViewController: UIViewController {
         conversationTableView.register(ConversationTableViewCell.self, forCellReuseIdentifier: Constants.cellIdentifier)
         conversationTableView.allowsSelection = false
         conversationTableView.delegate = self
+        
+        conversationTableView.keyboardDismissMode = .onDrag
     }
     
     private func setupUI() {

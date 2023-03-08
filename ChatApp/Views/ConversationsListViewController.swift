@@ -26,6 +26,10 @@ class ConversationsListViewController: UIViewController {
         setupTableView()
         setupDataSource()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
 
     // MARK: - Properties
     
@@ -70,7 +74,7 @@ class ConversationsListViewController: UIViewController {
         view.addSubview(conversationsTableView)
         
         NSLayoutConstraint.activate([
-            conversationsTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            conversationsTableView.topAnchor.constraint(equalTo: view.topAnchor),
             conversationsTableView.rightAnchor.constraint(equalTo: view.rightAnchor),
             conversationsTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             conversationsTableView.leftAnchor.constraint(equalTo: view.leftAnchor)
