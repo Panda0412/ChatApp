@@ -66,8 +66,6 @@ class ConversationsListViewController: UIViewController {
         guard storedTheme == .light || storedTheme == .dark else { return }
         
         currentTheme = storedTheme ?? .light
-        
-        navigationController?.overrideUserInterfaceStyle = currentTheme
     }
     
     private func setupNavigationBar() {
@@ -80,6 +78,8 @@ class ConversationsListViewController: UIViewController {
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gear"), style: .plain, target: self, action: #selector(openSettings))
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: avatarButton)
+        
+        navigationController?.overrideUserInterfaceStyle = currentTheme
     }
     
     private func setupTableView() {
