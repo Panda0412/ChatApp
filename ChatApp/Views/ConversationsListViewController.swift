@@ -40,6 +40,8 @@ class ConversationsListViewController: UIViewController {
     
     private lazy var dataSource = ConversationsListDataSource(conversationsTableView)
     
+    var currentTheme: UIUserInterfaceStyle = .light
+    
     // MARK: - UI Elements
     
     private var avatarButton: UIButton = {
@@ -60,7 +62,7 @@ class ConversationsListViewController: UIViewController {
         view.backgroundColor = .systemBackground
         title = "Chat"
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.backButtonTitle = ""
+        navigationItem.backButtonTitle = "Back"
         
         avatarButton.addTarget(self, action: #selector(openProfile), for: .touchUpInside)
         
@@ -117,9 +119,27 @@ class ConversationsListViewController: UIViewController {
             }
         }
     }
+    /*
+     Если вынести инициализацию ThemesViewController сюда, то ConversationsListViewController будет держать на него ссылку, а ThemesViewController будет держать ссылку на ConversationsListViewController в качестве делегата, из-за чего возникает Retain cycle
+     При создании ThemesViewController внутри функции openSettings, утечки памяти не происходит (я проверила 😊)
+     В замыкании передаётся слабая ссылка на ConversationsListViewController, что позволяет избежать Retain cycle, где бы не создавался ThemesViewController
+     */
+//    let settingsScreen = ThemesViewController()
     
     @objc private func openSettings() {
-        print("Settings button tapped")
+        let settingsScreen = ThemesViewController()
+        
+        // Delegate
+        settingsScreen.delegate = self
+        
+        // Closure
+//        settingsScreen.changeUserInterfaceStyleClosure = { [weak self] theme in
+//            self?.navigationController?.overrideUserInterfaceStyle = theme
+//            self?.currentTheme = theme
+//        }
+//        settingsScreen.currentTheme = currentTheme
+        
+        navigationController?.pushViewController(settingsScreen, animated: true)
     }
     
     @objc private func openProfile() {
@@ -127,6 +147,8 @@ class ConversationsListViewController: UIViewController {
         profile.configure(with: UserProfileViewModel(nickname: Constants.nickname, description: "iOS Junior dev"))
         
         let profileNavigation = UINavigationController(rootViewController: profile)
+        profileNavigation.overrideUserInterfaceStyle = currentTheme
+        
         present(profileNavigation, animated: true)
     }
 }
@@ -198,5 +220,12 @@ extension ConversationsListViewController: UITableViewDelegate {
             separatorView.widthAnchor.constraint(equalTo: view.widthAnchor),
             separatorView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 1)
         ])
+    }
+}
+
+extension ConversationsListViewController: ThemesPickerDelegate {
+    func changeUserInterfaceStyle(theme: UIUserInterfaceStyle) {
+        navigationController?.overrideUserInterfaceStyle = theme
+        currentTheme = theme
     }
 }
