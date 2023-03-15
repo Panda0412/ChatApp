@@ -62,7 +62,11 @@ class ConversationsListViewController: UIViewController {
     
     // MARK: - Setup
     private func setupTheme() {
-        currentTheme = UIUserInterfaceStyle.init(rawValue: defaults.integer(forKey: Constants.themeKey)) ?? .light
+        let storedTheme = UIUserInterfaceStyle.init(rawValue: defaults.integer(forKey: Constants.themeKey))
+        guard storedTheme == .light || storedTheme == .dark else { return }
+        
+        currentTheme = storedTheme ?? .light
+        
         navigationController?.overrideUserInterfaceStyle = currentTheme
     }
     
