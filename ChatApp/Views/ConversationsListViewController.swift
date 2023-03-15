@@ -13,6 +13,7 @@ private enum Constants {
     static let avatarSize: CGFloat = 32
     static let cellIdentifier = "conversationsTableViewCell"
     static let nickname = "Anastasiia Bugaeva"
+    static let themeKey = "theme"
 }
 
 class ConversationsListViewController: UIViewController {
@@ -22,6 +23,7 @@ class ConversationsListViewController: UIViewController {
         
         generateSomeData()
         
+        setupTheme()
         setupNavigationBar()
         setupTableView()
         setupDataSource()
@@ -42,6 +44,8 @@ class ConversationsListViewController: UIViewController {
     
     var currentTheme: UIUserInterfaceStyle = .light
     
+    let defaults = UserDefaults.standard
+    
     // MARK: - UI Elements
     
     private var avatarButton: UIButton = {
@@ -57,6 +61,10 @@ class ConversationsListViewController: UIViewController {
     }()
     
     // MARK: - Setup
+    private func setupTheme() {
+        currentTheme = UIUserInterfaceStyle.init(rawValue: defaults.integer(forKey: Constants.themeKey)) ?? .light
+        navigationController?.overrideUserInterfaceStyle = currentTheme
+    }
     
     private func setupNavigationBar() {
         view.backgroundColor = .systemBackground
@@ -227,5 +235,6 @@ extension ConversationsListViewController: ThemesPickerDelegate {
     func changeUserInterfaceStyle(theme: UIUserInterfaceStyle) {
         navigationController?.overrideUserInterfaceStyle = theme
         currentTheme = theme
+        defaults.set(theme.rawValue, forKey: Constants.themeKey)
     }
 }
