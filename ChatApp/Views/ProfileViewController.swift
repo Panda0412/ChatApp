@@ -7,51 +7,29 @@
 
 import UIKit
 
-class ProfileViewController: UIViewController {
+private enum Constants {
+    static let avatarSize: CGFloat = 150
+}
+
+class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     
-    private var nicknameText: String = "Anastasiia Bugaeva"
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        setupUI()
+    }
+    
+    // MARK: - Properties
+    
+    private var nickname = ""
     
     // MARK: - UI Elements
     
-    private lazy var avatarView: UIView = {
-        let avatar = UIView()
+    private lazy var avatarView: AvatarView = {
+        let avatar = AvatarView()
         
-        avatar.frame.size = CGSize(width: 150, height: 150)
-        
-        let colorTop = CGColor(red: 0.95, green: 0.62, blue: 0.71, alpha: 1.00)
-        let colorBottom = CGColor(red: 0.93, green: 0.48, blue: 0.58, alpha: 1.00)
-        
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [colorTop, colorBottom]
-        gradientLayer.locations = [0, 1]
-        gradientLayer.frame = avatar.bounds
-        gradientLayer.cornerRadius = 75
-        avatar.layer.addSublayer(gradientLayer)
-        
-        return avatar
-    }()
-    
-    private lazy var avatarLabel: UILabel = {
-        let avatarLabel = UILabel()
-        
-        let nicknameArr = nicknameText.split(separator: " ").map{ $0.first ?? " " }
-        avatarLabel.text = String(nicknameArr[0...min(1, nicknameArr.count - 1)])
-        
-        if let descriptor = UIFont.systemFont(ofSize: 55, weight: .bold).fontDescriptor.withDesign(.rounded) {
-            avatarLabel.font = UIFont(descriptor: descriptor, size: 55)
-        } else {
-            avatarLabel.font = UIFont.systemFont(ofSize: 55, weight: .bold)
-        }
-        avatarLabel.textColor = .white
-        
-        return avatarLabel
-    }()
-    
-    private lazy var avatarImageView: UIImageView = {
-        let avatar = UIImageView()
-        
-        avatar.layer.cornerRadius = 75
-        avatar.layer.masksToBounds = true
+        let avatarData = AvatarModel(size: Constants.avatarSize, nickname: nickname)
+        avatar.configure(with: avatarData)
         
         return avatar
     }()
@@ -84,7 +62,7 @@ class ProfileViewController: UIViewController {
     private lazy var nicknameLabel: UILabel = {
         let nickname = UILabel()
         
-        nickname.text = nicknameText
+        nickname.text = self.nickname
         nickname.textColor = .label
         nickname.font = UIFont.preferredFont(forTextStyle: .headline).withSize(22)
                 
@@ -139,34 +117,9 @@ class ProfileViewController: UIViewController {
         return alert
     }()
     
-    // MARK: - Lifecicle
+    // MARK: - Setup
     
-    init() {
-        super.init(nibName: nil, bundle: nil)
-        // view ещё не создана
-        printAddPhotoButtonFrame()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // view создана, но размеры пока не актуальны
-        printAddPhotoButtonFrame()
-
-        configureUI()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        // view уже находится в иерархии отображения (view hierarchy) и имеет актуальные размеры
-        printAddPhotoButtonFrame()
-    }
-    
-    // MARK: - Helpers
-    
-    func configureUI() {
+    private func setupUI() {
         view.backgroundColor = .systemBackground
         title = "My profile"
         
@@ -174,34 +127,28 @@ class ProfileViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit")
         
         [avatarView,
-         avatarLabel,
-         avatarImageView,
          addPhotoButton,
          infoBlockView,
          nicknameLabel,
          descriptionLabel,
          stackView].forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
         
-        avatarView.addSubview(avatarLabel)
-        
         [nicknameLabel, descriptionLabel].forEach { infoBlockView.addArrangedSubview($0) }
         
-        view.addSubview(stackView)
-        
         [avatarView, addPhotoButton, infoBlockView].forEach { stackView.addArrangedSubview($0) }
+        
+        view.addSubview(stackView)
         
         NSLayoutConstraint.activate([
             stackView.leftAnchor.constraint(equalTo: view.leftAnchor),
             stackView.topAnchor.constraint(equalTo: view.topAnchor, constant: (navigationController?.navigationBar.frame.height ?? 0) + 32),
             stackView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            avatarView.heightAnchor.constraint(equalToConstant: 150),
-            avatarView.widthAnchor.constraint(equalTo: avatarView.heightAnchor),
-            avatarLabel.centerXAnchor.constraint(equalTo: avatarView.centerXAnchor),
-            avatarLabel.centerYAnchor.constraint(equalTo: avatarView.centerYAnchor),
-            avatarImageView.heightAnchor.constraint(equalToConstant: 150),
-            avatarImageView.widthAnchor.constraint(equalToConstant: 150)
+            avatarView.heightAnchor.constraint(equalToConstant: Constants.avatarSize),
+            avatarView.widthAnchor.constraint(equalToConstant: Constants.avatarSize),
         ])
     }
+    
+    // MARK: - Helpers
     
     @objc private func closeModal() {
         dismiss(animated: true)
@@ -215,6 +162,7 @@ class ProfileViewController: UIViewController {
         let picker = UIImagePickerController()
         picker.allowsEditing = true
         picker.delegate = self
+        
         if withCamera {
             guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
                 present(cameraAlert, animated: true)
@@ -222,13 +170,22 @@ class ProfileViewController: UIViewController {
             }
             picker.sourceType = .camera
         }
+        
         present(picker, animated: true)
     }
     
-    func printAddPhotoButtonFrame(_ method: String = #function) {
-        print(method, addPhotoButton.frame)
+    func configure(with model: UserProfileViewModel) {
+        nickname = model.nickname
+        if let description = model.description {
+            descriptionLabel.text = description
+        }
+        if let avatar = model.image {
+            avatarView.setAvatarImage(image: avatar)
+        }
     }
 }
+
+// MARK: - Delegate
 
 extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -236,9 +193,7 @@ extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationCo
         dismiss(animated: true)
         
         guard let avatar = info[.editedImage] as? UIImage else { return }
-        avatarLabel.removeFromSuperview()
         
-        avatarImageView.image = avatar
-        avatarView.addSubview(avatarImageView)
+        avatarView.setAvatarImage(image: avatar)
     }
 }
