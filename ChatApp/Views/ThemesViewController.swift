@@ -32,7 +32,7 @@ class ThemesViewController: UIViewController {
     // MARK: - Properties
     
     // Delegate
-    var delegate: ThemesPickerDelegate?
+    weak var delegate: ThemesPickerDelegate?
     
     // Closure
 //    var changeUserInterfaceStyleClosure: ((UIUserInterfaceStyle) -> ())?

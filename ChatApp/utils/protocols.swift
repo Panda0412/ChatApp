@@ -12,7 +12,7 @@ protocol ConfigurableViewProtocol {
     func configure(with model: ConfigurationModel)
 }
 
-protocol ThemesPickerDelegate {
+protocol ThemesPickerDelegate: UIViewController {
     var currentTheme: UIUserInterfaceStyle { get set }
     func changeUserInterfaceStyle(theme: UIUserInterfaceStyle)
 }
