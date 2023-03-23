@@ -11,10 +11,10 @@ import UIKit
 
 struct AvatarModel {
     let size: Double
-    let nickname: String
+    let nickname: String?
     let image: UIImage?
     
-    init(size: Double, nickname: String, image: UIImage? = nil) {
+    init(size: Double, nickname: String? = nil, image: UIImage? = nil) {
         self.size = size
         self.nickname = nickname
         self.image = image
@@ -24,11 +24,11 @@ struct AvatarModel {
 // MARK: - Profile View
 
 struct UserProfileViewModel {
-    let nickname: String
+    let nickname: String?
     let description: String?
     let image: UIImage?
     
-    init(nickname: String, description: String? = nil, image: UIImage? = nil) {
+    init(nickname: String? = nil, description: String? = nil, image: UIImage? = nil) {
         self.nickname = nickname
         self.description = description
         self.image = image

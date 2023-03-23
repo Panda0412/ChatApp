@@ -24,6 +24,16 @@ class AvatarView: UIView, ConfigurableViewProtocol {
         return gradientLayer
     }()
     
+    private lazy var noNamePersonImage: UIImageView = {
+        let avatar = UIImageView()
+        
+        avatar.image = UIImage(systemName: "person.fill")
+        avatar.tintColor = .systemGray
+        avatar.translatesAutoresizingMaskIntoConstraints = false
+        
+        return avatar
+    }()
+    
     // MARK: - Setup
     
     func configure(with model: AvatarModel) {
@@ -34,16 +44,29 @@ class AvatarView: UIView, ConfigurableViewProtocol {
         } else {
             avatarGradient.frame = avatarView.bounds
             avatarGradient.cornerRadius = model.size / 2
-            
-            let avatarLabel = setupAvatarLabel(with: model.nickname, fontSize: CGFloat(model.size / 3))
-                        
-            avatarView.layer.addSublayer(avatarGradient)
-            avatarView.addSubview(avatarLabel)
 
-            NSLayoutConstraint.activate([
-                avatarLabel.centerXAnchor.constraint(equalTo: avatarView.centerXAnchor),
-                avatarLabel.centerYAnchor.constraint(equalTo: avatarView.centerYAnchor)
-            ])
+            if let nickname = model.nickname {
+                let avatarLabel = setupAvatarLabel(with: nickname, fontSize: CGFloat(model.size / 3))
+
+                avatarView.layer.addSublayer(avatarGradient)
+                avatarView.addSubview(avatarLabel)
+
+                NSLayoutConstraint.activate([
+                    avatarLabel.centerXAnchor.constraint(equalTo: avatarView.centerXAnchor),
+                    avatarLabel.centerYAnchor.constraint(equalTo: avatarView.centerYAnchor)
+                ])
+            } else {
+                avatarView.backgroundColor = .systemGray4
+                avatarView.layer.cornerRadius = model.size / 2
+                avatarView.addSubview(noNamePersonImage)
+                
+                NSLayoutConstraint.activate([
+                    noNamePersonImage.centerXAnchor.constraint(equalTo: avatarView.centerXAnchor),
+                    noNamePersonImage.centerYAnchor.constraint(equalTo: avatarView.centerYAnchor),
+                    noNamePersonImage.heightAnchor.constraint(equalTo: avatarView.heightAnchor, multiplier: 0.6),
+                    noNamePersonImage.widthAnchor.constraint(equalTo: avatarView.widthAnchor, multiplier: 0.6),
+                ])
+            }
         }
         
         addSubview(avatarView)

@@ -11,17 +11,37 @@ private enum Constants {
     static let avatarSize: CGFloat = 150
 }
 
+enum TextFieldPurpose {
+    case nickname
+    case description
+}
+
 class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
 
         setupUI()
     }
     
     // MARK: - Properties
     
-    private var nickname = ""
+    private var nickname: String?
+    private var bio: String?
+
+    private let activityIndicator = UIActivityIndicatorView(style: .medium)
+        
+    private lazy var closeButton = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(closeModal))
+    private lazy var editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(switchToEditMode))
+    private lazy var cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelEditMode))
+    private lazy var saveButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: saveOptionsMenu)
+    private lazy var activityIndicatorBarItem = UIBarButtonItem(customView: activityIndicator)
+
+    private let savingWithGCD = UICommand(title: "Save GCD", action: #selector(saveProfileDataWithGCD))
+    private let savingWithOperations = UICommand(title: "Save Operations", action: #selector(saveProfileDataWithOperations))
+    private lazy var saveOptionsMenu = UIMenu(title: "", options: .displayInline, children: [savingWithGCD, savingWithOperations])
     
     // MARK: - UI Elements
     
@@ -61,25 +81,88 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     
     private lazy var nicknameLabel: UILabel = {
         let nickname = UILabel()
-        
-        nickname.text = self.nickname
+
+        nickname.text = self.nickname ?? "No name"
         nickname.textColor = .label
         nickname.font = UIFont.preferredFont(forTextStyle: .headline).withSize(22)
-                
+
         return nickname
     }()
-    
+
     private lazy var descriptionLabel: UILabel = {
         let description = UILabel()
-        
-        description.text = "UX/UI designer, web designer Moscow, Russia"
+
+        description.text = bio ?? "No bio specified"
         description.textColor = .secondaryLabel
         description.numberOfLines = 0
         description.textAlignment = .center
         description.font = UIFont.preferredFont(forTextStyle: .body)
-                
+
         return description
     }()
+    
+    private func setupTextField(for purpose: TextFieldPurpose) -> UITextField {
+        let field = UITextField()
+        let fieldLabelView = UIView()
+        let label = UILabel()
+        
+        let separatorLine = UIView()
+        let bottomSeparatorLine = UIView()
+        separatorLine.backgroundColor = .separator
+        bottomSeparatorLine.backgroundColor = .separator
+        
+        label.font = UIFont.systemFont(ofSize: 17)
+        
+        field.backgroundColor = .systemBackground
+        field.font = UIFont.systemFont(ofSize: 17)
+        field.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
+                
+        fieldLabelView.addSubview(label)
+        
+        field.leftView = fieldLabelView
+        field.leftViewMode = .always
+        
+        field.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: field.frame.height))
+        field.rightViewMode = .always
+        
+        field.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
+        
+        [field, fieldLabelView, label, separatorLine, bottomSeparatorLine].forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
+        
+        field.addSubview(separatorLine)
+
+        switch purpose {
+            case .nickname:
+                field.placeholder = "Enter your name"
+                label.text = "Name"
+            case .description:
+                field.placeholder = "Tell about yourself"
+                label.text = "Bio"
+                field.addSubview(bottomSeparatorLine)
+                NSLayoutConstraint.activate([
+                    bottomSeparatorLine.heightAnchor.constraint(equalToConstant: 0.5),
+                    bottomSeparatorLine.widthAnchor.constraint(equalTo: field.widthAnchor),
+                    bottomSeparatorLine.bottomAnchor.constraint(equalTo: field.bottomAnchor)
+                ])
+        }
+        
+        field.delegate = self
+        
+        NSLayoutConstraint.activate([
+            separatorLine.heightAnchor.constraint(equalToConstant: 0.5),
+            separatorLine.widthAnchor.constraint(equalTo: field.widthAnchor),
+            separatorLine.leadingAnchor.constraint(equalTo: field.leadingAnchor, constant: purpose == .description ? 16 : 0),
+            
+            field.heightAnchor.constraint(equalToConstant: 44),
+            fieldLabelView.heightAnchor.constraint(equalToConstant: 44),
+            fieldLabelView.widthAnchor.constraint(equalToConstant: view.frame.width * 0.3),
+            label.leadingAnchor.constraint(equalTo: fieldLabelView.leadingAnchor, constant: 16),
+            label.centerYAnchor.constraint(equalTo: fieldLabelView.centerYAnchor)
+        ])
+        
+        return field
+    }
     
     private lazy var stackView: UIStackView = {
         let stack = UIStackView()
@@ -91,9 +174,9 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         return stack
     }()
     
-    private lazy var avatarActionSheet: UIAlertController = {
+    lazy var avatarActionSheet: UIAlertController = {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-                
+                        
         let makePhotoAction = UIAlertAction(title: "Сделать фото", style: .default) { [self] (action) in
             addAvatar(withCamera: true)
         }
@@ -117,34 +200,44 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         return alert
     }()
     
+    private lazy var nicknameTextField = setupTextField(for: .nickname)
+    private lazy var descriptionTextField = setupTextField(for: .description)
+    
     // MARK: - Setup
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
         title = "My profile"
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(closeModal))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit")
+        navigationItem.setLeftBarButton(closeButton, animated: true)
+        navigationItem.setRightBarButton(editButton, animated: true)
         
         [avatarView,
          addPhotoButton,
          infoBlockView,
          nicknameLabel,
          descriptionLabel,
+         nicknameTextField,
+         descriptionTextField,
          stackView].forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
         
-        [nicknameLabel, descriptionLabel].forEach { infoBlockView.addArrangedSubview($0) }
+        [nicknameLabel, descriptionLabel, nicknameTextField, descriptionTextField].forEach { infoBlockView.addArrangedSubview($0) }
+        
+        nicknameTextField.isHidden = true
+        descriptionTextField.isHidden = true
         
         [avatarView, addPhotoButton, infoBlockView].forEach { stackView.addArrangedSubview($0) }
         
         view.addSubview(stackView)
         
         NSLayoutConstraint.activate([
-            stackView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             stackView.topAnchor.constraint(equalTo: view.topAnchor, constant: (navigationController?.navigationBar.frame.height ?? 0) + 32),
-            stackView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             avatarView.heightAnchor.constraint(equalToConstant: Constants.avatarSize),
             avatarView.widthAnchor.constraint(equalToConstant: Constants.avatarSize),
+            nicknameTextField.widthAnchor.constraint(equalTo: stackView.widthAnchor),
+            descriptionTextField.widthAnchor.constraint(equalTo: stackView.widthAnchor),
         ])
     }
     
@@ -154,6 +247,78 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         dismiss(animated: true)
     }
     
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    @objc private func switchToEditMode() {
+        title = "Edit profile"
+        
+        navigationItem.setLeftBarButton(cancelButton, animated: true)
+        navigationItem.setRightBarButton(saveButton, animated: true)
+        
+        self.nicknameTextField.becomeFirstResponder()
+        
+        UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1) {
+            [self.nicknameLabel, self.descriptionLabel].forEach {
+                $0.alpha = 0
+            }
+        }
+        
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1) {
+            [self.nicknameLabel, self.descriptionLabel].forEach {
+                $0.isHidden = true
+            }
+            
+            [self.nicknameTextField, self.descriptionTextField].forEach {
+                $0.alpha = 1
+                $0.isHidden = false
+            }
+            
+            self.infoBlockView.spacing = 0
+            self.view.backgroundColor = .secondarySystemBackground
+        }
+    }
+    
+    @objc private func cancelEditMode() {
+        title = "My profile"
+        
+        navigationItem.setLeftBarButton(closeButton, animated: true)
+        navigationItem.setRightBarButton(editButton, animated: true)
+        
+        UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1) {
+            [self.nicknameTextField, self.descriptionTextField].forEach {
+                $0.alpha = 0
+            }
+        }
+        
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1) {
+            [self.nicknameTextField, self.descriptionTextField].forEach {
+                $0.isHidden = true
+                $0.resignFirstResponder()
+            }
+
+            [self.nicknameLabel, self.descriptionLabel].forEach {
+                $0.alpha = 1
+                $0.isHidden = false
+            }
+
+            self.infoBlockView.spacing = 10
+            self.view.backgroundColor = .systemBackground
+        }
+    }
+    
+    @objc private func saveProfileDataWithGCD() {
+        print(#function)
+        activityIndicator.startAnimating()
+        navigationItem.setRightBarButton(activityIndicatorBarItem, animated: true)
+    }
+    @objc private func saveProfileDataWithOperations() {
+        print(#function)
+        activityIndicator.startAnimating()
+        navigationItem.setRightBarButton(activityIndicatorBarItem, animated: true)
+    }
+
     @objc private func presentAddPhotoActionSheet() {
         present(avatarActionSheet, animated: true)
     }
@@ -175,9 +340,11 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     }
     
     func configure(with model: UserProfileViewModel) {
-        nickname = model.nickname
+        if let name = model.nickname {
+            nickname = name
+        }
         if let description = model.description {
-            descriptionLabel.text = description
+            bio = description
         }
         if let avatar = model.image {
             avatarView.setAvatarImage(image: avatar)
@@ -185,7 +352,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     }
 }
 
-// MARK: - Delegate
+// MARK: - Delegates
 
 extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -195,5 +362,13 @@ extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationCo
         guard let avatar = info[.editedImage] as? UIImage else { return }
         
         avatarView.setAvatarImage(image: avatar)
+        switchToEditMode()
+    }
+}
+
+extension ProfileViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return false
     }
 }
