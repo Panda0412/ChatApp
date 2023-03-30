@@ -14,6 +14,7 @@
 		CD05BB7F29B6593100B77E86 /* protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD05BB7E29B6593100B77E86 /* protocols.swift */; };
 		CD34F9A429D42C15009633DA /* FileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD34F9A329D42C15009633DA /* FileService.swift */; };
 		CD34F9A629D43701009633DA /* GCDService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD34F9A529D43701009633DA /* GCDService.swift */; };
+		CD34F9A829D5BCBD009633DA /* OperationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD34F9A729D5BCBD009633DA /* OperationService.swift */; };
 		CD4F2EEB29B76FB300E0DB4D /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEA29B76FB300E0DB4D /* ConversationViewController.swift */; };
 		CD4F2EED29B7B6DB00E0DB4D /* CustomNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEC29B7B6DB00E0DB4D /* CustomNavigationBar.swift */; };
 		CD4F2EEF29B8895200E0DB4D /* ConversationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEE29B8895200E0DB4D /* ConversationTableViewCell.swift */; };
@@ -34,6 +35,7 @@
 		CD05BB7E29B6593100B77E86 /* protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = protocols.swift; sourceTree = "<group>"; };
 		CD34F9A329D42C15009633DA /* FileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileService.swift; sourceTree = "<group>"; };
 		CD34F9A529D43701009633DA /* GCDService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GCDService.swift; sourceTree = "<group>"; };
+		CD34F9A729D5BCBD009633DA /* OperationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationService.swift; sourceTree = "<group>"; };
 		CD4F2EEA29B76FB300E0DB4D /* ConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewController.swift; sourceTree = "<group>"; };
 		CD4F2EEC29B7B6DB00E0DB4D /* CustomNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationBar.swift; sourceTree = "<group>"; };
 		CD4F2EEE29B8895200E0DB4D /* ConversationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTableViewCell.swift; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 			children = (
 				CD34F9A329D42C15009633DA /* FileService.swift */,
 				CD34F9A529D43701009633DA /* GCDService.swift */,
+				CD34F9A729D5BCBD009633DA /* OperationService.swift */,
 			);
 			path = DataService;
 			sourceTree = "<group>";
@@ -210,6 +213,7 @@
 				CD4F2EED29B7B6DB00E0DB4D /* CustomNavigationBar.swift in Sources */,
 				CD4F2EEF29B8895200E0DB4D /* ConversationTableViewCell.swift in Sources */,
 				CDDDAFCA29AD11D2006ED745 /* ProfileViewController.swift in Sources */,
+				CD34F9A829D5BCBD009633DA /* OperationService.swift in Sources */,
 				CD05BB7429B4D31800B77E86 /* ConversationsListViewController.swift in Sources */,
 				CD05BB7829B4D78A00B77E86 /* AvatarView.swift in Sources */,
 				CD97B39129C0744C008DF3FC /* ThemesViewController.swift in Sources */,

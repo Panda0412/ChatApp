@@ -40,6 +40,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         didSet {
             switch state {
                 case .loading:
+                    navigationItem.setRightBarButton(activityIndicatorBarItem, animated: true)
                     activityIndicator.startAnimating()
                     nicknameTextField.isEnabled = false
                     descriptionTextField.isEnabled = false
@@ -62,6 +63,8 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     var currentTheme: UIUserInterfaceStyle = .light
     
     private let serviceGCD = GCDService()
+    private let serviceOperation = OperationService()
+    private var currentService: MultithreadingServiceProtocol?
     
     private var avatarImage: UIImage?
     private var nickname: String?
@@ -257,7 +260,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
             self?.cancelEditMode()
         }
         let retryAction = UIAlertAction(title: "Try Again", style: .cancel) { [weak self] _ in
-            self?.saveProfileDataWithGCD()
+            self?.saveData()
         }
 
         alert.addAction(dismissAction)
@@ -355,7 +358,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     }
     
     @objc private func cancelEditMode() {
-        serviceGCD.cancel()
+        currentService?.cancel()
         if let avatar = avatarImage {
             avatarView.setAvatarImage(image: avatar)
         }
@@ -390,9 +393,21 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     }
     
     @objc private func saveProfileDataWithGCD() {
+        currentService = serviceGCD
+        saveData()
+    }
+    
+    @objc private func saveProfileDataWithOperations() {
+        currentService = serviceOperation
+        saveData()
+    }
+    
+    private func saveData() {
         state = .loading
-                
-        serviceGCD.save(user: UserProfileViewModel(nickname: nicknameTextField.text, description: descriptionTextField.text, image: avatarView.avatarImageView.image)) { [weak self] result in
+        
+        guard let currentService else { return }
+        
+        currentService.save(user: UserProfileViewModel(nickname: nicknameTextField.text, description: descriptionTextField.text, image: avatarView.avatarImageView.image)) { [weak self] result in
             guard let self else { return }
             switch result {
                 case .success(let user):
@@ -402,12 +417,6 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
                     self.state = .error
             }
         }
-        navigationItem.setRightBarButton(activityIndicatorBarItem, animated: true)
-    }
-    
-    @objc private func saveProfileDataWithOperations() {
-        activityIndicator.startAnimating()
-        navigationItem.setRightBarButton(activityIndicatorBarItem, animated: true)
     }
 
     @objc private func presentAddPhotoActionSheet() {

@@ -5,7 +5,7 @@
 //  Created by Anastasiia Bugaeva on 28.03.2023.
 //
 
-import UIKit
+import Foundation
 
 class GCDService: MultithreadingServiceProtocol {
     var fileService = FileService()
@@ -19,16 +19,13 @@ class GCDService: MultithreadingServiceProtocol {
             guard let isCanceled = self.workItem?.isCancelled, !isCanceled else { return }
             
             self.fileService.saveData(userData: user) { result in
-                switch result {
-                    case .success(let user):
-                        DispatchQueue.main.async {
+                DispatchQueue.main.async {
+                    switch result {
+                        case .success(let user):
                             completion(.success(user))
-                        }
-                    case .failure(let writingError):
-                        print("failure GCD")
-                        DispatchQueue.main.async {
+                        case .failure(let writingError):
                             completion(.failure(writingError))
-                        }
+                    }
                 }
             }
             
@@ -43,15 +40,13 @@ class GCDService: MultithreadingServiceProtocol {
         queue.async { [weak self] in
             guard let self else { return }
             self.fileService.readData { result in
-                switch result {
-                    case .success(let user):
-                        DispatchQueue.main.async {
+                DispatchQueue.main.async {
+                    switch result {
+                        case .success(let user):
                             completion(.success(user))
-                        }
-                    case .failure(let readingError):
-                        DispatchQueue.main.async {
+                        case .failure(let readingError):
                             completion(.failure(readingError))
-                        }
+                    }
                 }
             }
         }
