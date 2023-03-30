@@ -157,11 +157,10 @@ class ConversationsListViewController: UIViewController {
     @objc private func openProfile() {
         let profile = ProfileViewController()
         profile.configure(with: UserProfileViewModel(nickname: nil, description: nil))
+        profile.currentTheme = currentTheme
         
         let profileNavigation = UINavigationController(rootViewController: profile)
-        profileNavigation.overrideUserInterfaceStyle = currentTheme
-        profile.avatarActionSheet.overrideUserInterfaceStyle = currentTheme
-        
+
         present(profileNavigation, animated: true)
     }
 }

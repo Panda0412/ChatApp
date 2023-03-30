@@ -12,6 +12,8 @@
 		CD05BB7A29B50FE600B77E86 /* ConversationsListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD05BB7929B50FE600B77E86 /* ConversationsListTableViewCell.swift */; };
 		CD05BB7D29B6592400B77E86 /* models.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD05BB7C29B6592400B77E86 /* models.swift */; };
 		CD05BB7F29B6593100B77E86 /* protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD05BB7E29B6593100B77E86 /* protocols.swift */; };
+		CD34F9A429D42C15009633DA /* FileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD34F9A329D42C15009633DA /* FileService.swift */; };
+		CD34F9A629D43701009633DA /* GCDService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD34F9A529D43701009633DA /* GCDService.swift */; };
 		CD4F2EEB29B76FB300E0DB4D /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEA29B76FB300E0DB4D /* ConversationViewController.swift */; };
 		CD4F2EED29B7B6DB00E0DB4D /* CustomNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEC29B7B6DB00E0DB4D /* CustomNavigationBar.swift */; };
 		CD4F2EEF29B8895200E0DB4D /* ConversationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEE29B8895200E0DB4D /* ConversationTableViewCell.swift */; };
@@ -30,6 +32,8 @@
 		CD05BB7929B50FE600B77E86 /* ConversationsListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListTableViewCell.swift; sourceTree = "<group>"; };
 		CD05BB7C29B6592400B77E86 /* models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = models.swift; sourceTree = "<group>"; };
 		CD05BB7E29B6593100B77E86 /* protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = protocols.swift; sourceTree = "<group>"; };
+		CD34F9A329D42C15009633DA /* FileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileService.swift; sourceTree = "<group>"; };
+		CD34F9A529D43701009633DA /* GCDService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GCDService.swift; sourceTree = "<group>"; };
 		CD4F2EEA29B76FB300E0DB4D /* ConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewController.swift; sourceTree = "<group>"; };
 		CD4F2EEC29B7B6DB00E0DB4D /* CustomNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationBar.swift; sourceTree = "<group>"; };
 		CD4F2EEE29B8895200E0DB4D /* ConversationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTableViewCell.swift; sourceTree = "<group>"; };
@@ -87,6 +91,15 @@
 			path = utils;
 			sourceTree = "<group>";
 		};
+		CD34F9A229D42B74009633DA /* DataService */ = {
+			isa = PBXGroup;
+			children = (
+				CD34F9A329D42C15009633DA /* FileService.swift */,
+				CD34F9A529D43701009633DA /* GCDService.swift */,
+			);
+			path = DataService;
+			sourceTree = "<group>";
+		};
 		CDAE910F29A3996C002F2452 = {
 			isa = PBXGroup;
 			children = (
@@ -108,6 +121,7 @@
 			children = (
 				CD05BB7529B4D74100B77E86 /* Views */,
 				CD05BB7629B4D76000B77E86 /* UIElements */,
+				CD34F9A229D42B74009633DA /* DataService */,
 				CD05BB8029B6620600B77E86 /* utils */,
 				CDAE911B29A3996C002F2452 /* AppDelegate.swift */,
 				CDAE912129A3996C002F2452 /* Main.storyboard */,
@@ -191,6 +205,7 @@
 			files = (
 				CD05BB7D29B6592400B77E86 /* models.swift in Sources */,
 				CD05BB7A29B50FE600B77E86 /* ConversationsListTableViewCell.swift in Sources */,
+				CD34F9A629D43701009633DA /* GCDService.swift in Sources */,
 				CD4F2EEB29B76FB300E0DB4D /* ConversationViewController.swift in Sources */,
 				CD4F2EED29B7B6DB00E0DB4D /* CustomNavigationBar.swift in Sources */,
 				CD4F2EEF29B8895200E0DB4D /* ConversationTableViewCell.swift in Sources */,
@@ -200,6 +215,7 @@
 				CD97B39129C0744C008DF3FC /* ThemesViewController.swift in Sources */,
 				CDAE911C29A3996C002F2452 /* AppDelegate.swift in Sources */,
 				CD05BB7F29B6593100B77E86 /* protocols.swift in Sources */,
+				CD34F9A429D42C15009633DA /* FileService.swift in Sources */,
 				CD97B39529C2257D008DF3FC /* subclasses.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

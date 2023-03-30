@@ -12,6 +12,7 @@ class AvatarView: UIView, ConfigurableViewProtocol {
     // MARK: - UI Elements
     
     private lazy var avatarView = UIView()
+    let avatarImageView = UIImageView()
     
     private lazy var avatarGradient: CAGradientLayer = {
         let colorTop = CGColor(red: 0.95, green: 0.62, blue: 0.71, alpha: 1.00)
@@ -45,7 +46,7 @@ class AvatarView: UIView, ConfigurableViewProtocol {
             avatarGradient.frame = avatarView.bounds
             avatarGradient.cornerRadius = model.size / 2
 
-            if let nickname = model.nickname {
+            if let nickname = model.nickname, nickname != "" {
                 let avatarLabel = setupAvatarLabel(with: nickname, fontSize: CGFloat(model.size / 3))
 
                 avatarView.layer.addSublayer(avatarGradient)
@@ -93,8 +94,6 @@ class AvatarView: UIView, ConfigurableViewProtocol {
     }
     
     func setAvatarImage(image: UIImage) {
-        let avatarImageView = UIImageView()
-        
         avatarImageView.layer.cornerRadius = avatarView.frame.height / 2
         avatarImageView.layer.masksToBounds = true
         

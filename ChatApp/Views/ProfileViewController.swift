@@ -23,11 +23,47 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
 
+        fetchUserData()
         setupUI()
     }
     
     // MARK: - Properties
+    enum State {
+        case initial
+        case loading
+        case success
+        case error
+        case content(UserProfileViewModel)
+    }
     
+    var state: State = .initial {
+        didSet {
+            switch state {
+                case .loading:
+                    activityIndicator.startAnimating()
+                    nicknameTextField.isEnabled = false
+                    descriptionTextField.isEnabled = false
+                    addPhotoButton.isEnabled = false
+                case .success:
+                    activityIndicator.stopAnimating()
+                    addPhotoButton.isEnabled = true
+                    present(successAlert, animated: true)
+                case .error:
+                    activityIndicator.stopAnimating()
+                    addPhotoButton.isEnabled = true
+                    present(errorAlert, animated: true)
+                case .content(let user):
+                    configure(with: user)
+                default: break
+            }
+        }
+    }
+    
+    var currentTheme: UIUserInterfaceStyle = .light
+    
+    private let serviceGCD = GCDService()
+    
+    private var avatarImage: UIImage?
     private var nickname: String?
     private var bio: String?
 
@@ -134,11 +170,13 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
 
         switch purpose {
             case .nickname:
-                field.placeholder = "Enter your name"
                 label.text = "Name"
+                field.placeholder = "Enter your name"
+                field.text = nickname
             case .description:
-                field.placeholder = "Tell about yourself"
                 label.text = "Bio"
+                field.placeholder = "Tell about yourself"
+                field.text = bio
                 field.addSubview(bottomSeparatorLine)
                 NSLayoutConstraint.activate([
                     bottomSeparatorLine.heightAnchor.constraint(equalToConstant: 0.5),
@@ -200,12 +238,45 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         return alert
     }()
     
+    lazy var successAlert: UIAlertController = {
+        let alert = UIAlertController(title: "Success", message: "You are breathtaking", preferredStyle: .alert)
+        
+        let dismissAction = UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            self?.cancelEditMode()
+        }
+
+        alert.addAction(dismissAction)
+
+        return alert
+    }()
+    
+    lazy var errorAlert: UIAlertController = {
+        let alert = UIAlertController(title: "Could not save profile", message: "Try again", preferredStyle: .alert)
+        
+        let dismissAction = UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            self?.cancelEditMode()
+        }
+        let retryAction = UIAlertAction(title: "Try Again", style: .cancel) { [weak self] _ in
+            self?.saveProfileDataWithGCD()
+        }
+
+        alert.addAction(dismissAction)
+        alert.addAction(retryAction)
+
+        return alert
+    }()
+    
     private lazy var nicknameTextField = setupTextField(for: .nickname)
     private lazy var descriptionTextField = setupTextField(for: .description)
     
     // MARK: - Setup
     
     private func setupUI() {
+        navigationController?.overrideUserInterfaceStyle = currentTheme
+        avatarActionSheet.overrideUserInterfaceStyle = currentTheme
+        successAlert.overrideUserInterfaceStyle = currentTheme
+        errorAlert.overrideUserInterfaceStyle = currentTheme
+        
         view.backgroundColor = .systemBackground
         title = "My profile"
         
@@ -255,9 +326,12 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         title = "Edit profile"
         
         navigationItem.setLeftBarButton(cancelButton, animated: true)
-        navigationItem.setRightBarButton(saveButton, animated: true)
+        navigationItem.setRightBarButton(nil, animated: true)
+
+        nicknameTextField.isEnabled = true
+        descriptionTextField.isEnabled = true
         
-        self.nicknameTextField.becomeFirstResponder()
+        nicknameTextField.becomeFirstResponder()
         
         UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1) {
             [self.nicknameLabel, self.descriptionLabel].forEach {
@@ -281,6 +355,13 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     }
     
     @objc private func cancelEditMode() {
+        serviceGCD.cancel()
+        if let avatar = avatarImage {
+            avatarView.setAvatarImage(image: avatar)
+        }
+        nicknameTextField.text = nickname
+        descriptionTextField.text = bio
+        
         title = "My profile"
         
         navigationItem.setLeftBarButton(closeButton, animated: true)
@@ -309,12 +390,22 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     }
     
     @objc private func saveProfileDataWithGCD() {
-        print(#function)
-        activityIndicator.startAnimating()
+        state = .loading
+                
+        serviceGCD.save(user: UserProfileViewModel(nickname: nicknameTextField.text, description: descriptionTextField.text, image: avatarView.avatarImageView.image)) { [weak self] result in
+            guard let self else { return }
+            switch result {
+                case .success(let user):
+                    self.state = .content(user)
+                    self.state = .success
+                case .failure:
+                    self.state = .error
+            }
+        }
         navigationItem.setRightBarButton(activityIndicatorBarItem, animated: true)
     }
+    
     @objc private func saveProfileDataWithOperations() {
-        print(#function)
         activityIndicator.startAnimating()
         navigationItem.setRightBarButton(activityIndicatorBarItem, animated: true)
     }
@@ -339,14 +430,33 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         present(picker, animated: true)
     }
     
+    private func fetchUserData() {
+        serviceGCD.fetchUser { [weak self] result in
+            switch result {
+                case .success(let user):
+                    self?.state = .content(user)
+                case .failure:
+                    print("Failure reading :c")
+            }
+        }
+    }
+    
     func configure(with model: UserProfileViewModel) {
         if let name = model.nickname {
             nickname = name
+            nicknameLabel.text = name == "" ? "No name" : name
+            nicknameTextField.text = name
+            avatarView.configure(with: AvatarModel(size: Constants.avatarSize, nickname: name))
         }
+        
         if let description = model.description {
             bio = description
+            descriptionLabel.text = description == "" ? "No bio specified" : description
+            descriptionTextField.text = description
         }
+        
         if let avatar = model.image {
+            avatarImage = avatar
             avatarView.setAvatarImage(image: avatar)
         }
     }
@@ -363,6 +473,7 @@ extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationCo
         
         avatarView.setAvatarImage(image: avatar)
         switchToEditMode()
+        navigationItem.setRightBarButton(saveButton, animated: true)
     }
 }
 
@@ -370,5 +481,10 @@ extension ProfileViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
+    }
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        let needHideSaveButton = (nicknameTextField.text == nickname && descriptionTextField.text == bio && avatarView.avatarImageView.image == avatarImage) || nicknameTextField.text == Optional("") || descriptionTextField.text == Optional("")
+        navigationItem.setRightBarButton(needHideSaveButton ? nil : saveButton, animated: true)
     }
 }
