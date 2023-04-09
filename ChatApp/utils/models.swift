@@ -23,15 +23,41 @@ struct AvatarModel {
 
 // MARK: - Profile View
 
-struct UserProfileViewModel {
+struct AvatarImage: Codable {
+    let image: UIImage?
+    
+    init(image: UIImage?) {
+        self.image = image
+    }
+    
+    enum CodingKeys: CodingKey { case data }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        if let data = try? container.decode(Data.self, forKey: .data) {
+            self.image = UIImage(data: data)
+        } else {
+            self.image = nil
+        }
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        if let image = self.image {
+            try container.encode(image.pngData(), forKey: .data)
+        }
+    }
+}
+
+struct UserProfileViewModel: Codable {
     let nickname: String?
     let description: String?
-    let image: UIImage?
+    let image: AvatarImage?
     
     init(nickname: String? = nil, description: String? = nil, image: UIImage? = nil) {
         self.nickname = nickname
         self.description = description
-        self.image = image
+        self.image = AvatarImage(image: image)
     }
 }
 

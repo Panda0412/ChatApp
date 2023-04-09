@@ -5,6 +5,7 @@
 //  Created by Anastasiia Bugaeva on 05.03.2023.
 //
 
+import Combine
 import UIKit
 
 private enum Constants {
@@ -21,6 +22,7 @@ class ConversationsListViewController: UIViewController {
         super.viewDidLoad()
         
         generateSomeData()
+        fetchUserData()
         
         setupTheme()
         setupNavigationBar()
@@ -43,21 +45,27 @@ class ConversationsListViewController: UIViewController {
     
     var currentTheme: UIUserInterfaceStyle = .light
     
-    let defaults = UserDefaults.standard
+    private var userDataRequest: Cancellable?
+    private lazy var avatarButton = UIButton()
+    
+    private let defaults = UserDefaults.standard
     
     // MARK: - UI Elements
     
-    private var avatarButton: UIButton = {
+    private func setupProfileButton(with userData: UserProfileViewModel) -> UIButton {
         let button = UIButton()
         
-        let avatar = AvatarView()
-        let avatarData = AvatarModel(size: Constants.avatarSize, nickname: nil)
-        avatar.configure(with: avatarData)
-                        
-        button.addSubview(avatar)
+        let avatarView = AvatarView()
+        let avatarData = AvatarModel(size: Constants.avatarSize, nickname: userData.nickname, image: userData.image?.image)
+        avatarView.configure(with: avatarData)
+        
+        button.addSubview(avatarView)
+        button.addTarget(self, action: #selector(openProfile), for: .touchUpInside)
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
         
         return button
-    }()
+    }
     
     // MARK: - Setup
     private func setupTheme() {
@@ -73,10 +81,7 @@ class ConversationsListViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.backButtonTitle = "Back"
         
-        avatarButton.addTarget(self, action: #selector(openProfile), for: .touchUpInside)
-        
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gear"), style: .plain, target: self, action: #selector(openSettings))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: avatarButton)
         
         navigationController?.overrideUserInterfaceStyle = currentTheme
         avatarButton.overrideUserInterfaceStyle = currentTheme
@@ -131,6 +136,15 @@ class ConversationsListViewController: UIViewController {
             }
         }
     }
+    
+    private func fetchUserData() {
+        userDataRequest = sharedCombineService.getProfileDataPublisher
+            .sink { [weak self] userData in
+                guard let self else { return }
+                self.avatarButton = self.setupProfileButton(with: userData)
+            }
+    }
+    
     /*
      Если вынести инициализацию ThemesViewController сюда, то ConversationsListViewController будет держать на него ссылку, а ThemesViewController будет держать ссылку на ConversationsListViewController в качестве делегата, из-за чего возникает Retain cycle
      При создании ThemesViewController внутри функции openSettings, утечки памяти не происходит (я проверила 😊)

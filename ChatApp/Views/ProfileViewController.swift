@@ -5,6 +5,7 @@
 //  Created by Anastasiia Bugaeva on 27.02.2023.
 //
 
+import Combine
 import UIKit
 
 private enum Constants {
@@ -27,7 +28,8 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         setupUI()
     }
     
-    // MARK: - Properties
+    // MARK: - State
+    
     enum State {
         case initial
         case loading
@@ -46,48 +48,42 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
                     descriptionTextField.isEnabled = false
                     addPhotoButton.isEnabled = false
                 case .success:
-                    activityIndicator.stopAnimating()
-                    addPhotoButton.isEnabled = true
                     present(successAlert, animated: true)
                 case .error:
-                    activityIndicator.stopAnimating()
-                    addPhotoButton.isEnabled = true
                     present(errorAlert, animated: true)
                 case .content(let user):
+                    activityIndicator.stopAnimating()
+                    addPhotoButton.isEnabled = true
+                    currentUserData = user
                     configure(with: user)
                 default: break
             }
         }
     }
     
+    // MARK: - Properties
+    
     var currentTheme: UIUserInterfaceStyle = .light
     
-    private let serviceGCD = GCDService()
-    private let serviceOperation = OperationService()
-    private var currentService: MultithreadingServiceProtocol?
-    
-    private var avatarImage: UIImage?
-    private var nickname: String?
-    private var bio: String?
+    private var userDataRequest: Cancellable?
+    private var saveDataRequest: AnyCancellable?
+
+    private var currentUserData = UserProfileViewModel()
 
     private let activityIndicator = UIActivityIndicatorView(style: .medium)
         
     private lazy var closeButton = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(closeModal))
     private lazy var editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(switchToEditMode))
     private lazy var cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelEditMode))
-    private lazy var saveButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: saveOptionsMenu)
+    private lazy var saveButton = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveData))
     private lazy var activityIndicatorBarItem = UIBarButtonItem(customView: activityIndicator)
-
-    private let savingWithGCD = UICommand(title: "Save GCD", action: #selector(saveProfileDataWithGCD))
-    private let savingWithOperations = UICommand(title: "Save Operations", action: #selector(saveProfileDataWithOperations))
-    private lazy var saveOptionsMenu = UIMenu(title: "", options: .displayInline, children: [savingWithGCD, savingWithOperations])
     
     // MARK: - UI Elements
     
     private lazy var avatarView: AvatarView = {
         let avatar = AvatarView()
         
-        let avatarData = AvatarModel(size: Constants.avatarSize, nickname: nickname)
+        let avatarData = AvatarModel(size: Constants.avatarSize, nickname: currentUserData.nickname)
         avatar.configure(with: avatarData)
         
         return avatar
@@ -121,7 +117,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     private lazy var nicknameLabel: UILabel = {
         let nickname = UILabel()
 
-        nickname.text = self.nickname ?? "No name"
+        nickname.text = currentUserData.nickname ?? "No name"
         nickname.textColor = .label
         nickname.font = UIFont.preferredFont(forTextStyle: .headline).withSize(22)
 
@@ -131,7 +127,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     private lazy var descriptionLabel: UILabel = {
         let description = UILabel()
 
-        description.text = bio ?? "No bio specified"
+        description.text = currentUserData.description ?? "No bio specified"
         description.textColor = .secondaryLabel
         description.numberOfLines = 0
         description.textAlignment = .center
@@ -175,11 +171,11 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
             case .nickname:
                 label.text = "Name"
                 field.placeholder = "Enter your name"
-                field.text = nickname
+                field.text = currentUserData.nickname
             case .description:
                 label.text = "Bio"
                 field.placeholder = "Tell about yourself"
-                field.text = bio
+                field.text = currentUserData.description
                 field.addSubview(bottomSeparatorLine)
                 NSLayoutConstraint.activate([
                     bottomSeparatorLine.heightAnchor.constraint(equalToConstant: 0.5),
@@ -358,12 +354,10 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     }
     
     @objc private func cancelEditMode() {
-        currentService?.cancel()
-        if let avatar = avatarImage {
-            avatarView.setAvatarImage(image: avatar)
-        }
-        nicknameTextField.text = nickname
-        descriptionTextField.text = bio
+        sharedCombineService.cancel()
+        
+        nicknameTextField.text = currentUserData.nickname
+        descriptionTextField.text = currentUserData.description
         
         title = "My profile"
         
@@ -392,31 +386,31 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         }
     }
     
-    @objc private func saveProfileDataWithGCD() {
-        currentService = serviceGCD
-        saveData()
-    }
-    
-    @objc private func saveProfileDataWithOperations() {
-        currentService = serviceOperation
-        saveData()
-    }
-    
-    private func saveData() {
+    @objc private func saveData() {
         state = .loading
         
-        guard let currentService else { return }
-        
-        currentService.save(user: UserProfileViewModel(nickname: nicknameTextField.text, description: descriptionTextField.text, image: avatarView.avatarImageView.image)) { [weak self] result in
-            guard let self else { return }
-            switch result {
-                case .success(let user):
-                    self.state = .content(user)
-                    self.state = .success
-                case .failure:
-                    self.state = .error
-            }
-        }
+        saveDataRequest = sharedCombineService.saveProfileDataPublisher(user: UserProfileViewModel(nickname: nicknameTextField.text, description: descriptionTextField.text, image: avatarView.avatarImageView.image))
+            .subscribe(on: DispatchQueue.global(qos: .userInitiated))
+            .receive(on: DispatchQueue.main)
+            .decode(type: UserProfileViewModel.self, decoder: JSONDecoder())
+            .sink(
+                receiveCompletion: { [weak self] result in
+                    guard let self else { return }
+                    
+                    switch result {
+                        case .finished: break
+                        case .failure(let error):
+                            self.state = .content(self.currentUserData)
+                            guard let combineServiceError = error as? CombineServiceError, combineServiceError == CombineServiceError.cancel else {
+                                self.state = .error
+                                break
+                            }
+                    }
+                },
+                receiveValue: { [weak self] user in
+                    self?.state = .content(user)
+                    self?.state = .success
+                })
     }
 
     @objc private func presentAddPhotoActionSheet() {
@@ -440,32 +434,26 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     }
     
     private func fetchUserData() {
-        serviceGCD.fetchUser { [weak self] result in
-            switch result {
-                case .success(let user):
-                    self?.state = .content(user)
-                case .failure:
-                    print("Failure reading :c")
-            }
-        }
+        userDataRequest = sharedCombineService.getProfileDataPublisher
+            .map(State.content)
+            .assign(to: \.state, on: self)
     }
     
     func configure(with model: UserProfileViewModel) {
+        currentUserData = model
+        
         if let name = model.nickname {
-            nickname = name
             nicknameLabel.text = name == "" ? "No name" : name
             nicknameTextField.text = name
             avatarView.configure(with: AvatarModel(size: Constants.avatarSize, nickname: name))
         }
         
         if let description = model.description {
-            bio = description
             descriptionLabel.text = description == "" ? "No bio specified" : description
             descriptionTextField.text = description
         }
-        
-        if let avatar = model.image {
-            avatarImage = avatar
+                
+        if let avatar = model.image?.image {
             avatarView.setAvatarImage(image: avatar)
         }
     }
@@ -493,7 +481,7 @@ extension ProfileViewController: UITextFieldDelegate {
     }
     
     func textFieldDidChangeSelection(_ textField: UITextField) {
-        let needHideSaveButton = (nicknameTextField.text == nickname && descriptionTextField.text == bio && avatarView.avatarImageView.image == avatarImage) || nicknameTextField.text == Optional("") || descriptionTextField.text == Optional("")
+        let needHideSaveButton = (nicknameTextField.text == currentUserData.nickname && descriptionTextField.text == currentUserData.description && avatarView.avatarImageView.image == currentUserData.image?.image) || nicknameTextField.text == Optional("") || descriptionTextField.text == Optional("")
         navigationItem.setRightBarButton(needHideSaveButton ? nil : saveButton, animated: true)
     }
 }
