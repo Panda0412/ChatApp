@@ -408,8 +408,10 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
                     }
                 },
                 receiveValue: { [weak self] user in
-                    self?.state = .content(user)
-                    self?.state = .success
+                    guard let self else { return }
+                    
+                    self.state = .content(user)
+                    self.state = .success
                 })
     }
 
