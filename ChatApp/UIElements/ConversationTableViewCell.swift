@@ -110,7 +110,7 @@ class ConversationTableViewCell: UITableViewCell, ConfigurableViewProtocol {
             messageText.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: -Constants.verticalPadding),
             
             timeLabel.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: -Constants.horizontalPadding),
-            timeLabel.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: -Constants.verticalPadding),
+            timeLabel.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: -Constants.verticalPadding)
         ])
     }
     
@@ -130,15 +130,19 @@ class ConversationTableViewCell: UITableViewCell, ConfigurableViewProtocol {
         messageView.backgroundColor = model.isIncoming ? .systemGray5 : UIColor(red: 0.27, green: 0.54, blue: 0.97, alpha: 1)
         
         NSLayoutConstraint.activate([
-            model.isIncoming ? messageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.margin) : messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.margin),
+            model.isIncoming ?
+                messageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.margin) :
+                messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.margin),
             messageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.spacing),
             messageView.widthAnchor.constraint(lessThanOrEqualTo: contentView.widthAnchor, multiplier: 3 / 4, constant: -Constants.margin),
             messageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            model.isIncoming ? tail.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -4) : tail.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: 4),
+            model.isIncoming ?
+                tail.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -4) :
+                tail.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: 4),
             tail.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: -1),
             tail.heightAnchor.constraint(equalToConstant: 20.5),
-            tail.widthAnchor.constraint(equalToConstant: 16.5),
+            tail.widthAnchor.constraint(equalToConstant: 16.5)
         ])
     }
 }

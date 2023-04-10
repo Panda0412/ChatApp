@@ -175,7 +175,9 @@ class ConversationsListTableViewCell: UITableViewCell, ConfigurableViewProtocol 
         
         if let message = model.message {
             messageLabel.text = message
-            messageLabel.font = model.hasUnreadMessages ? .boldSystemFont(ofSize: Constants.mediumTextFontSize) : .systemFont(ofSize: Constants.mediumTextFontSize)
+            messageLabel.font = model.hasUnreadMessages ?
+                .boldSystemFont(ofSize: Constants.mediumTextFontSize) :
+                .systemFont(ofSize: Constants.mediumTextFontSize)
             messageLabel.textColor = model.hasUnreadMessages ? .label : .secondaryLabel
         } else {
             messageLabel.text = "No messages yet"

@@ -41,22 +41,22 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     var state: State = .initial {
         didSet {
             switch state {
-                case .loading:
-                    navigationItem.setRightBarButton(activityIndicatorBarItem, animated: true)
-                    activityIndicator.startAnimating()
-                    nicknameTextField.isEnabled = false
-                    descriptionTextField.isEnabled = false
-                    addPhotoButton.isEnabled = false
-                case .success:
-                    present(successAlert, animated: true)
-                case .error:
-                    present(errorAlert, animated: true)
-                case .content(let user):
-                    activityIndicator.stopAnimating()
-                    addPhotoButton.isEnabled = true
-                    currentUserData = user
-                    configure(with: user)
-                default: break
+            case .loading:
+                navigationItem.setRightBarButton(activityIndicatorBarItem, animated: true)
+                activityIndicator.startAnimating()
+                nicknameTextField.isEnabled = false
+                descriptionTextField.isEnabled = false
+                addPhotoButton.isEnabled = false
+            case .success:
+                present(successAlert, animated: true)
+            case .error:
+                present(errorAlert, animated: true)
+            case .content(let user):
+                activityIndicator.stopAnimating()
+                addPhotoButton.isEnabled = true
+                currentUserData = user
+                configure(with: user)
+            default: break
             }
         }
     }
@@ -168,20 +168,20 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         field.addSubview(separatorLine)
 
         switch purpose {
-            case .nickname:
-                label.text = "Name"
-                field.placeholder = "Enter your name"
-                field.text = currentUserData.nickname
-            case .description:
-                label.text = "Bio"
-                field.placeholder = "Tell about yourself"
-                field.text = currentUserData.description
-                field.addSubview(bottomSeparatorLine)
-                NSLayoutConstraint.activate([
-                    bottomSeparatorLine.heightAnchor.constraint(equalToConstant: 0.5),
-                    bottomSeparatorLine.widthAnchor.constraint(equalTo: field.widthAnchor),
-                    bottomSeparatorLine.bottomAnchor.constraint(equalTo: field.bottomAnchor)
-                ])
+        case .nickname:
+            label.text = "Name"
+            field.placeholder = "Enter your name"
+            field.text = currentUserData.nickname
+        case .description:
+            label.text = "Bio"
+            field.placeholder = "Tell about yourself"
+            field.text = currentUserData.description
+            field.addSubview(bottomSeparatorLine)
+            NSLayoutConstraint.activate([
+                bottomSeparatorLine.heightAnchor.constraint(equalToConstant: 0.5),
+                bottomSeparatorLine.widthAnchor.constraint(equalTo: field.widthAnchor),
+                bottomSeparatorLine.bottomAnchor.constraint(equalTo: field.bottomAnchor)
+            ])
         }
         
         field.delegate = self
@@ -214,10 +214,10 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     lazy var avatarActionSheet: UIAlertController = {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
                         
-        let makePhotoAction = UIAlertAction(title: "Сделать фото", style: .default) { [self] (action) in
+        let makePhotoAction = UIAlertAction(title: "Сделать фото", style: .default) { [self] _ in
             addAvatar(withCamera: true)
         }
-        let openPhotoLibraryAction = UIAlertAction(title: "Выбрать из галереи", style: .default) { [self] (action) in
+        let openPhotoLibraryAction = UIAlertAction(title: "Выбрать из галереи", style: .default) { [self] _ in
             addAvatar()
         }
         let cancelAction = UIAlertAction(title: "Отмена", style: .cancel)
@@ -307,7 +307,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
             avatarView.heightAnchor.constraint(equalToConstant: Constants.avatarSize),
             avatarView.widthAnchor.constraint(equalToConstant: Constants.avatarSize),
             nicknameTextField.widthAnchor.constraint(equalTo: stackView.widthAnchor),
-            descriptionTextField.widthAnchor.constraint(equalTo: stackView.widthAnchor),
+            descriptionTextField.widthAnchor.constraint(equalTo: stackView.widthAnchor)
         ])
     }
     
@@ -389,7 +389,11 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     @objc private func saveData() {
         state = .loading
         
-        saveDataRequest = sharedCombineService.saveProfileDataPublisher(user: UserProfileViewModel(nickname: nicknameTextField.text, description: descriptionTextField.text, image: avatarView.avatarImageView.image))
+        saveDataRequest = sharedCombineService.saveProfileDataPublisher(user: UserProfileViewModel(
+            nickname: nicknameTextField.text,
+            description: descriptionTextField.text,
+            image: avatarView.avatarImageView.image
+        ))
             .subscribe(on: DispatchQueue.global(qos: .userInitiated))
             .receive(on: DispatchQueue.main)
             .decode(type: UserProfileViewModel.self, decoder: JSONDecoder())
@@ -398,13 +402,13 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
                     guard let self else { return }
                     
                     switch result {
-                        case .finished: break
-                        case .failure(let error):
-                            self.state = .content(self.currentUserData)
-                            guard let combineServiceError = error as? CombineServiceError, combineServiceError == CombineServiceError.cancel else {
-                                self.state = .error
-                                break
-                            }
+                    case .finished: break
+                    case .failure(let error):
+                        self.state = .content(self.currentUserData)
+                        guard let combineServiceError = error as? CombineServiceError, combineServiceError == CombineServiceError.cancel else {
+                            self.state = .error
+                            break
+                        }
                     }
                 },
                 receiveValue: { [weak self] user in
@@ -465,7 +469,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
 
 extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         dismiss(animated: true)
         
         guard let avatar = info[.editedImage] as? UIImage else { return }
@@ -483,7 +487,12 @@ extension ProfileViewController: UITextFieldDelegate {
     }
     
     func textFieldDidChangeSelection(_ textField: UITextField) {
-        let needHideSaveButton = (nicknameTextField.text == currentUserData.nickname && descriptionTextField.text == currentUserData.description && avatarView.avatarImageView.image == currentUserData.image?.image) || nicknameTextField.text == Optional("") || descriptionTextField.text == Optional("")
+        let needHideSaveButton =
+            (nicknameTextField.text == currentUserData.nickname &&
+             descriptionTextField.text == currentUserData.description &&
+             avatarView.avatarImageView.image == currentUserData.image?.image) ||
+            nicknameTextField.text == Optional("") ||
+            descriptionTextField.text == Optional("")
         navigationItem.setRightBarButton(needHideSaveButton ? nil : saveButton, animated: true)
     }
 }

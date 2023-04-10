@@ -70,11 +70,11 @@ class ThemesViewController: UIViewController {
         stack.spacing = 10
         
         switch theme {
-            case .light:
-                [lightMessagesView, lightButtonTitle, lightThemeButton].forEach { stack.addArrangedSubview($0) }
-            case .dark:
-                [darkMessagesView, darkButtonTitle, darkThemeButton].forEach { stack.addArrangedSubview($0) }
-            default: break
+        case .light:
+            [lightMessagesView, lightButtonTitle, lightThemeButton].forEach { stack.addArrangedSubview($0) }
+        case .dark:
+            [darkMessagesView, darkButtonTitle, darkThemeButton].forEach { stack.addArrangedSubview($0) }
+        default: break
         }
 
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -94,11 +94,11 @@ class ThemesViewController: UIViewController {
         messagesView.layer.borderWidth = 0.5
         
         switch theme {
-            case .light:
-                messagesView.layer.borderColor = UIColor.lightGray.cgColor
-            case .dark:
-                messagesView.layer.borderColor = UIColor.darkGray.cgColor
-            default: break
+        case .light:
+            messagesView.layer.borderColor = UIColor.lightGray.cgColor
+        case .dark:
+            messagesView.layer.borderColor = UIColor.darkGray.cgColor
+        default: break
         }
                 
         messagesView.addSubview(outcomingMessageView)
@@ -134,10 +134,12 @@ class ThemesViewController: UIViewController {
             messageView.heightAnchor.constraint(equalToConstant: 18),
             messageView.widthAnchor.constraint(equalToConstant: 50),
 
-            isIncoming ? tail.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -2.5) : tail.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: 2.5),
+            isIncoming ?
+                tail.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -2.5) :
+                tail.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: 2.5),
             tail.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: -0.7),
             tail.heightAnchor.constraint(equalToConstant: 10.5),
-            tail.widthAnchor.constraint(equalToConstant: 8.5),
+            tail.widthAnchor.constraint(equalToConstant: 8.5)
         ])
         
         messageView.translatesAutoresizingMaskIntoConstraints = false
@@ -150,13 +152,13 @@ class ThemesViewController: UIViewController {
         let tailImage = UIImage(named: "bubble_tail")
         
         switch direction {
-            case .right:
-                tail.image = tailImage?.withRenderingMode(.alwaysTemplate)
-                tail.tintColor = Constants.messagesBlueColor
-                
-            case .left:
-                tail.image = tailImage?.withRenderingMode(.alwaysTemplate).withHorizontallyFlippedOrientation()
-                tail.tintColor = .systemGray5
+        case .right:
+            tail.image = tailImage?.withRenderingMode(.alwaysTemplate)
+            tail.tintColor = Constants.messagesBlueColor
+            
+        case .left:
+            tail.image = tailImage?.withRenderingMode(.alwaysTemplate).withHorizontallyFlippedOrientation()
+            tail.tintColor = .systemGray5
         }
         
         tail.translatesAutoresizingMaskIntoConstraints = false
@@ -230,7 +232,7 @@ class ThemesViewController: UIViewController {
             leftStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             leftStack.trailingAnchor.constraint(equalTo: contentView.centerXAnchor),
             rightStack.leadingAnchor.constraint(equalTo: leftStack.trailingAnchor),
-            rightStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            rightStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
         ])
     }
     
@@ -238,17 +240,17 @@ class ThemesViewController: UIViewController {
     
     @objc private func themeButtonAction(sender: ThemeButton) {        
         switch sender.theme {
-            case .light:
-                lightThemeButton.isSelected = true
-                lightThemeButton.isUserInteractionEnabled = false
-                darkThemeButton.isSelected = false
-                darkThemeButton.isUserInteractionEnabled = true
-            case .dark:
-                darkThemeButton.isSelected = true
-                darkThemeButton.isUserInteractionEnabled = false
-                lightThemeButton.isSelected = false
-                lightThemeButton.isUserInteractionEnabled = true
-            default: break
+        case .light:
+            lightThemeButton.isSelected = true
+            lightThemeButton.isUserInteractionEnabled = false
+            darkThemeButton.isSelected = false
+            darkThemeButton.isUserInteractionEnabled = true
+        case .dark:
+            darkThemeButton.isSelected = true
+            darkThemeButton.isUserInteractionEnabled = false
+            lightThemeButton.isSelected = false
+            lightThemeButton.isUserInteractionEnabled = true
+        default: break
         }
         
         // Delegate

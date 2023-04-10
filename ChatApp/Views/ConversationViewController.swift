@@ -32,7 +32,8 @@ class ConversationViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    override func viewWillAppear(_ animated: Bool) {        
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: true)
     }
 
@@ -79,7 +80,7 @@ class ConversationViewController: UIViewController {
 
         NSLayoutConstraint.activate([
             buttonImage.centerXAnchor.constraint(equalTo: button.centerXAnchor),
-            buttonImage.centerYAnchor.constraint(equalTo: button.centerYAnchor),
+            buttonImage.centerYAnchor.constraint(equalTo: button.centerYAnchor)
         ])
         
         return button
@@ -103,7 +104,7 @@ class ConversationViewController: UIViewController {
             buttonImage.heightAnchor.constraint(equalToConstant: 28),
             buttonImage.widthAnchor.constraint(equalToConstant: 28),
             button.heightAnchor.constraint(equalToConstant: 36),
-            button.widthAnchor.constraint(equalToConstant: 36),
+            button.widthAnchor.constraint(equalToConstant: 36)
         ])
         
         return button
@@ -252,7 +253,11 @@ class ConversationViewController: UIViewController {
             MessageItem(message: "Let’s get lunch soon! I’d glad to see you soon! 👀", date: Date(), isIncoming: false),
             MessageItem(message: "Let’s meet at Moe’s tomorrow", date: Date(), isIncoming: false),
             MessageItem(message: "OK", date: Date(), isIncoming: true),
-            MessageItem(message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.", date: Date(), isIncoming: true),
+            MessageItem(
+                message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+                date: Date(),
+                isIncoming: true
+            )
         ]
         dates.append(MessageSection(date: Date(), messages: messages))
     }

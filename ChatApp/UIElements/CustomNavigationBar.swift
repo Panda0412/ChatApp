@@ -75,7 +75,7 @@ class CustomNavigationBar: UIView {
         
         NSLayoutConstraint.activate([
             buttonImage.centerXAnchor.constraint(equalTo: button.centerXAnchor),
-            buttonImage.centerYAnchor.constraint(equalTo: button.centerYAnchor),
+            buttonImage.centerYAnchor.constraint(equalTo: button.centerYAnchor)
         ])
         
         return button

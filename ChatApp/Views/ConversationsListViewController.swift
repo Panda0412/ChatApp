@@ -31,6 +31,7 @@ class ConversationsListViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
     }
 
@@ -68,8 +69,9 @@ class ConversationsListViewController: UIViewController {
     }
     
     // MARK: - Setup
+    
     private func setupTheme() {
-        let storedTheme = UIUserInterfaceStyle.init(rawValue: defaults.integer(forKey: Constants.themeKey))
+        let storedTheme = UIUserInterfaceStyle(rawValue: defaults.integer(forKey: Constants.themeKey))
         guard storedTheme == .light || storedTheme == .dark else { return }
         
         currentTheme = storedTheme ?? .light
@@ -121,18 +123,57 @@ class ConversationsListViewController: UIViewController {
             let time = Date().addingTimeInterval(-Double((86400 * index)))
             
             switch index {
-                case 0:
-                    onlineConversations.append(ConversationItem(nickname: "Vasya Pupkin The Best Man In the World", message: nil, date: time, isOnline: true, hasUnreadMessages: false))
-                    historyConversations.append(ConversationItem(nickname: "Vasya Pupkin", message: nil, date: time, isOnline: false, hasUnreadMessages: false))
-                case 1:
-                    onlineConversations.append(ConversationItem(nickname: "Panda0412", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.", date: time, isOnline: true, hasUnreadMessages: false))
-                    historyConversations.append(ConversationItem(nickname: "Panda0412", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.", date: time, isOnline: false, hasUnreadMessages: false))
-                case 2:
-                    onlineConversations.append(ConversationItem(nickname: "Dmitry Puzyrev", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.", date: time, isOnline: true, hasUnreadMessages: true))
-                    historyConversations.append(ConversationItem(nickname: "Dmitry Puzyrev", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.", date: time, isOnline: false, hasUnreadMessages: true))
-                default:
-                    onlineConversations.append(ConversationItem(nickname: "Anastasiia Bugaeva", message: "Hello world!", date: time, isOnline: true, hasUnreadMessages: false))
-                    historyConversations.append(ConversationItem(nickname: "Anastasiia Bugaeva", message: "Hello world!", date: time, isOnline: false, hasUnreadMessages: false))
+            case 0:
+                onlineConversations.append(ConversationItem(
+                    nickname: "Vasya Pupkin The Best Man In the World",
+                    message: nil,
+                    date: time,
+                    isOnline: true,
+                    hasUnreadMessages: false))
+                historyConversations.append(ConversationItem(
+                    nickname: "Vasya Pupkin",
+                    message: nil,
+                    date: time,
+                    isOnline: false,
+                    hasUnreadMessages: false))
+            case 1:
+                onlineConversations.append(ConversationItem(
+                    nickname: "Panda0412",
+                    message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+                    date: time,
+                    isOnline: true,
+                    hasUnreadMessages: false))
+                historyConversations.append(ConversationItem(
+                    nickname: "Panda0412",
+                    message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+                    date: time,
+                    isOnline: false,
+                    hasUnreadMessages: false))
+            case 2:
+                onlineConversations.append(ConversationItem(
+                    nickname: "Dmitry Puzyrev",
+                    message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+                    date: time,
+                    isOnline: true,
+                    hasUnreadMessages: true))
+                historyConversations.append(ConversationItem(
+                    nickname: "Dmitry Puzyrev",
+                    message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+                    date: time,
+                    isOnline: false,
+                    hasUnreadMessages: true))
+            default:
+                onlineConversations.append(ConversationItem(
+                    nickname: "Anastasiia Bugaeva",
+                    message: "Hello world!",
+                    date: time, isOnline: true,
+                    hasUnreadMessages: false))
+                historyConversations.append(ConversationItem(
+                    nickname: "Anastasiia Bugaeva",
+                    message: "Hello world!",
+                    date: time,
+                    isOnline: false,
+                    hasUnreadMessages: false))
             }
         }
     }
@@ -144,13 +185,6 @@ class ConversationsListViewController: UIViewController {
                 self.avatarButton = self.setupProfileButton(with: userData)
             }
     }
-    
-    /*
-     Если вынести инициализацию ThemesViewController сюда, то ConversationsListViewController будет держать на него ссылку, а ThemesViewController будет держать ссылку на ConversationsListViewController в качестве делегата, из-за чего возникает Retain cycle
-     При создании ThemesViewController внутри функции openSettings, утечки памяти не происходит (я проверила 😊)
-     В замыкании передаётся слабая ссылка на ConversationsListViewController, что позволяет избежать Retain cycle, где бы не создавался ThemesViewController
-     */
-//    let settingsScreen = ThemesViewController()
     
     @objc private func openSettings() {
         let settingsScreen = ThemesViewController()
@@ -188,7 +222,13 @@ final class ConversationsListDataSource: UITableViewDiffableDataSource<Conversat
                 return UITableViewCell()
             }
 
-            let model = ConversationCellModel(nickname: itemIdentifier.nickname, message: itemIdentifier.message, date: itemIdentifier.date, isOnline: itemIdentifier.isOnline, hasUnreadMessages: itemIdentifier.hasUnreadMessages)
+            let model = ConversationCellModel(
+                nickname: itemIdentifier.nickname,
+                message: itemIdentifier.message,
+                date: itemIdentifier.date,
+                isOnline: itemIdentifier.isOnline,
+                hasUnreadMessages: itemIdentifier.hasUnreadMessages
+            )
             
             cell.configure(with: model)
             
@@ -206,14 +246,14 @@ final class ConversationsListDataSource: UITableViewDiffableDataSource<Conversat
         
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
-            case 0:
-                return "ONLINE"
+        case 0:
+            return "ONLINE"
+        
+        case 1:
+            return "HISTORY"
             
-            case 1:
-                return "HISTORY"
-                
-            default:
-                return nil
+        default:
+            return nil
         }
     }
 }

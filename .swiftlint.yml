@@ -18,6 +18,7 @@ disabled_rules:
   - identifier_name
   - unused_setter_value
   - weak_delegate
+  - class_delegate_protocol
 
 opt_in_rules:
   - overridden_super_call
