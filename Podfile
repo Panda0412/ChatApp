@@ -7,4 +7,6 @@ target 'ChatApp' do
 
   # Pods for ChatApp
   pod 'TFSChatTransport'
+  pod 'SwiftLint'
+
 end
