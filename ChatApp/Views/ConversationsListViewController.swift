@@ -13,7 +13,6 @@ private enum Constants {
     static let rowHeight: CGFloat = 76
     static let avatarSize: CGFloat = 32
     static let cellIdentifier = "conversationsTableViewCell"
-    static let themeKey = "theme"
 }
 
 class ConversationsListViewController: UIViewController {
@@ -22,9 +21,7 @@ class ConversationsListViewController: UIViewController {
         super.viewDidLoad()
         
         generateSomeData()
-        fetchUserData()
         
-        setupTheme()
         setupNavigationBar()
         setupTableView()
         setupDataSource()
@@ -39,54 +36,36 @@ class ConversationsListViewController: UIViewController {
     
     private lazy var conversationsTableView = UITableView()
     
-    private var onlineConversations: [ConversationItem] = []
-    private var historyConversations: [ConversationItem] = []
+    private var conversations: [ConversationItem] = []
     
     private lazy var dataSource = ConversationsListDataSource(conversationsTableView)
-    
-    var currentTheme: UIUserInterfaceStyle = .light
-    
+        
     private var userDataRequest: Cancellable?
-    private lazy var avatarButton = UIButton()
-    
-    private let defaults = UserDefaults.standard
-    
+        
     // MARK: - UI Elements
     
-    private func setupProfileButton(with userData: UserProfileViewModel) -> UIButton {
-        let button = UIButton()
+    lazy var addChannelAlert: UIAlertController = {
+        let alert = UIAlertController(title: "New channel", message: "", preferredStyle: .alert)
         
-        let avatarView = AvatarView()
-        let avatarData = AvatarModel(size: Constants.avatarSize, nickname: userData.nickname, image: userData.image?.image)
-        avatarView.configure(with: avatarData)
-        
-        button.addSubview(avatarView)
-        button.addTarget(self, action: #selector(openProfile), for: .touchUpInside)
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
-        
-        return button
-    }
+        let dismissAction = UIAlertAction(title: "Cancel", style: .cancel)
+        let createAction = UIAlertAction(title: "Create", style: .default)
+
+        alert.addAction(dismissAction)
+        alert.addAction(createAction)
+
+        return alert
+    }()
     
     // MARK: - Setup
     
-    private func setupTheme() {
-        let storedTheme = UIUserInterfaceStyle(rawValue: defaults.integer(forKey: Constants.themeKey))
-        guard storedTheme == .light || storedTheme == .dark else { return }
-        
-        currentTheme = storedTheme ?? .light
-    }
-    
     private func setupNavigationBar() {
         view.backgroundColor = .systemBackground
-        title = "Chat"
-        navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.backButtonTitle = "Back"
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gear"), style: .plain, target: self, action: #selector(openSettings))
-        
-        navigationController?.overrideUserInterfaceStyle = currentTheme
-        avatarButton.overrideUserInterfaceStyle = currentTheme
+        navigationItem.setRightBarButton(
+            UIBarButtonItem(title: "Add Channel", style: .plain, target: self, action: #selector(addChannelTapped)),
+            animated: true
+        )
     }
     
     private func setupTableView() {
@@ -110,8 +89,7 @@ class ConversationsListViewController: UIViewController {
                 
         snapshot.deleteAllItems()
         snapshot.appendSections(ConversationSections.allCases)
-        snapshot.appendItems(onlineConversations, toSection: .online)
-        snapshot.appendItems(historyConversations, toSection: .history)
+        snapshot.appendItems(conversations, toSection: .all)
         
         dataSource.apply(snapshot)
     }
@@ -124,92 +102,39 @@ class ConversationsListViewController: UIViewController {
             
             switch index {
             case 0:
-                onlineConversations.append(ConversationItem(
+                conversations.append(ConversationItem(
                     nickname: "Vasya Pupkin The Best Man In the World",
                     message: nil,
                     date: time,
                     isOnline: true,
                     hasUnreadMessages: false))
-                historyConversations.append(ConversationItem(
-                    nickname: "Vasya Pupkin",
-                    message: nil,
-                    date: time,
-                    isOnline: false,
-                    hasUnreadMessages: false))
             case 1:
-                onlineConversations.append(ConversationItem(
+                conversations.append(ConversationItem(
                     nickname: "Panda0412",
                     message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
                     date: time,
                     isOnline: true,
-                    hasUnreadMessages: false))
-                historyConversations.append(ConversationItem(
-                    nickname: "Panda0412",
-                    message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
-                    date: time,
-                    isOnline: false,
                     hasUnreadMessages: false))
             case 2:
-                onlineConversations.append(ConversationItem(
+                conversations.append(ConversationItem(
                     nickname: "Dmitry Puzyrev",
                     message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
                     date: time,
                     isOnline: true,
                     hasUnreadMessages: true))
-                historyConversations.append(ConversationItem(
-                    nickname: "Dmitry Puzyrev",
-                    message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
-                    date: time,
-                    isOnline: false,
-                    hasUnreadMessages: true))
             default:
-                onlineConversations.append(ConversationItem(
-                    nickname: "Anastasiia Bugaeva",
-                    message: "Hello world!",
-                    date: time, isOnline: true,
-                    hasUnreadMessages: false))
-                historyConversations.append(ConversationItem(
+                conversations.append(ConversationItem(
                     nickname: "Anastasiia Bugaeva",
                     message: "Hello world!",
                     date: time,
-                    isOnline: false,
+                    isOnline: true,
                     hasUnreadMessages: false))
             }
         }
     }
     
-    private func fetchUserData() {
-        userDataRequest = sharedCombineService.getProfileDataPublisher
-            .sink { [weak self] userData in
-                guard let self else { return }
-                self.avatarButton = self.setupProfileButton(with: userData)
-            }
-    }
-    
-    @objc private func openSettings() {
-        let settingsScreen = ThemesViewController()
-        
-        // Delegate
-        settingsScreen.delegate = self
-        
-        // Closure
-//        settingsScreen.changeUserInterfaceStyleClosure = { [weak self] theme in
-//            self?.navigationController?.overrideUserInterfaceStyle = theme
-//            self?.currentTheme = theme
-//        }
-//        settingsScreen.currentTheme = currentTheme
-        
-        navigationController?.pushViewController(settingsScreen, animated: true)
-    }
-    
-    @objc private func openProfile() {
-        let profile = ProfileViewController()
-        profile.configure(with: UserProfileViewModel(nickname: nil, description: nil))
-        profile.currentTheme = currentTheme
-        
-        let profileNavigation = UINavigationController(rootViewController: profile)
-
-        present(profileNavigation, animated: true)
+    @objc private func addChannelTapped() {
+        present(addChannelAlert, animated: true)
     }
 }
 
@@ -243,19 +168,6 @@ final class ConversationsListDataSource: UITableViewDiffableDataSource<Conversat
             return cell
         }
     }
-        
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch section {
-        case 0:
-            return "ONLINE"
-        
-        case 1:
-            return "HISTORY"
-            
-        default:
-            return nil
-        }
-    }
 }
 
 // MARK: - Delegate
@@ -286,14 +198,5 @@ extension ConversationsListViewController: UITableViewDelegate {
             separatorView.widthAnchor.constraint(equalTo: view.widthAnchor),
             separatorView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 1)
         ])
-    }
-}
-
-extension ConversationsListViewController: ThemesPickerDelegate {
-    func changeUserInterfaceStyle(theme: UIUserInterfaceStyle) {
-        navigationController?.overrideUserInterfaceStyle = theme
-        avatarButton.overrideUserInterfaceStyle = theme
-        currentTheme = theme
-        defaults.set(theme.rawValue, forKey: Constants.themeKey)
     }
 }

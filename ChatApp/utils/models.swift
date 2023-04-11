@@ -64,8 +64,7 @@ struct UserProfileViewModel: Codable {
 // MARK: - Conversations Table
 
 enum ConversationSections: Hashable, CaseIterable {
-    case online
-    case history
+    case all
 }
 
 struct ConversationItem: Hashable {

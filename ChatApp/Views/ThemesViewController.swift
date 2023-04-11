@@ -25,18 +25,12 @@ class ThemesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupNavigationBar()
         setupUI()
     }
     
     // MARK: - Properties
     
-    // Delegate
     weak var delegate: ThemesPickerDelegate?
-    
-    // Closure
-//    var changeUserInterfaceStyleClosure: ((UIUserInterfaceStyle) -> ())?
-//    var currentTheme: UIUserInterfaceStyle? = .unspecified
     
     // MARK: - UI Elements
 
@@ -185,10 +179,7 @@ class ThemesViewController: UIViewController {
         button.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .selected)
         button.setImage(UIImage(systemName: "circle")?.withTintColor(.systemGray2, renderingMode: .alwaysOriginal), for: .normal)
         
-        // Delegate
         button.isSelected = theme == delegate?.currentTheme
-        // Closure
-//        button.isSelected = theme == currentTheme
 
         button.isUserInteractionEnabled = !button.isSelected
         
@@ -201,13 +192,9 @@ class ThemesViewController: UIViewController {
     
     // MARK: - Setup
     
-    private func setupNavigationBar() {
-        view.backgroundColor = .secondarySystemBackground
-        title = "Settings"
-        navigationItem.largeTitleDisplayMode = .never
-    }
-    
     private func setupUI() {
+        view.backgroundColor = .secondarySystemBackground
+        
         lightMessagesView.addGestureRecognizer(lightThemeTapGestureRecognizer())
         darkMessagesView.addGestureRecognizer(darkThemeTapGestureRecognizer())
         lightButtonTitle.addGestureRecognizer(lightThemeTapGestureRecognizer())
@@ -253,10 +240,7 @@ class ThemesViewController: UIViewController {
         default: break
         }
         
-        // Delegate
         delegate?.changeUserInterfaceStyle(theme: sender.theme)
-        // Closure
-//        changeUserInterfaceStyleClosure?(sender.theme)
     }
     
     private func lightThemeTapGestureRecognizer() -> ThemeTapGestureRecognizer {

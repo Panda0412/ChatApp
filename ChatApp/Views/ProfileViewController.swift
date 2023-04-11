@@ -28,6 +28,11 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         setupUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupTheme()
+    }
+    
     // MARK: - State
     
     enum State {
@@ -71,8 +76,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     private var currentUserData = UserProfileViewModel()
 
     private let activityIndicator = UIActivityIndicatorView(style: .medium)
-        
-    private lazy var closeButton = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(closeModal))
+    
     private lazy var editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(switchToEditMode))
     private lazy var cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelEditMode))
     private lazy var saveButton = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveData))
@@ -94,12 +98,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         
         button.setTitle("Add Photo", for: .normal)
         button.setTitleColor(.systemBlue, for: .normal)
-        
-        button.addTarget(
-            self,
-            action: #selector(presentAddPhotoActionSheet),
-            for: .touchUpInside
-        )
+        button.addTarget(self, action: #selector(presentAddPhotoActionSheet), for: .touchUpInside)
         
         return button
     }()
@@ -270,16 +269,17 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     
     // MARK: - Setup
     
-    private func setupUI() {
+    private func setupTheme() {
         navigationController?.overrideUserInterfaceStyle = currentTheme
         avatarActionSheet.overrideUserInterfaceStyle = currentTheme
         successAlert.overrideUserInterfaceStyle = currentTheme
         errorAlert.overrideUserInterfaceStyle = currentTheme
-        
+    }
+    
+    private func setupUI() {
         view.backgroundColor = .systemBackground
-        title = "My profile"
         
-        navigationItem.setLeftBarButton(closeButton, animated: true)
+        navigationItem.setLeftBarButton(nil, animated: true)
         navigationItem.setRightBarButton(editButton, animated: true)
         
         [avatarView,
@@ -302,7 +302,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stackView.topAnchor.constraint(equalTo: view.topAnchor, constant: (navigationController?.navigationBar.frame.height ?? 0) + 32),
+            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
             stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             avatarView.heightAnchor.constraint(equalToConstant: Constants.avatarSize),
             avatarView.widthAnchor.constraint(equalToConstant: Constants.avatarSize),
@@ -312,10 +312,6 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     }
     
     // MARK: - Helpers
-    
-    @objc private func closeModal() {
-        dismiss(animated: true)
-    }
     
     @objc private func dismissKeyboard() {
         view.endEditing(true)
@@ -361,7 +357,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         
         title = "My profile"
         
-        navigationItem.setLeftBarButton(closeButton, animated: true)
+        navigationItem.setLeftBarButton(nil, animated: true)
         navigationItem.setRightBarButton(editButton, animated: true)
         
         UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1) {
