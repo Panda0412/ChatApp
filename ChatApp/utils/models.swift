@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import TFSChatTransport
 
 // MARK: - Avatar
 
@@ -61,27 +62,41 @@ struct UserProfileViewModel: Codable {
     }
 }
 
-// MARK: - Conversations Table
+// MARK: - Channels Table
 
-enum ConversationSections: Hashable, CaseIterable {
+enum ChannelSections: Hashable, CaseIterable {
     case all
 }
 
-struct ConversationItem: Hashable {
-    let id = UUID()
-    let nickname: String
-    let message: String?
-    let date: Date
-    let isOnline: Bool
-    let hasUnreadMessages: Bool
+struct ChannelItem: Hashable {
+    let id: String
+    let name: String
+    let logoURL: String?
+    let lastMessage: String?
+    let lastActivity: Date?
+    
+    init(id: String, name: String, logoURL: String?, lastMessage: String?, lastActivity: Date?) {
+        self.id = id
+        self.name = name
+        self.logoURL = logoURL
+        self.lastMessage = lastMessage
+        self.lastActivity = lastActivity
+    }
+    
+    init(from channel: Channel) {
+        self.id = channel.id
+        self.name = channel.name
+        self.logoURL = channel.logoURL
+        self.lastMessage = channel.lastMessage
+        self.lastActivity = channel.lastActivity
+    }
 }
 
-struct ConversationCellModel {
+struct ChannelCellModel {
+    let channelId: String
     let nickname: String
     let message: String?
-    let date: Date
-    let isOnline: Bool
-    let hasUnreadMessages: Bool
+    let date: Date?
 }
 
 // MARK: - Chat Table

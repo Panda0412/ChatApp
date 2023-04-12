@@ -1,5 +1,5 @@
 //
-//  ConversationsListViewController.swift
+//  ChannelsListViewController.swift
 //  ChatApp
 //
 //  Created by Anastasiia Bugaeva on 05.03.2023.
@@ -12,34 +12,37 @@ private enum Constants {
     static let headerHeight: CGFloat = 36
     static let rowHeight: CGFloat = 76
     static let avatarSize: CGFloat = 32
-    static let cellIdentifier = "conversationsTableViewCell"
+    static let cellIdentifier = "channelsTableViewCell"
 }
 
-class ConversationsListViewController: UIViewController {
+class ChannelsListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        generateSomeData()
+        fetchChannels()
         
         setupNavigationBar()
         setupTableView()
-        setupDataSource()
+        setupDataSource(with: [])
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
+        setupTheme()
     }
 
     // MARK: - Properties
     
-    private lazy var conversationsTableView = UITableView()
+    var currentTheme: UIUserInterfaceStyle = .light
     
-    private var conversations: [ConversationItem] = []
+    private lazy var channelsTableView = UITableView()
+    private lazy var dataSource = ChannelsListDataSource(channelsTableView)
     
-    private lazy var dataSource = ConversationsListDataSource(conversationsTableView)
-        
+    private let chatService = ChannelService()
+    private let refreshControl = UIRefreshControl()
+
     private var userDataRequest: Cancellable?
         
     // MARK: - UI Elements
@@ -58,6 +61,10 @@ class ConversationsListViewController: UIViewController {
     
     // MARK: - Setup
     
+    private func setupTheme() {
+        addChannelAlert.overrideUserInterfaceStyle = currentTheme
+    }
+    
     private func setupNavigationBar() {
         view.backgroundColor = .systemBackground
         navigationItem.backButtonTitle = "Back"
@@ -69,67 +76,49 @@ class ConversationsListViewController: UIViewController {
     }
     
     private func setupTableView() {
-        conversationsTableView.translatesAutoresizingMaskIntoConstraints = false
+        channelsTableView.translatesAutoresizingMaskIntoConstraints = false
+        channelsTableView.showsVerticalScrollIndicator = false
         
-        view.addSubview(conversationsTableView)
+        view.addSubview(channelsTableView)
         
         NSLayoutConstraint.activate([
-            conversationsTableView.topAnchor.constraint(equalTo: view.topAnchor),
-            conversationsTableView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            conversationsTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            conversationsTableView.leftAnchor.constraint(equalTo: view.leftAnchor)
+            channelsTableView.topAnchor.constraint(equalTo: view.topAnchor),
+            channelsTableView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            channelsTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            channelsTableView.leftAnchor.constraint(equalTo: view.leftAnchor)
         ])
         
-        conversationsTableView.register(ConversationsListTableViewCell.self, forCellReuseIdentifier: Constants.cellIdentifier)
-        conversationsTableView.delegate = self
+        channelsTableView.register(ChannelsListTableViewCell.self, forCellReuseIdentifier: Constants.cellIdentifier)
+        channelsTableView.delegate = self
+        
+        channelsTableView.refreshControl = refreshControl
+        refreshControl.addTarget(self, action: #selector(fetchChannels), for: .valueChanged)
     }
     
-    private func setupDataSource() {
+    private func setupDataSource(with channels: [ChannelItem]) {
         var snapshot = dataSource.snapshot()
                 
         snapshot.deleteAllItems()
-        snapshot.appendSections(ConversationSections.allCases)
-        snapshot.appendItems(conversations, toSection: .all)
+        snapshot.appendSections(ChannelSections.allCases)
+        snapshot.appendItems(channels, toSection: .all)
         
         dataSource.apply(snapshot)
     }
     
     // MARK: - Helpers
     
-    private func generateSomeData() {
-        for index in 0..<10 {
-            let time = Date().addingTimeInterval(-Double((86400 * index)))
+    @objc private func fetchChannels() {
+        chatService.getChannels { [weak self] result in
+            guard let self else { return }
             
-            switch index {
-            case 0:
-                conversations.append(ConversationItem(
-                    nickname: "Vasya Pupkin The Best Man In the World",
-                    message: nil,
-                    date: time,
-                    isOnline: true,
-                    hasUnreadMessages: false))
-            case 1:
-                conversations.append(ConversationItem(
-                    nickname: "Panda0412",
-                    message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
-                    date: time,
-                    isOnline: true,
-                    hasUnreadMessages: false))
-            case 2:
-                conversations.append(ConversationItem(
-                    nickname: "Dmitry Puzyrev",
-                    message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
-                    date: time,
-                    isOnline: true,
-                    hasUnreadMessages: true))
-            default:
-                conversations.append(ConversationItem(
-                    nickname: "Anastasiia Bugaeva",
-                    message: "Hello world!",
-                    date: time,
-                    isOnline: true,
-                    hasUnreadMessages: false))
+            switch result {
+            case .success(let channels):
+                self.setupDataSource(with: channels)
+            case .failure(let error):
+                print("Error", error)
             }
+            
+            self.refreshControl.endRefreshing()
         }
     }
     
@@ -140,19 +129,18 @@ class ConversationsListViewController: UIViewController {
 
 // MARK: - Data source
 
-final class ConversationsListDataSource: UITableViewDiffableDataSource<ConversationSections, ConversationItem> {
+final class ChannelsListDataSource: UITableViewDiffableDataSource<ChannelSections, ChannelItem> {
     init(_ tableView: UITableView) {
         super.init(tableView: tableView) { tableView, indexPath, itemIdentifier in
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath) as? ConversationsListTableViewCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath) as? ChannelsListTableViewCell else {
                 return UITableViewCell()
             }
 
-            let model = ConversationCellModel(
-                nickname: itemIdentifier.nickname,
-                message: itemIdentifier.message,
-                date: itemIdentifier.date,
-                isOnline: itemIdentifier.isOnline,
-                hasUnreadMessages: itemIdentifier.hasUnreadMessages
+            let model = ChannelCellModel(
+                channelId: itemIdentifier.id,
+                nickname: itemIdentifier.name,
+                message: itemIdentifier.lastMessage,
+                date: itemIdentifier.lastActivity
             )
             
             cell.configure(with: model)
@@ -172,7 +160,7 @@ final class ConversationsListDataSource: UITableViewDiffableDataSource<Conversat
 
 // MARK: - Delegate
 
-extension ConversationsListViewController: UITableViewDelegate {
+extension ChannelsListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat { Constants.headerHeight }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { Constants.rowHeight }
@@ -180,10 +168,10 @@ extension ConversationsListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let conversationScreen = ConversationViewController()
-        conversationScreen.title = dataSource.itemIdentifier(for: indexPath)?.nickname
+        let chatScreen = ConversationViewController()
+        chatScreen.title = dataSource.itemIdentifier(for: indexPath)?.name
                 
-        navigationController?.pushViewController(conversationScreen, animated: true)
+        navigationController?.pushViewController(chatScreen, animated: true)
     }
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {

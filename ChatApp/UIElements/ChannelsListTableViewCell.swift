@@ -1,5 +1,5 @@
 //
-//  ConversationsTableViewCell.swift
+//  ChannelsListTableViewCell.swift
 //  ChatApp
 //
 //  Created by Anastasiia Bugaeva on 05.03.2023.
@@ -17,7 +17,7 @@ private enum Constants {
     static let largeTextFontSize: CGFloat = 17
 }
 
-class ConversationsListTableViewCell: UITableViewCell, ConfigurableViewProtocol {
+class ChannelsListTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     
     // MARK: - Init
 
@@ -159,34 +159,25 @@ class ConversationsListTableViewCell: UITableViewCell, ConfigurableViewProtocol 
         ])
     }
     
-    func configure(with model: ConversationCellModel) {
+    func configure(with model: ChannelCellModel) {
         avatarView.configure(with: AvatarModel(size: Constants.avatarSize, nickname: model.nickname))
         
         nameLabel.text = model.nickname
         
-        if model.isOnline {
-            avatarView.addSubview(onlineIndicator)
-                    
-            NSLayoutConstraint.activate([
-                onlineIndicator.topAnchor.constraint(equalTo: avatarView.topAnchor, constant: -2),
-                onlineIndicator.trailingAnchor.constraint(equalTo: avatarView.trailingAnchor, constant: 2)
-            ])
-        }
-        
         if let message = model.message {
             messageLabel.text = message
-            messageLabel.font = model.hasUnreadMessages ?
-                .boldSystemFont(ofSize: Constants.mediumTextFontSize) :
-                .systemFont(ofSize: Constants.mediumTextFontSize)
-            messageLabel.textColor = model.hasUnreadMessages ? .label : .secondaryLabel
+            messageLabel.font = .systemFont(ofSize: Constants.mediumTextFontSize)
+            messageLabel.textColor = .secondaryLabel
         } else {
             messageLabel.text = "No messages yet"
             messageLabel.font = .italicSystemFont(ofSize: Constants.mediumTextFontSize)
             messageLabel.textColor = .secondaryLabel
         }
         
-        dateFormatter.dateFormat = isDateToday(model.date) ? "HH:mm" : "dd MMM"
-        dateLabel.text = dateFormatter.string(from: model.date)
+        if let date = model.date {
+            dateFormatter.dateFormat = isDateToday(date) ? "HH:mm" : "dd MMM"
+            dateLabel.text = dateFormatter.string(from: date)
+        }
     }
     
     // MARK: - Helpers

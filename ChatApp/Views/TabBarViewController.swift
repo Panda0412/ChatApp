@@ -23,6 +23,7 @@ class TabBarViewController: UITabBarController {
     private let defaults = UserDefaults.standard
     var currentTheme: UIUserInterfaceStyle = .light
     
+    private let channels = ChannelsListViewController()
     private let settingsScreen = ThemesViewController()
     private let profile = ProfileViewController()
     
@@ -42,11 +43,12 @@ class TabBarViewController: UITabBarController {
     }
     
     func setupScreens() {
+        channels.currentTheme = currentTheme
         settingsScreen.delegate = self
         profile.currentTheme = currentTheme
         
         viewControllers = [
-            createNavController(for: ConversationsListViewController(), title: "Channels", image: UIImage(systemName: "bubble.left.and.bubble.right")),
+            createNavController(for: channels, title: "Channels", image: UIImage(systemName: "bubble.left.and.bubble.right")),
             createNavController(for: settingsScreen, title: "Settings", image: UIImage(systemName: "gear")),
             createNavController(for: profile, title: "My profile", image: UIImage(systemName: "person"))
         ]
@@ -68,6 +70,7 @@ extension TabBarViewController: ThemesPickerDelegate {
     func changeUserInterfaceStyle(theme: UIUserInterfaceStyle) {
         overrideUserInterfaceStyle = theme
         currentTheme = theme
+        channels.currentTheme = theme
         profile.currentTheme = theme
         defaults.set(theme.rawValue, forKey: Constants.themeKey)
     }
