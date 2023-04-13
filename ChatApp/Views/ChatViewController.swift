@@ -71,42 +71,39 @@ class ChatViewController: UIViewController {
     
     private lazy var backButton: UIButton = {
         let button = UIButton()
-        let buttonImage = UIImageView()
         
         let buttonImageConfig = UIImage.SymbolConfiguration(font: .boldSystemFont(ofSize: 17), scale: .large)
-        buttonImage.image = UIImage(systemName: "chevron.backward", withConfiguration: buttonImageConfig)
-        buttonImage.tintColor = .systemBlue
         
-        button.addSubview(buttonImage)
+        let buttonImage = UIImage(systemName: "chevron.backward", withConfiguration: buttonImageConfig)?
+            .withTintColor(.systemBlue)
+            .withRenderingMode(.alwaysOriginal)
+        
+        button.setImage(buttonImage, for: .normal)
         
         button.translatesAutoresizingMaskIntoConstraints = false
-        buttonImage.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            buttonImage.centerXAnchor.constraint(equalTo: button.centerXAnchor),
-            buttonImage.centerYAnchor.constraint(equalTo: button.centerYAnchor)
-        ])
-        
+                
         return button
     }()
     
     private lazy var sendButton: UIButton = {
         let button = UIButton()
-        let buttonImage = UIImageView()
+        button.isEnabled = false
         
-        buttonImage.image = UIImage(systemName: "arrow.up.circle.fill")
-        buttonImage.tintColor = .systemBlue
+        let grayButtonImage = UIImage(systemName: "arrow.up.circle.fill")?
+            .withTintColor(.systemGray)
+            .withRenderingMode(.alwaysOriginal)
         
-        button.addSubview(buttonImage)
-        
-        button.translatesAutoresizingMaskIntoConstraints = false
-        buttonImage.translatesAutoresizingMaskIntoConstraints = false
+        let blueButtonImage = UIImage(systemName: "arrow.up.circle.fill")?
+            .withTintColor(.systemBlue)
+            .withRenderingMode(.alwaysOriginal)
                 
+        button.setImage(grayButtonImage, for: .disabled)
+        button.setImage(blueButtonImage, for: .normal)
+        
+        button.contentHorizontalAlignment = .center
+        button.contentVerticalAlignment = .center
+        
         NSLayoutConstraint.activate([
-            buttonImage.centerXAnchor.constraint(equalTo: button.centerXAnchor),
-            buttonImage.centerYAnchor.constraint(equalTo: button.centerYAnchor),
-            buttonImage.heightAnchor.constraint(equalToConstant: 28),
-            buttonImage.widthAnchor.constraint(equalToConstant: 28),
             button.heightAnchor.constraint(equalToConstant: 36),
             button.widthAnchor.constraint(equalToConstant: 36)
         ])
@@ -174,8 +171,10 @@ class ChatViewController: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
-        chatTableView.translatesAutoresizingMaskIntoConstraints = false
-        messageTextField.translatesAutoresizingMaskIntoConstraints = false
+        
+        [sendButton,
+         chatTableView,
+         messageTextField].forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
         
         sendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
         
@@ -307,12 +306,21 @@ class ChatViewController: UIViewController {
             
             switch result {
             case .success(var message):
+                message.isBubbleTailNeeded = true
+                
+                let lastSectionIndex = self.chatSections.count - 1
+                
+                guard lastSectionIndex != -1 else {
+                    self.chatSections.append(MessageSection(date: message.date, messages: [message]))
+                    self.messageTextField.text = ""
+                    self.setupDataSource(animatedScroll: true)
+                    return
+                }
+                
                 let formatter = DateFormatter()
                 formatter.dateFormat = "dd MMM yyyy"
-                    
-                let lastSectionIndex = self.chatSections.count - 1
+                
                 let lastMessageIndex = self.chatSections[lastSectionIndex].messages.count - 1
-                message.isBubbleTailNeeded = true
                 
                 if self.chatSections[lastSectionIndex].messages[lastMessageIndex].userID == message.userID {
                     self.chatSections[lastSectionIndex].messages[lastMessageIndex].isBubbleTailNeeded = false
@@ -391,5 +399,9 @@ extension ChatViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
+    }
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        sendButton.isEnabled = messageTextField.text != "" && messageTextField.text != nil
     }
 }

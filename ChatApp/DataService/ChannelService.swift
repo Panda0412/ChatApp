@@ -20,6 +20,7 @@ class ChannelService {
 
     private var channelsRequest: Cancellable?
     private var channelMessagesRequest: Cancellable?
+    private var createChannelRequest: Cancellable?
     private var sendMessagesRequest: Cancellable?
     private var userDataRequest: Cancellable?
     
@@ -85,6 +86,21 @@ class ChannelService {
                 }
                 
                 completion(.success(sortedMessages.map { MessageItem(from: $0) }))
+            })
+    }
+    
+    func createChannel(_ channelName: String, completion: @escaping (Result<ChannelItem, Error>) -> Void) {
+        createChannelRequest = chatService.createChannel(name: channelName)
+            .subscribe(on: backgroundQueue)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { result in
+                switch result {
+                case .finished: break
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }, receiveValue: { channel in
+                completion(.success(ChannelItem(from: channel)))
             })
     }
     

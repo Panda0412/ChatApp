@@ -47,12 +47,26 @@ class ChannelsListViewController: UIViewController {
         
     // MARK: - UI Elements
     
-    lazy var addChannelAlert: UIAlertController = {
+    private lazy var addChannelAlert: UIAlertController = {
         let alert = UIAlertController(title: "New channel", message: "", preferredStyle: .alert)
         
+        alert.addTextField { (textField: UITextField) in
+            textField.placeholder = "Channel Name"
+            textField.delegate = self
+        }
+                
         let dismissAction = UIAlertAction(title: "Cancel", style: .cancel)
-        let createAction = UIAlertAction(title: "Create", style: .default)
-
+        let createAction = UIAlertAction(title: "Create", style: .default) { [weak self] _ in
+            guard let textField = alert.textFields?.first, let self = self else {
+                return
+            }
+            
+            self.createChannel(textField.text)
+            textField.text = ""
+        }
+        
+        createAction.isEnabled = alert.textFields?.first?.text != ""
+        
         alert.addAction(dismissAction)
         alert.addAction(createAction)
 
@@ -119,6 +133,21 @@ class ChannelsListViewController: UIViewController {
             }
             
             self.refreshControl.endRefreshing()
+        }
+    }
+    
+    @objc private func createChannel(_ channelName: String?) {
+        guard let channelName = channelName else { return }
+        
+        sharedChannelService.createChannel(channelName) { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+            case .success(_):
+                self.fetchChannels()
+            case .failure(let error):
+                print("Error createChannel", error)
+            }
         }
     }
     
@@ -189,5 +218,13 @@ extension ChannelsListViewController: UITableViewDelegate {
             separatorView.widthAnchor.constraint(equalTo: view.widthAnchor),
             separatorView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 1)
         ])
+    }
+}
+
+// MARK: - Delegates
+
+extension ChannelsListViewController: UITextFieldDelegate {
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        addChannelAlert.actions.first(where: { action in action.title == "Create" })?.isEnabled = textField.text != "" && textField.text != nil
     }
 }
