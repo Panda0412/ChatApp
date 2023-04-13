@@ -20,6 +20,9 @@
 		CD88C0D029E4541F00F2BC56 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = CD88C0CF29E4541F00F2BC56 /* .swiftlint.yml */; };
 		CD88C0D229E4CDB400F2BC56 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD88C0D129E4CDB400F2BC56 /* TabBarViewController.swift */; };
 		CD88C0D429E6AA8C00F2BC56 /* ChannelService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD88C0D329E6AA8C00F2BC56 /* ChannelService.swift */; };
+		CD88C0D729E8917500F2BC56 /* ChannelsDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CD88C0D529E8917500F2BC56 /* ChannelsDataModel.xcdatamodeld */; };
+		CD88C0D929E892D000F2BC56 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD88C0D829E892D000F2BC56 /* CoreDataService.swift */; };
+		CD88C0DB29E896BE00F2BC56 /* ChannelsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD88C0DA29E896BE00F2BC56 /* ChannelsDataSource.swift */; };
 		CD97B39129C0744C008DF3FC /* ThemesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD97B39029C0744C008DF3FC /* ThemesViewController.swift */; };
 		CD97B39529C2257D008DF3FC /* subclasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD97B39429C2257D008DF3FC /* subclasses.swift */; };
 		CDAE911C29A3996C002F2452 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDAE911B29A3996C002F2452 /* AppDelegate.swift */; };
@@ -44,6 +47,9 @@
 		CD88C0CF29E4541F00F2BC56 /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		CD88C0D129E4CDB400F2BC56 /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
 		CD88C0D329E6AA8C00F2BC56 /* ChannelService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelService.swift; sourceTree = "<group>"; };
+		CD88C0D629E8917500F2BC56 /* ChannelsDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ChannelsDataModel.xcdatamodel; sourceTree = "<group>"; };
+		CD88C0D829E892D000F2BC56 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
+		CD88C0DA29E896BE00F2BC56 /* ChannelsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelsDataSource.swift; sourceTree = "<group>"; };
 		CD97B39029C0744C008DF3FC /* ThemesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemesViewController.swift; sourceTree = "<group>"; };
 		CD97B39429C2257D008DF3FC /* subclasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = subclasses.swift; sourceTree = "<group>"; };
 		CDAE911829A3996C002F2452 /* ChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -123,6 +129,9 @@
 			children = (
 				CD88C0CC29DE043300F2BC56 /* CombineService.swift */,
 				CD88C0D329E6AA8C00F2BC56 /* ChannelService.swift */,
+				CD88C0D529E8917500F2BC56 /* ChannelsDataModel.xcdatamodeld */,
+				CD88C0D829E892D000F2BC56 /* CoreDataService.swift */,
+				CD88C0DA29E896BE00F2BC56 /* ChannelsDataSource.swift */,
 			);
 			path = DataService;
 			sourceTree = "<group>";
@@ -298,11 +307,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD88C0D929E892D000F2BC56 /* CoreDataService.swift in Sources */,
 				CD05BB7D29B6592400B77E86 /* models.swift in Sources */,
 				CD05BB7A29B50FE600B77E86 /* ChannelsListTableViewCell.swift in Sources */,
 				CD4F2EEB29B76FB300E0DB4D /* ChatViewController.swift in Sources */,
 				CD4F2EED29B7B6DB00E0DB4D /* CustomNavigationBar.swift in Sources */,
 				CD88C0D229E4CDB400F2BC56 /* TabBarViewController.swift in Sources */,
+				CD88C0DB29E896BE00F2BC56 /* ChannelsDataSource.swift in Sources */,
 				CD4F2EEF29B8895200E0DB4D /* ChatTableViewCell.swift in Sources */,
 				CDDDAFCA29AD11D2006ED745 /* ProfileViewController.swift in Sources */,
 				CD05BB7429B4D31800B77E86 /* ChannelsListViewController.swift in Sources */,
@@ -311,6 +322,7 @@
 				CD97B39129C0744C008DF3FC /* ThemesViewController.swift in Sources */,
 				CDAE911C29A3996C002F2452 /* AppDelegate.swift in Sources */,
 				CD05BB7F29B6593100B77E86 /* protocols.swift in Sources */,
+				CD88C0D729E8917500F2BC56 /* ChannelsDataModel.xcdatamodeld in Sources */,
 				CD88C0CD29DE043300F2BC56 /* CombineService.swift in Sources */,
 				CD97B39529C2257D008DF3FC /* subclasses.swift in Sources */,
 			);
@@ -544,6 +556,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		CD88C0D529E8917500F2BC56 /* ChannelsDataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				CD88C0D629E8917500F2BC56 /* ChannelsDataModel.xcdatamodel */,
+			);
+			currentVersion = CD88C0D629E8917500F2BC56 /* ChannelsDataModel.xcdatamodel */;
+			path = ChannelsDataModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = CDAE911029A3996C002F2452 /* Project object */;
 }
