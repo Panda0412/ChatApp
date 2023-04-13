@@ -22,10 +22,13 @@ class ChatViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        coreDataMessages = sharedChannelsDataSource.getMessages(for: channelId)
+        coreDataSections = makeSections(from: coreDataMessages)
+        setupDataSource(with: coreDataSections)
+        
         fetchMessages()
         
         setupTableView()
-        setupDataSource()
         setupNavigationBar()
         setupUI()
         
@@ -57,6 +60,8 @@ class ChatViewController: UIViewController {
     private lazy var chatTableView = UITableView(frame: .zero, style: .grouped)
     private lazy var dataSource = ChatDataSource(chatTableView)
     
+    private var coreDataMessages: [MessageItem] = []
+    private var coreDataSections: [MessageSection] = []
     private var chatSections: [MessageSection] = []
     
     // MARK: - UI Elements
@@ -132,7 +137,7 @@ class ChatViewController: UIViewController {
         return field
     }()
     
-    private lazy var errorAlert: UIAlertController = {
+    lazy var errorAlert: UIAlertController = {
         let alert = UIAlertController(title: "Ooops!", message: "Something went wrong", preferredStyle: .alert)
         
         let dismissAction = UIAlertAction(title: "OK", style: .default)
@@ -204,13 +209,13 @@ class ChatViewController: UIViewController {
         ])
     }
     
-    private func setupDataSource(animatedScroll: Bool = false) {
+    private func setupDataSource(with sections: [MessageSection], animatedScroll: Bool = false) {
         var snapshot = dataSource.snapshot()
         
         snapshot.deleteAllItems()
-        snapshot.appendSections(chatSections)
+        snapshot.appendSections(sections)
         
-        for section in chatSections {
+        for section in sections {
             snapshot.appendItems(section.messages, toSection: section)
         }
                 
@@ -252,57 +257,81 @@ class ChatViewController: UIViewController {
         chatTableView.scrollToRow(at: IndexPath(row: row, section: section), at: .bottom, animated: animated)
     }
     
+    private func makeSections(from messages: [MessageItem]) -> [MessageSection] {
+        if messages.isEmpty { return [] }
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMM yyyy"
+        
+        var sections: [MessageSection] = []
+        var currentSectionDate = messages[0].date
+        var currentSectionMessages: [MessageItem] = []
+        
+        for (index, message) in messages.enumerated() {
+            let prevMessage = index != 0 ? messages[index - 1] : nil
+            var currentMessage = message
+            let nextMessage = index != messages.count - 1 ? messages[index + 1] : nil
+            
+            let isIncoming = currentMessage.userID != sharedChannelService.userId
+            
+            if let prevMessage = prevMessage,
+                currentMessage.userID != prevMessage.userID ||
+                formatter.string(from: currentSectionDate) != formatter.string(from: prevMessage.date) {
+                currentMessage.isNicknameNeeded = isIncoming
+            } else if prevMessage == nil {
+                currentMessage.isNicknameNeeded = isIncoming
+            }
+            if let nextMessage = nextMessage,
+                currentMessage.userID != nextMessage.userID ||
+                formatter.string(from: currentSectionDate) != formatter.string(from: nextMessage.date) {
+                currentMessage.isBubbleTailNeeded = true
+            } else if nextMessage == nil {
+                currentMessage.isBubbleTailNeeded = true
+            }
+            
+            if formatter.string(from: currentMessage.date) == formatter.string(from: currentSectionDate) {
+                currentSectionMessages.append(currentMessage)
+            } else {
+                if !currentSectionMessages.isEmpty {
+                    sections.append(MessageSection(date: currentSectionDate, messages: currentSectionMessages))
+                }
+                currentMessage.isNicknameNeeded = isIncoming
+                currentSectionDate = currentMessage.date
+                currentSectionMessages = [currentMessage]
+            }
+        }
+        
+        sections.append(MessageSection(date: currentSectionDate, messages: currentSectionMessages))
+        
+        return sections
+    }
+    
+    private func saveMessagesToCoreData(_ messages: [MessageItem]) {
+        for message in messages {
+            print(message.text)
+            guard coreDataMessages.contains(message) else {
+                print("save")
+                coreDataMessages.append(message)
+                sharedChannelsDataSource.saveMessageItem(message, in: channelId)
+                continue
+            }
+            print("contain")
+        }
+        
+        coreDataSections = makeSections(from: coreDataMessages)
+    }
+    
     private func fetchMessages() {
         sharedChannelService.getChannelMessages(for: channelId) { [weak self] result in
             guard let self else { return }
             
             switch result {
             case .success(let messages):
-                if messages.isEmpty { return }
-                
-                let formatter = DateFormatter()
-                formatter.dateFormat = "dd MMM yyyy"
-                
-                self.chatSections = []
-                var currentSectionDate = messages[0].date
-                var currentSectionMessages: [MessageItem] = []
-                
-                for (index, message) in messages.enumerated() {
-                    let prevMessage = index != 0 ? messages[index - 1] : nil
-                    var currentMessage = message
-                    let nextMessage = index != messages.count - 1 ? messages[index + 1] : nil
-                    
-                    if let prevMessage = prevMessage,
-                        currentMessage.userID != prevMessage.userID ||
-                        formatter.string(from: currentSectionDate) != formatter.string(from: prevMessage.date) {
-                        currentMessage.isNicknameNeeded = currentMessage.userID != sharedChannelService.userId
-                    } else if prevMessage == nil {
-                        currentMessage.isNicknameNeeded = currentMessage.userID != sharedChannelService.userId
-                    }
-                    if let nextMessage = nextMessage,
-                        currentMessage.userID != nextMessage.userID ||
-                        formatter.string(from: currentSectionDate) != formatter.string(from: nextMessage.date) {
-                        currentMessage.isBubbleTailNeeded = true
-                    } else if nextMessage == nil {
-                        currentMessage.isBubbleTailNeeded = true
-                    }
-                    
-                    if formatter.string(from: currentMessage.date) == formatter.string(from: currentSectionDate) {
-                        currentSectionMessages.append(currentMessage)
-                    } else {
-                        if !currentSectionMessages.isEmpty {
-                            self.chatSections.append(MessageSection(date: currentSectionDate, messages: currentSectionMessages))
-                        }
-                        currentMessage.isNicknameNeeded = true
-                        currentSectionDate = currentMessage.date
-                        currentSectionMessages = [currentMessage]
-                    }
-                }
-                
-                self.chatSections.append(MessageSection(date: currentSectionDate, messages: currentSectionMessages))
-                self.setupDataSource()
-                
+                self.chatSections = self.makeSections(from: messages)
+                self.setupDataSource(with: self.chatSections)
+                self.saveMessagesToCoreData(messages)
             case .failure(_):
+                self.setupDataSource(with: self.coreDataSections)
                 self.present(self.errorAlert, animated: true)
             }
         }
@@ -316,14 +345,18 @@ class ChatViewController: UIViewController {
             
             switch result {
             case .success(var message):
+                self.messageTextField.text = ""
                 message.isBubbleTailNeeded = true
+                
+                sharedChannelsDataSource.saveMessageItem(message, in: self.channelId)
+                self.coreDataMessages.append(message)
+                self.coreDataSections = self.makeSections(from: self.coreDataMessages)
                 
                 let lastSectionIndex = self.chatSections.count - 1
                 
                 guard lastSectionIndex != -1 else {
                     self.chatSections.append(MessageSection(date: message.date, messages: [message]))
-                    self.messageTextField.text = ""
-                    self.setupDataSource(animatedScroll: true)
+                    self.setupDataSource(with: self.chatSections, animatedScroll: true)
                     return
                 }
                 
@@ -342,8 +375,7 @@ class ChatViewController: UIViewController {
                     self.chatSections.append(MessageSection(date: message.date, messages: [message]))
                 }
                 
-                self.messageTextField.text = ""
-                self.setupDataSource(animatedScroll: true)
+                self.setupDataSource(with: self.chatSections, animatedScroll: true)
             case .failure(_):
                 self.present(self.errorAlert, animated: true)
             }
@@ -388,14 +420,24 @@ extension ChatViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat { 20 }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let date = chatSections[section].date
-        dateFormatter.dateFormat = isCurrentYear(date) ? "dd MMMM" : "dd MMMM yyyy"
+        var date: Date
         
         let header = UILabel()
-        header.text = dateFormatter.string(from: date)
         header.textAlignment = .center
         header.font = .systemFont(ofSize: 11, weight: .medium)
         header.textColor = .secondaryLabel
+        
+        if chatSections.count > section {
+            date = chatSections[section].date
+        } else if coreDataSections.count > section {
+            date = coreDataSections[section].date
+        } else {
+            header.text = "Date parsing error"
+            return header
+        }
+        
+        dateFormatter.dateFormat = isCurrentYear(date) ? "dd MMMM" : "dd MMMM yyyy"
+        header.text = dateFormatter.string(from: date)
                 
         return header
     }

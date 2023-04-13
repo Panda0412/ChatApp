@@ -6,5 +6,14 @@
         <attribute name="lastMessage" optional="YES" attributeType="String"/>
         <attribute name="logoURL" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="messages" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MessageManagedObject" inverseName="channel" inverseEntity="MessageManagedObject"/>
+    </entity>
+    <entity name="MessageManagedObject" representedClassName="MessageManagedObject" syncable="YES" codeGenerationType="class">
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="text" optional="YES" attributeType="String"/>
+        <attribute name="userID" optional="YES" attributeType="String"/>
+        <attribute name="userName" optional="YES" attributeType="String"/>
+        <relationship name="channel" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ChannelManagedObject" inverseName="messages" inverseEntity="ChannelManagedObject"/>
     </entity>
 </model>

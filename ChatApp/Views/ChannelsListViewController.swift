@@ -20,7 +20,7 @@ class ChannelsListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        coreDataChannels = channelsDataSource.getChannels()
+        coreDataChannels = sharedChannelsDataSource.getChannels()
         setupDataSource(with: coreDataChannels)
         
         fetchChannels()
@@ -42,7 +42,6 @@ class ChannelsListViewController: UIViewController {
     
     private lazy var channelsTableView = UITableView()
     private lazy var dataSource = ChannelsListDataSource(channelsTableView)
-    private let channelsDataSource = ChannelsDataSource()
 
     private var coreDataChannels: [ChannelItem] = []
 
@@ -141,7 +140,7 @@ class ChannelsListViewController: UIViewController {
         for channel in channels {
             guard coreDataChannels.contains(channel) else {
                 coreDataChannels.append(channel)
-                channelsDataSource.saveChannelItem(with: channel)
+                sharedChannelsDataSource.saveChannelItem(channel)
                 continue
             }
         }
@@ -227,25 +226,12 @@ extension ChannelsListViewController: UITableViewDelegate {
         if let channelItem = dataSource.itemIdentifier(for: indexPath) {
             let chatScreen = ChatViewController(channelId: channelItem.id)
             chatScreen.title = channelItem.name
+            chatScreen.errorAlert.overrideUserInterfaceStyle = currentTheme
             
             navigationController?.pushViewController(chatScreen, animated: true)
         } else {
             present(self.errorAlert, animated: true)
         }
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        let separatorView = UIView()
-        separatorView.backgroundColor = .systemBackground
-        separatorView.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(separatorView)
-        
-        NSLayoutConstraint.activate([
-            separatorView.heightAnchor.constraint(equalToConstant: 1),
-            separatorView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            separatorView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 1)
-        ])
     }
 }
 
