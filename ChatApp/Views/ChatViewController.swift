@@ -38,12 +38,6 @@ class ChatViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: true)
     }
-
-//    override func viewDidLayoutSubviews() {
-//        if needScrollToBottom {
-//            scrollToBottom()
-//        }
-//    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -56,12 +50,9 @@ class ChatViewController: UIViewController {
     
     // MARK: - Properties
     
-    private let chatService = ChannelService()
-    
     private var channelId: String
     private var nickname = ""
     private let dateFormatter = DateFormatter()
-//    private var needScrollToBottom = true
         
     private lazy var chatTableView = UITableView(frame: .zero, style: .grouped)
     private lazy var dataSource = ChatDataSource(chatTableView)
@@ -123,7 +114,7 @@ class ChatViewController: UIViewController {
         return button
     }()
     
-    private lazy var textField: UITextField = {
+    private lazy var messageTextField: UITextField = {
         let field = UITextField()
         
         field.placeholder = "Type message"
@@ -184,27 +175,27 @@ class ChatViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .systemBackground
         chatTableView.translatesAutoresizingMaskIntoConstraints = false
-        textField.translatesAutoresizingMaskIntoConstraints = false
+        messageTextField.translatesAutoresizingMaskIntoConstraints = false
         
         sendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
         
         view.addSubview(chatTableView)
-        view.addSubview(textField)
+        view.addSubview(messageTextField)
         
         NSLayoutConstraint.activate([
             chatTableView.topAnchor.constraint(equalTo: navBar.bottomAnchor),
             chatTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             chatTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            chatTableView.bottomAnchor.constraint(equalTo: textField.topAnchor, constant: -Constants.textFieldMargin),
+            chatTableView.bottomAnchor.constraint(equalTo: messageTextField.topAnchor, constant: -Constants.textFieldMargin),
             
-            textField.heightAnchor.constraint(greaterThanOrEqualToConstant: 36),
-            textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.textFieldMargin),
-            textField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.textFieldMargin),
-            textField.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Constants.textFieldMargin)
+            messageTextField.heightAnchor.constraint(greaterThanOrEqualToConstant: 36),
+            messageTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.textFieldMargin),
+            messageTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Constants.textFieldMargin),
+            messageTextField.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Constants.textFieldMargin)
         ])
     }
     
-    private func setupDataSource() {
+    private func setupDataSource(animatedScroll: Bool = false) {
         var snapshot = dataSource.snapshot()
         
         snapshot.deleteAllItems()
@@ -216,7 +207,7 @@ class ChatViewController: UIViewController {
                 
         dataSource.apply(snapshot, animatingDifferences: false)
         
-        scrollToBottom()
+        scrollToBottom(animated: animatedScroll)
     }
     
     // MARK: - Keyboard observers
@@ -241,7 +232,7 @@ class ChatViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
-    private func scrollToBottom() {
+    private func scrollToBottom(animated: Bool = false) {
         guard !chatSections.isEmpty else {
             return
         }
@@ -249,11 +240,11 @@ class ChatViewController: UIViewController {
         let section = chatSections.isEmpty ? 0 : chatSections.count - 1
         let row = chatSections[section].messages.isEmpty ? 0 : chatSections[section].messages.count - 1
         
-        chatTableView.scrollToRow(at: IndexPath(row: row, section: section), at: .bottom, animated: false)
+        chatTableView.scrollToRow(at: IndexPath(row: row, section: section), at: .bottom, animated: animated)
     }
     
     private func fetchMessages() {
-        chatService.getChannelMessages(for: channelId) { [weak self] result in
+        sharedChannelService.getChannelMessages(for: channelId) { [weak self] result in
             guard let self else { return }
             
             switch result {
@@ -263,6 +254,7 @@ class ChatViewController: UIViewController {
                 let formatter = DateFormatter()
                 formatter.dateFormat = "dd MMM yyyy"
                 
+                self.chatSections = []
                 var currentSectionDate = messages[0].date
                 var currentSectionMessages: [MessageItem] = []
                 
@@ -274,9 +266,9 @@ class ChatViewController: UIViewController {
                     if let prevMessage = prevMessage,
                         currentMessage.userID != prevMessage.userID ||
                         formatter.string(from: currentSectionDate) != formatter.string(from: prevMessage.date) {
-                        currentMessage.isNicknameNeeded = true
+                        currentMessage.isNicknameNeeded = currentMessage.userID != sharedChannelService.userId
                     } else if prevMessage == nil {
-                        currentMessage.isNicknameNeeded = true
+                        currentMessage.isNicknameNeeded = currentMessage.userID != sharedChannelService.userId
                     }
                     if let nextMessage = nextMessage,
                         currentMessage.userID != nextMessage.userID ||
@@ -308,7 +300,36 @@ class ChatViewController: UIViewController {
     }
     
     @objc private func sendMessage() {
-        print("SendMessage button tapped")
+        guard let messageText = messageTextField.text else { return }
+        
+        sharedChannelService.sendMessage(messageText, for: channelId) { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+            case .success(var message):
+                let formatter = DateFormatter()
+                formatter.dateFormat = "dd MMM yyyy"
+                    
+                let lastSectionIndex = self.chatSections.count - 1
+                let lastMessageIndex = self.chatSections[lastSectionIndex].messages.count - 1
+                message.isBubbleTailNeeded = true
+                
+                if self.chatSections[lastSectionIndex].messages[lastMessageIndex].userID == message.userID {
+                    self.chatSections[lastSectionIndex].messages[lastMessageIndex].isBubbleTailNeeded = false
+                }
+                
+                if formatter.string(from: self.chatSections[lastSectionIndex].date) == formatter.string(from: message.date) {
+                    self.chatSections[lastSectionIndex].messages.append(message)
+                } else {
+                    self.chatSections.append(MessageSection(date: message.date, messages: [message]))
+                }
+                
+                self.messageTextField.text = ""
+                self.setupDataSource(animatedScroll: true)
+            case .failure(let error):
+                print("Error sendMessage", error)
+            }
+        }
     }
     
     private func isCurrentYear(_ date: Date) -> Bool {
@@ -331,7 +352,7 @@ final class ChatDataSource: UITableViewDiffableDataSource<MessageSection, Messag
                 userName: itemIdentifier.userName,
                 message: itemIdentifier.text,
                 date: itemIdentifier.date,
-                isIncoming: true,
+                isIncoming: itemIdentifier.userID != sharedChannelService.userId,
                 isBubbleTailNeeded: itemIdentifier.isBubbleTailNeeded,
                 isNicknameNeeded: itemIdentifier.isNicknameNeeded
             )

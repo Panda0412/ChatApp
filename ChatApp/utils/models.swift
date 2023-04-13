@@ -102,7 +102,7 @@ struct ChannelCellModel {
 
 struct MessageSection: Hashable {
     let date: Date
-    let messages: [MessageItem]
+    var messages: [MessageItem]
 }
 
 public struct MessageItem: Hashable {

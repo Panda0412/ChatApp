@@ -31,6 +31,7 @@ class ChannelsListViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
         setupTheme()
+        fetchChannels()
     }
 
     // MARK: - Properties
@@ -40,7 +41,6 @@ class ChannelsListViewController: UIViewController {
     private lazy var channelsTableView = UITableView()
     private lazy var dataSource = ChannelsListDataSource(channelsTableView)
     
-    private let chatService = ChannelService()
     private let refreshControl = UIRefreshControl()
 
     private var userDataRequest: Cancellable?
@@ -108,7 +108,7 @@ class ChannelsListViewController: UIViewController {
     // MARK: - Helpers
     
     @objc private func fetchChannels() {
-        chatService.getChannels { [weak self] result in
+        sharedChannelService.getChannels { [weak self] result in
             guard let self else { return }
             
             switch result {

@@ -111,7 +111,8 @@ class ChatTableViewCell: UITableViewCell, ConfigurableViewProtocol {
         messageView.addSubview(timeLabel)
 
         NSLayoutConstraint.activate([
-//            messageText.heightAnchor.constraint(greaterThanOrEqualToConstant: 22),
+            contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 42),
+            
             messageText.topAnchor.constraint(equalTo: messageView.topAnchor, constant: Constants.verticalPadding),
             messageText.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: Constants.horizontalPadding),
             messageText.trailingAnchor.constraint(equalTo: timeLabel.leadingAnchor, constant: -Constants.verticalPadding),
