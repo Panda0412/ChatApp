@@ -271,12 +271,18 @@ class ChatViewController: UIViewController {
                     var currentMessage = message
                     let nextMessage = index != messages.count - 1 ? messages[index + 1] : nil
                     
-                    if currentMessage.userID != prevMessage?.userID {
+                    if let prevMessage = prevMessage,
+                        currentMessage.userID != prevMessage.userID ||
+                        formatter.string(from: currentSectionDate) != formatter.string(from: prevMessage.date) {
+                        currentMessage.isNicknameNeeded = true
+                    } else if prevMessage == nil {
                         currentMessage.isNicknameNeeded = true
                     }
                     if let nextMessage = nextMessage,
                         currentMessage.userID != nextMessage.userID ||
                         formatter.string(from: currentSectionDate) != formatter.string(from: nextMessage.date) {
+                        currentMessage.isBubbleTailNeeded = true
+                    } else if nextMessage == nil {
                         currentMessage.isBubbleTailNeeded = true
                     }
                     
