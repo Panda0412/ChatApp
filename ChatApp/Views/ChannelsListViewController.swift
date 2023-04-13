@@ -21,12 +21,12 @@ class ChannelsListViewController: UIViewController {
         super.viewDidLoad()
         
         coreDataChannels = channelsDataSource.getChannels()
+        setupDataSource(with: coreDataChannels)
         
         fetchChannels()
         
         setupNavigationBar()
         setupTableView()
-        setupDataSource(with: [])
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -43,9 +43,9 @@ class ChannelsListViewController: UIViewController {
     private lazy var channelsTableView = UITableView()
     private lazy var dataSource = ChannelsListDataSource(channelsTableView)
     private let channelsDataSource = ChannelsDataSource()
-    
+
     private var coreDataChannels: [ChannelItem] = []
-    
+
     private let refreshControl = UIRefreshControl()
 
     private var userDataRequest: Cancellable?
@@ -137,6 +137,16 @@ class ChannelsListViewController: UIViewController {
     
     // MARK: - Helpers
     
+    private func saveChannelsToCoreData(_ channels: [ChannelItem]) {
+        for channel in channels {
+            guard coreDataChannels.contains(channel) else {
+                coreDataChannels.append(channel)
+                channelsDataSource.saveChannelItem(with: channel)
+                continue
+            }
+        }
+    }
+    
     @objc private func fetchChannels() {
         sharedChannelService.getChannels { [weak self] result in
             guard let self else { return }
@@ -144,15 +154,7 @@ class ChannelsListViewController: UIViewController {
             switch result {
             case .success(let channels):
                 self.setupDataSource(with: channels)
-                    
-                for channel in channels {
-                    print(channel)
-                    guard self.coreDataChannels.contains(channel) else {
-                        self.coreDataChannels.append(channel)
-                        self.channelsDataSource.saveChannelItem(with: channel)
-                        return
-                    }
-                }
+                self.saveChannelsToCoreData(channels)
             case .failure(_):
                 self.setupDataSource(with: self.coreDataChannels)
                 self.present(self.errorAlert, animated: true)

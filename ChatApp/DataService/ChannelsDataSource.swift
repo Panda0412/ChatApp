@@ -11,15 +11,14 @@ class ChannelsDataSource {
     private let coreDataService = CoreDataService()
     
     func saveChannelItem(with channel: ChannelItem) {
-        coreDataService.save { context in            
+        coreDataService.save { context in
             let channelManagedObject = ChannelManagedObject(context: context)
             
             channelManagedObject.id = channel.id
             channelManagedObject.name = channel.name
+            channelManagedObject.logoURL = channel.logoURL
             channelManagedObject.lastMessage = channel.lastMessage
             channelManagedObject.lastActivity = channel.lastActivity
-
-//            channelManagedObject.images = NSOrderedSet()
         }
     }
     
@@ -30,14 +29,18 @@ class ChannelsDataSource {
             let channels: [ChannelItem] = channelManagedObjects.compactMap { channelManagedObject in
                 guard
                     let id = channelManagedObject.id,
-                    let name = channelManagedObject.name,
-                    let lastMessage = channelManagedObject.lastMessage,
-                    let lastActivity = channelManagedObject.lastActivity
+                    let name = channelManagedObject.name
                 else {
                     return nil
                 }
                 
-                return ChannelItem(id: id, name: name, logoURL: nil, lastMessage: lastMessage, lastActivity: lastActivity)
+                return ChannelItem(
+                    id: id,
+                    name: name,
+                    logoURL: channelManagedObject.logoURL,
+                    lastMessage: channelManagedObject.lastMessage,
+                    lastActivity: channelManagedObject.lastActivity
+                )
             }
             
             return channels
