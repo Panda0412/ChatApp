@@ -13,9 +13,9 @@
 		CD05BB7A29B50FE600B77E86 /* ChannelsListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD05BB7929B50FE600B77E86 /* ChannelsListTableViewCell.swift */; };
 		CD05BB7D29B6592400B77E86 /* models.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD05BB7C29B6592400B77E86 /* models.swift */; };
 		CD05BB7F29B6593100B77E86 /* protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD05BB7E29B6593100B77E86 /* protocols.swift */; };
-		CD4F2EEB29B76FB300E0DB4D /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEA29B76FB300E0DB4D /* ConversationViewController.swift */; };
+		CD4F2EEB29B76FB300E0DB4D /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEA29B76FB300E0DB4D /* ChatViewController.swift */; };
 		CD4F2EED29B7B6DB00E0DB4D /* CustomNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEC29B7B6DB00E0DB4D /* CustomNavigationBar.swift */; };
-		CD4F2EEF29B8895200E0DB4D /* ConversationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEE29B8895200E0DB4D /* ConversationTableViewCell.swift */; };
+		CD4F2EEF29B8895200E0DB4D /* ChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEE29B8895200E0DB4D /* ChatTableViewCell.swift */; };
 		CD88C0CD29DE043300F2BC56 /* CombineService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD88C0CC29DE043300F2BC56 /* CombineService.swift */; };
 		CD88C0D029E4541F00F2BC56 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = CD88C0CF29E4541F00F2BC56 /* .swiftlint.yml */; };
 		CD88C0D229E4CDB400F2BC56 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD88C0D129E4CDB400F2BC56 /* TabBarViewController.swift */; };
@@ -37,9 +37,9 @@
 		CD05BB7929B50FE600B77E86 /* ChannelsListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelsListTableViewCell.swift; sourceTree = "<group>"; };
 		CD05BB7C29B6592400B77E86 /* models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = models.swift; sourceTree = "<group>"; };
 		CD05BB7E29B6593100B77E86 /* protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = protocols.swift; sourceTree = "<group>"; };
-		CD4F2EEA29B76FB300E0DB4D /* ConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewController.swift; sourceTree = "<group>"; };
+		CD4F2EEA29B76FB300E0DB4D /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		CD4F2EEC29B7B6DB00E0DB4D /* CustomNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationBar.swift; sourceTree = "<group>"; };
-		CD4F2EEE29B8895200E0DB4D /* ConversationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTableViewCell.swift; sourceTree = "<group>"; };
+		CD4F2EEE29B8895200E0DB4D /* ChatTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableViewCell.swift; sourceTree = "<group>"; };
 		CD88C0CC29DE043300F2BC56 /* CombineService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineService.swift; sourceTree = "<group>"; };
 		CD88C0CF29E4541F00F2BC56 /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		CD88C0D129E4CDB400F2BC56 /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
@@ -90,7 +90,7 @@
 			children = (
 				CDDDAFC929AD11D2006ED745 /* ProfileViewController.swift */,
 				CD05BB7329B4D31800B77E86 /* ChannelsListViewController.swift */,
-				CD4F2EEA29B76FB300E0DB4D /* ConversationViewController.swift */,
+				CD4F2EEA29B76FB300E0DB4D /* ChatViewController.swift */,
 				CD97B39029C0744C008DF3FC /* ThemesViewController.swift */,
 				CD88C0D129E4CDB400F2BC56 /* TabBarViewController.swift */,
 			);
@@ -102,7 +102,7 @@
 			children = (
 				CD05BB7729B4D78A00B77E86 /* AvatarView.swift */,
 				CD05BB7929B50FE600B77E86 /* ChannelsListTableViewCell.swift */,
-				CD4F2EEE29B8895200E0DB4D /* ConversationTableViewCell.swift */,
+				CD4F2EEE29B8895200E0DB4D /* ChatTableViewCell.swift */,
 				CD4F2EEC29B7B6DB00E0DB4D /* CustomNavigationBar.swift */,
 			);
 			path = UIElements;
@@ -300,10 +300,10 @@
 			files = (
 				CD05BB7D29B6592400B77E86 /* models.swift in Sources */,
 				CD05BB7A29B50FE600B77E86 /* ChannelsListTableViewCell.swift in Sources */,
-				CD4F2EEB29B76FB300E0DB4D /* ConversationViewController.swift in Sources */,
+				CD4F2EEB29B76FB300E0DB4D /* ChatViewController.swift in Sources */,
 				CD4F2EED29B7B6DB00E0DB4D /* CustomNavigationBar.swift in Sources */,
 				CD88C0D229E4CDB400F2BC56 /* TabBarViewController.swift in Sources */,
-				CD4F2EEF29B8895200E0DB4D /* ConversationTableViewCell.swift in Sources */,
+				CD4F2EEF29B8895200E0DB4D /* ChatTableViewCell.swift in Sources */,
 				CDDDAFCA29AD11D2006ED745 /* ProfileViewController.swift in Sources */,
 				CD05BB7429B4D31800B77E86 /* ChannelsListViewController.swift in Sources */,
 				CD88C0D429E6AA8C00F2BC56 /* ChannelService.swift in Sources */,

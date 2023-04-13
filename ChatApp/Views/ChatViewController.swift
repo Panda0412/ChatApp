@@ -1,5 +1,5 @@
 //
-//  ConversationViewController.swift
+//  ChatViewController.swift
 //  ChatApp
 //
 //  Created by Anastasiia Bugaeva on 07.03.2023.
@@ -12,15 +12,15 @@ private enum Constants {
     static let customNavBarHeight: CGFloat = 88
     static let padding: CGFloat = -20
     static let textFieldMargin: CGFloat = 8
-    static let cellIdentifier = "conversationTableViewCell"
+    static let cellIdentifier = "chatTableViewCell"
 }
 
-class ConversationViewController: UIViewController {
+class ChatViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        generateSomeData()
+        fetchMessages()
         
         setupTableView()
         setupDataSource()
@@ -37,23 +37,34 @@ class ConversationViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: true)
     }
 
-    override func viewDidLayoutSubviews() {
-        if needScrollToBottom {
-            scrollToBottom()
-        }
+//    override func viewDidLayoutSubviews() {
+//        if needScrollToBottom {
+//            scrollToBottom()
+//        }
+//    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    init(channelId: String) {
+        self.channelId = channelId
+        super.init(nibName: nil, bundle: nil)
     }
     
     // MARK: - Properties
     
+    private let chatService = ChannelService()
+    
+    private var channelId: String
     private var nickname = ""
     private let dateFormatter = DateFormatter()
-    private var needScrollToBottom = true
+//    private var needScrollToBottom = true
         
-    private lazy var conversationTableView = UITableView(frame: .zero, style: .grouped)
+    private lazy var chatTableView = UITableView(frame: .zero, style: .grouped)
+    private lazy var dataSource = ChatDataSource(chatTableView)
     
-    private var dates: [MessageSection] = []
-    
-    private lazy var dataSource = ConversationDataSource(conversationTableView)
+    private var chatSections: [MessageSection] = []
     
     // MARK: - UI Elements
     
@@ -154,35 +165,35 @@ class ConversationViewController: UIViewController {
     }
     
     private func setupTableView() {
-        conversationTableView.rowHeight = UITableView.automaticDimension
-        conversationTableView.estimatedRowHeight = 34
+        chatTableView.rowHeight = UITableView.automaticDimension
+        chatTableView.estimatedRowHeight = 42
         
-        conversationTableView.separatorStyle = .none
-        conversationTableView.backgroundColor = .systemBackground
-        conversationTableView.showsVerticalScrollIndicator = false
+        chatTableView.separatorStyle = .none
+        chatTableView.backgroundColor = .systemBackground
+        chatTableView.showsVerticalScrollIndicator = false
         
-        conversationTableView.register(ConversationTableViewCell.self, forCellReuseIdentifier: Constants.cellIdentifier)
-        conversationTableView.allowsSelection = false
-        conversationTableView.delegate = self
+        chatTableView.register(ChatTableViewCell.self, forCellReuseIdentifier: Constants.cellIdentifier)
+        chatTableView.allowsSelection = false
+        chatTableView.delegate = self
         
-        conversationTableView.keyboardDismissMode = .onDrag
+        chatTableView.keyboardDismissMode = .onDrag
     }
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
-        conversationTableView.translatesAutoresizingMaskIntoConstraints = false
+        chatTableView.translatesAutoresizingMaskIntoConstraints = false
         textField.translatesAutoresizingMaskIntoConstraints = false
         
         sendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
         
-        view.addSubview(conversationTableView)
+        view.addSubview(chatTableView)
         view.addSubview(textField)
         
         NSLayoutConstraint.activate([
-            conversationTableView.topAnchor.constraint(equalTo: navBar.bottomAnchor),
-            conversationTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            conversationTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            conversationTableView.bottomAnchor.constraint(equalTo: textField.topAnchor, constant: -Constants.textFieldMargin),
+            chatTableView.topAnchor.constraint(equalTo: navBar.bottomAnchor),
+            chatTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            chatTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            chatTableView.bottomAnchor.constraint(equalTo: textField.topAnchor, constant: -Constants.textFieldMargin),
             
             textField.heightAnchor.constraint(greaterThanOrEqualToConstant: 36),
             textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.textFieldMargin),
@@ -193,14 +204,17 @@ class ConversationViewController: UIViewController {
     
     private func setupDataSource() {
         var snapshot = dataSource.snapshot()
-                
+        
         snapshot.deleteAllItems()
-        snapshot.appendSections(dates)
-        for section in dates {
+        snapshot.appendSections(chatSections)
+        
+        for section in chatSections {
             snapshot.appendItems(section.messages, toSection: section)
         }
                 
-        dataSource.apply(snapshot)
+        dataSource.apply(snapshot, animatingDifferences: false)
+        
+        scrollToBottom()
     }
     
     // MARK: - Keyboard observers
@@ -225,41 +239,68 @@ class ConversationViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
-    @objc private func sendMessage() {
-        print("SendMessage button tapped")
+    private func scrollToBottom() {
+        guard !chatSections.isEmpty else {
+            return
+        }
+        
+        let section = chatSections.isEmpty ? 0 : chatSections.count - 1
+        let row = chatSections[section].messages.isEmpty ? 0 : chatSections[section].messages.count - 1
+        
+        chatTableView.scrollToRow(at: IndexPath(row: row, section: section), at: .bottom, animated: false)
     }
     
-    private func scrollToBottom() {
-        conversationTableView.scrollToRow(at: IndexPath(row: dates[dates.count - 1].messages.count - 1, section: dates.count - 1), at: .bottom, animated: false)
-    }
-
-    private func generateSomeData() {
-        for index in 0..<3 {
-            let date = Date().addingTimeInterval(-Double((86400 * (index + 1))))
-
-            var messages: [MessageItem] = []
-            for msg in 0..<5 {
-                messages.append(MessageItem(message: "Hello world!", date: date, isIncoming: msg % 2 == 0))
+    private func fetchMessages() {
+        chatService.getChannelMessages(for: channelId) { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+            case .success(let messages):
+                if messages.isEmpty { return }
+                
+                let formatter = DateFormatter()
+                formatter.dateFormat = "dd MMM yyyy"
+                
+                var currentSectionDate = messages[0].date
+                var currentSectionMessages: [MessageItem] = []
+                
+                for (index, message) in messages.enumerated() {
+                    let prevMessage = index != 0 ? messages[index - 1] : nil
+                    var currentMessage = message
+                    let nextMessage = index != messages.count - 1 ? messages[index + 1] : nil
+                    
+                    if currentMessage.userID != prevMessage?.userID {
+                        currentMessage.isNicknameNeeded = true
+                    }
+                    if let nextMessage = nextMessage,
+                        currentMessage.userID != nextMessage.userID ||
+                        formatter.string(from: currentSectionDate) != formatter.string(from: nextMessage.date) {
+                        currentMessage.isBubbleTailNeeded = true
+                    }
+                    
+                    if formatter.string(from: currentMessage.date) == formatter.string(from: currentSectionDate) {
+                        currentSectionMessages.append(currentMessage)
+                    } else {
+                        if !currentSectionMessages.isEmpty {
+                            self.chatSections.append(MessageSection(date: currentSectionDate, messages: currentSectionMessages))
+                        }
+                        currentMessage.isNicknameNeeded = true
+                        currentSectionDate = currentMessage.date
+                        currentSectionMessages = [currentMessage]
+                    }
+                }
+                
+                self.chatSections.append(MessageSection(date: currentSectionDate, messages: currentSectionMessages))
+                self.setupDataSource()
+                
+            case .failure(let error):
+                print("Error", error)
             }
-
-            dates.append(MessageSection(date: date, messages: messages))
         }
-
-        dates.reverse()
-        
-        let messages = [
-            MessageItem(message: "Was so great to see you!", date: Date(), isIncoming: true),
-            MessageItem(message: "We should catch up!", date: Date(), isIncoming: true),
-            MessageItem(message: "Let’s get lunch soon! I’d glad to see you soon! 👀", date: Date(), isIncoming: false),
-            MessageItem(message: "Let’s meet at Moe’s tomorrow", date: Date(), isIncoming: false),
-            MessageItem(message: "OK", date: Date(), isIncoming: true),
-            MessageItem(
-                message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
-                date: Date(),
-                isIncoming: true
-            )
-        ]
-        dates.append(MessageSection(date: Date(), messages: messages))
+    }
+    
+    @objc private func sendMessage() {
+        print("SendMessage button tapped")
     }
     
     private func isCurrentYear(_ date: Date) -> Bool {
@@ -271,14 +312,21 @@ class ConversationViewController: UIViewController {
 
 // MARK: - Data source
 
-final class ConversationDataSource: UITableViewDiffableDataSource<MessageSection, MessageItem> {
+final class ChatDataSource: UITableViewDiffableDataSource<MessageSection, MessageItem> {
     init(_ tableView: UITableView) {
         super.init(tableView: tableView) { tableView, indexPath, itemIdentifier in
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath) as? ConversationTableViewCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath) as? ChatTableViewCell else {
                 return UITableViewCell()
             }
 
-            let model = MessageCellModel(message: itemIdentifier.message, date: itemIdentifier.date, isIncoming: itemIdentifier.isIncoming)
+            let model = MessageCellModel(
+                userName: itemIdentifier.userName,
+                message: itemIdentifier.text,
+                date: itemIdentifier.date,
+                isIncoming: true,
+                isBubbleTailNeeded: itemIdentifier.isBubbleTailNeeded,
+                isNicknameNeeded: itemIdentifier.isNicknameNeeded
+            )
             
             cell.configure(with: model)
             
@@ -289,11 +337,11 @@ final class ConversationDataSource: UITableViewDiffableDataSource<MessageSection
 
 // MARK: - Delegates
 
-extension ConversationViewController: UITableViewDelegate {
+extension ChatViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat { 20 }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let date = dates[section].date
+        let date = chatSections[section].date
         dateFormatter.dateFormat = isCurrentYear(date) ? "dd MMMM" : "dd MMMM yyyy"
         
         let header = UILabel()
@@ -306,11 +354,11 @@ extension ConversationViewController: UITableViewDelegate {
     }
 }
 
-extension ConversationViewController: UIGestureRecognizerDelegate {
+extension ChatViewController: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool { true }
 }
 
-extension ConversationViewController: UITextFieldDelegate {
+extension ChatViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false

@@ -137,7 +137,6 @@ final class ChannelsListDataSource: UITableViewDiffableDataSource<ChannelSection
             }
 
             let model = ChannelCellModel(
-                channelId: itemIdentifier.id,
                 nickname: itemIdentifier.name,
                 message: itemIdentifier.lastMessage,
                 date: itemIdentifier.lastActivity
@@ -168,10 +167,14 @@ extension ChannelsListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let chatScreen = ConversationViewController()
-        chatScreen.title = dataSource.itemIdentifier(for: indexPath)?.name
-                
-        navigationController?.pushViewController(chatScreen, animated: true)
+        if let channelItem = dataSource.itemIdentifier(for: indexPath) {
+            let chatScreen = ChatViewController(channelId: channelItem.id)
+            chatScreen.title = channelItem.name
+            
+            navigationController?.pushViewController(chatScreen, animated: true)
+        } else {
+            print("chat error")
+        }
     }
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
