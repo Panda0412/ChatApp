@@ -132,6 +132,16 @@ class ChatViewController: UIViewController {
         return field
     }()
     
+    private lazy var errorAlert: UIAlertController = {
+        let alert = UIAlertController(title: "Ooops!", message: "Something went wrong", preferredStyle: .alert)
+        
+        let dismissAction = UIAlertAction(title: "OK", style: .default)
+
+        alert.addAction(dismissAction)
+
+        return alert
+    }()
+    
     // MARK: - Setup
     
     private func setupNavigationBar() {
@@ -292,8 +302,8 @@ class ChatViewController: UIViewController {
                 self.chatSections.append(MessageSection(date: currentSectionDate, messages: currentSectionMessages))
                 self.setupDataSource()
                 
-            case .failure(let error):
-                print("Error", error)
+            case .failure(_):
+                self.present(self.errorAlert, animated: true)
             }
         }
     }
@@ -334,8 +344,8 @@ class ChatViewController: UIViewController {
                 
                 self.messageTextField.text = ""
                 self.setupDataSource(animatedScroll: true)
-            case .failure(let error):
-                print("Error sendMessage", error)
+            case .failure(_):
+                self.present(self.errorAlert, animated: true)
             }
         }
     }

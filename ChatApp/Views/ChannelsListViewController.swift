@@ -73,6 +73,16 @@ class ChannelsListViewController: UIViewController {
         return alert
     }()
     
+    private lazy var errorAlert: UIAlertController = {
+        let alert = UIAlertController(title: "Ooops!", message: "Something went wrong", preferredStyle: .alert)
+        
+        let dismissAction = UIAlertAction(title: "OK", style: .default)
+
+        alert.addAction(dismissAction)
+
+        return alert
+    }()
+    
     // MARK: - Setup
     
     private func setupTheme() {
@@ -128,8 +138,8 @@ class ChannelsListViewController: UIViewController {
             switch result {
             case .success(let channels):
                 self.setupDataSource(with: channels)
-            case .failure(let error):
-                print("Error", error)
+            case .failure(_):
+                self.present(self.errorAlert, animated: true)
             }
             
             self.refreshControl.endRefreshing()
@@ -145,8 +155,8 @@ class ChannelsListViewController: UIViewController {
             switch result {
             case .success(_):
                 self.fetchChannels()
-            case .failure(let error):
-                print("Error createChannel", error)
+            case .failure(_):
+                self.present(self.errorAlert, animated: true)
             }
         }
     }
@@ -202,7 +212,7 @@ extension ChannelsListViewController: UITableViewDelegate {
             
             navigationController?.pushViewController(chatScreen, animated: true)
         } else {
-            print("chat error")
+            present(self.errorAlert, animated: true)
         }
     }
     
