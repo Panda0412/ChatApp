@@ -12,7 +12,6 @@ private enum Constants {
     static let rowHeight: CGFloat = 76
     static let avatarSize: CGFloat = 32
     static let cellIdentifier = "conversationsTableViewCell"
-    static let nickname = "Anastasiia Bugaeva"
     static let themeKey = "theme"
 }
 
@@ -52,7 +51,7 @@ class ConversationsListViewController: UIViewController {
         let button = UIButton()
         
         let avatar = AvatarView()
-        let avatarData = AvatarModel(size: Constants.avatarSize, nickname: Constants.nickname)
+        let avatarData = AvatarModel(size: Constants.avatarSize, nickname: nil)
         avatar.configure(with: avatarData)
                         
         button.addSubview(avatar)
@@ -80,6 +79,7 @@ class ConversationsListViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: avatarButton)
         
         navigationController?.overrideUserInterfaceStyle = currentTheme
+        avatarButton.overrideUserInterfaceStyle = currentTheme
     }
     
     private func setupTableView() {
@@ -126,8 +126,8 @@ class ConversationsListViewController: UIViewController {
                     onlineConversations.append(ConversationItem(nickname: "Dmitry Puzyrev", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.", date: time, isOnline: true, hasUnreadMessages: true))
                     historyConversations.append(ConversationItem(nickname: "Dmitry Puzyrev", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.", date: time, isOnline: false, hasUnreadMessages: true))
                 default:
-                    onlineConversations.append(ConversationItem(nickname: Constants.nickname, message: "Hello world!", date: time, isOnline: true, hasUnreadMessages: false))
-                    historyConversations.append(ConversationItem(nickname: Constants.nickname, message: "Hello world!", date: time, isOnline: false, hasUnreadMessages: false))
+                    onlineConversations.append(ConversationItem(nickname: "Anastasiia Bugaeva", message: "Hello world!", date: time, isOnline: true, hasUnreadMessages: false))
+                    historyConversations.append(ConversationItem(nickname: "Anastasiia Bugaeva", message: "Hello world!", date: time, isOnline: false, hasUnreadMessages: false))
             }
         }
     }
@@ -156,11 +156,11 @@ class ConversationsListViewController: UIViewController {
     
     @objc private func openProfile() {
         let profile = ProfileViewController()
-        profile.configure(with: UserProfileViewModel(nickname: Constants.nickname, description: "iOS Junior dev"))
+        profile.configure(with: UserProfileViewModel(nickname: nil, description: nil))
+        profile.currentTheme = currentTheme
         
         let profileNavigation = UINavigationController(rootViewController: profile)
-        profileNavigation.overrideUserInterfaceStyle = currentTheme
-        
+
         present(profileNavigation, animated: true)
     }
 }
@@ -238,6 +238,7 @@ extension ConversationsListViewController: UITableViewDelegate {
 extension ConversationsListViewController: ThemesPickerDelegate {
     func changeUserInterfaceStyle(theme: UIUserInterfaceStyle) {
         navigationController?.overrideUserInterfaceStyle = theme
+        avatarButton.overrideUserInterfaceStyle = theme
         currentTheme = theme
         defaults.set(theme.rawValue, forKey: Constants.themeKey)
     }
