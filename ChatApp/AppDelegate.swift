@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        let appNavigation = UINavigationController(rootViewController: ConversationsListViewController())
+        let appNavigation = TabBarViewController()
         window?.rootViewController = appNavigation
                 
         return true

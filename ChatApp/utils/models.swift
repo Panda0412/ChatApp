@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import TFSChatTransport
 
 // MARK: - Avatar
 
@@ -61,46 +62,80 @@ struct UserProfileViewModel: Codable {
     }
 }
 
-// MARK: - Conversations Table
+// MARK: - Channels Table
 
-enum ConversationSections: Hashable, CaseIterable {
-    case online
-    case history
+enum ChannelSections: Hashable, CaseIterable {
+    case all
 }
 
-struct ConversationItem: Hashable {
-    let id = UUID()
-    let nickname: String
-    let message: String?
-    let date: Date
-    let isOnline: Bool
-    let hasUnreadMessages: Bool
+struct ChannelItem: Hashable {
+    let id: String
+    let name: String
+    let logoURL: String?
+    let lastMessage: String?
+    let lastActivity: Date?
+    
+    init(id: String, name: String, logoURL: String?, lastMessage: String?, lastActivity: Date?) {
+        self.id = id
+        self.name = name
+        self.logoURL = logoURL
+        self.lastMessage = lastMessage
+        self.lastActivity = lastActivity
+    }
+    
+    init(from channel: Channel) {
+        self.id = channel.id
+        self.name = channel.name
+        self.logoURL = channel.logoURL
+        self.lastMessage = channel.lastMessage
+        self.lastActivity = channel.lastActivity
+    }
 }
 
-struct ConversationCellModel {
+struct ChannelCellModel {
     let nickname: String
     let message: String?
-    let date: Date
-    let isOnline: Bool
-    let hasUnreadMessages: Bool
+    let date: Date?
 }
 
 // MARK: - Chat Table
 
 struct MessageSection: Hashable {
     let date: Date
-    let messages: [MessageItem]
+    var messages: [MessageItem]
 }
 
-struct MessageItem: Hashable {
-    let id = UUID()
-    let message: String
+public struct MessageItem: Hashable {
+    let id: String
+    let text: String
+    let userID: String
+    let userName: String
     let date: Date
-    let isIncoming: Bool
+    var isBubbleTailNeeded: Bool = false
+    var isNicknameNeeded: Bool = false
+
+    init(id: String, text: String, userID: String, userName: String, date: Date) {
+        self.id = id
+        self.text = text
+        self.userID = userID
+        self.userName = userName
+        self.date = date
+    }
+    
+    init(from message: Message) {
+        self.id = message.id
+        self.text = message.text
+        self.userID = message.userID
+        self.userName = message.userName
+        self.date = message.date
+    }
 }
 
 struct MessageCellModel {
+    let userName: String
     let message: String
     let date: Date
     let isIncoming: Bool
+    var isBubbleTailNeeded: Bool
+    var isNicknameNeeded: Bool
 }

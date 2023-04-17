@@ -65,7 +65,7 @@ class AvatarView: UIView, ConfigurableViewProtocol {
                     noNamePersonImage.centerXAnchor.constraint(equalTo: avatarView.centerXAnchor),
                     noNamePersonImage.centerYAnchor.constraint(equalTo: avatarView.centerYAnchor),
                     noNamePersonImage.heightAnchor.constraint(equalTo: avatarView.heightAnchor, multiplier: 0.6),
-                    noNamePersonImage.widthAnchor.constraint(equalTo: avatarView.widthAnchor, multiplier: 0.6),
+                    noNamePersonImage.widthAnchor.constraint(equalTo: avatarView.widthAnchor, multiplier: 0.6)
                 ])
             }
         }
@@ -78,7 +78,7 @@ class AvatarView: UIView, ConfigurableViewProtocol {
     private func setupAvatarLabel(with nickname: String, fontSize: CGFloat) -> UILabel {
         let avatarLabel = UILabel()
         
-        let nicknameArr = nickname.split(separator: " ").map{ $0.first ?? " " }
+        let nicknameArr = nickname.split(separator: " ").map { $0.first ?? " " }
         avatarLabel.text = String(nicknameArr[0..<min(2, nicknameArr.count)])
         
         if let descriptor = UIFont.systemFont(ofSize: fontSize, weight: .bold).fontDescriptor.withDesign(.rounded) {

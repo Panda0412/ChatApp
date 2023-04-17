@@ -1,5 +1,5 @@
 //
-//  ConversationTableViewCell.swift
+//  ChatTableViewCell.swift
 //  ChatApp
 //
 //  Created by Anastasiia Bugaeva on 08.03.2023.
@@ -14,7 +14,7 @@ private enum Constants {
     static let spacing: CGFloat = 8
 }
 
-class ConversationTableViewCell: UITableViewCell, ConfigurableViewProtocol {
+class ChatTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     
     // MARK: - Init
 
@@ -34,10 +34,19 @@ class ConversationTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     
     // MARK: - UI Elements
     
+    private lazy var messageAuthorLabel: UILabel = {
+        let nickname = UILabel()
+        
+        nickname.font = .systemFont(ofSize: 11)
+        nickname.textColor = .secondaryLabel
+        nickname.translatesAutoresizingMaskIntoConstraints = false
+        
+        return nickname
+    }()
+    
     private lazy var messageView: UIView = {
         let messageView = UIView()
         
-        messageView.translatesAutoresizingMaskIntoConstraints = false
         messageView.layer.cornerRadius = 17
         
         return messageView
@@ -67,7 +76,6 @@ class ConversationTableViewCell: UITableViewCell, ConfigurableViewProtocol {
         
         let tailImage = UIImage(named: "bubble_tail")
         tail.image = tailImage?.withRenderingMode(.alwaysTemplate)
-        tail.translatesAutoresizingMaskIntoConstraints = false
         tail.tintColor = UIColor(red: 0.27, green: 0.54, blue: 0.97, alpha: 1)
         
         return tail
@@ -78,7 +86,6 @@ class ConversationTableViewCell: UITableViewCell, ConfigurableViewProtocol {
         
         let tailImage = UIImage(named: "bubble_tail")
         tail.image = tailImage?.withRenderingMode(.alwaysTemplate).withHorizontallyFlippedOrientation()
-        tail.translatesAutoresizingMaskIntoConstraints = false
         tail.tintColor = .systemGray5
         
         return tail
@@ -89,6 +96,7 @@ class ConversationTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        messageAuthorLabel.removeFromSuperview()
         messageView.removeFromSuperview()
         rightTail.removeFromSuperview()
         leftTail.removeFromSuperview()
@@ -96,21 +104,22 @@ class ConversationTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     
     private func setupUI() {
         contentView.backgroundColor = .systemBackground
-        messageText.translatesAutoresizingMaskIntoConstraints = false
-        timeLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        [messageText, timeLabel, messageView].forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
 
         messageView.addSubview(messageText)
         messageView.addSubview(timeLabel)
 
         NSLayoutConstraint.activate([
-            messageText.heightAnchor.constraint(greaterThanOrEqualToConstant: 22),
+            contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 42),
+            
             messageText.topAnchor.constraint(equalTo: messageView.topAnchor, constant: Constants.verticalPadding),
             messageText.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: Constants.horizontalPadding),
             messageText.trailingAnchor.constraint(equalTo: timeLabel.leadingAnchor, constant: -Constants.verticalPadding),
             messageText.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: -Constants.verticalPadding),
             
             timeLabel.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: -Constants.horizontalPadding),
-            timeLabel.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: -Constants.verticalPadding),
+            timeLabel.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: -Constants.verticalPadding)
         ])
     }
     
@@ -122,23 +131,46 @@ class ConversationTableViewCell: UITableViewCell, ConfigurableViewProtocol {
         timeLabel.text = dateFormatter.string(from: model.date)
         timeLabel.textColor = model.isIncoming ? .secondaryLabel : .init(white: 1, alpha: 0.6)
         
-        let tail = model.isIncoming ? leftTail : rightTail
-        
         contentView.addSubview(messageView)
-        contentView.addSubview(tail)
 
         messageView.backgroundColor = model.isIncoming ? .systemGray5 : UIColor(red: 0.27, green: 0.54, blue: 0.97, alpha: 1)
         
-        NSLayoutConstraint.activate([
-            model.isIncoming ? messageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.margin) : messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.margin),
-            messageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.spacing),
-            messageView.widthAnchor.constraint(lessThanOrEqualTo: contentView.widthAnchor, multiplier: 3 / 4, constant: -Constants.margin),
-            messageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+        if model.isNicknameNeeded {
+            messageAuthorLabel.text = model.userName
             
-            model.isIncoming ? tail.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -4) : tail.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: 4),
-            tail.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: -1),
-            tail.heightAnchor.constraint(equalToConstant: 20.5),
-            tail.widthAnchor.constraint(equalToConstant: 16.5),
+            contentView.addSubview(messageAuthorLabel)
+            
+            NSLayoutConstraint.activate([
+                messageAuthorLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+                messageAuthorLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 35)
+            ])
+        }
+        
+        if model.isBubbleTailNeeded {
+            let tail = model.isIncoming ? leftTail : rightTail
+            tail.translatesAutoresizingMaskIntoConstraints = false
+            
+            contentView.addSubview(tail)
+            
+            NSLayoutConstraint.activate([
+                model.isIncoming ?
+                    tail.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -4) :
+                    tail.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: 4),
+                tail.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: -1),
+                tail.heightAnchor.constraint(equalToConstant: 20.5),
+                tail.widthAnchor.constraint(equalToConstant: 16.5)
+            ])
+        }
+        
+        NSLayoutConstraint.activate([
+            model.isIncoming ?
+                messageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.margin) :
+                messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Constants.margin),
+            model.isNicknameNeeded ?
+                messageView.topAnchor.constraint(equalTo: messageAuthorLabel.bottomAnchor, constant: Constants.spacing / 2) :
+                messageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.spacing),
+            messageView.widthAnchor.constraint(lessThanOrEqualTo: contentView.widthAnchor, multiplier: 3 / 4, constant: -Constants.margin),
+            messageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
     }
 }

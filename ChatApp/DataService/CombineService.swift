@@ -34,13 +34,13 @@ class CombineService {
     
     init() {
         backgroundQueue.async {
-            self.getProfileData() { [weak self] result in
+            self.getProfileData { [weak self] result in
                 guard let self else { return }
                 switch result {
-                    case .success(let user):
-                        self.currentProfileDataSubject.send(user)
-                    case .failure(let error):
-                        self.currentProfileDataSubject.send(completion: .failure(error))
+                case .success(let user):
+                    self.currentProfileDataSubject.send(user)
+                case .failure(let error):
+                    self.currentProfileDataSubject.send(completion: .failure(error))
                 }
             }
         }
