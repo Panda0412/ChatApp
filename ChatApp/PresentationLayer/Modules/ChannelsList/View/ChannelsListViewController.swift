@@ -20,10 +20,8 @@ class ChannelsListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        coreDataChannels = sharedChannelsDataSource.getChannels()
-        setupDataSource(with: coreDataChannels)
-        
-        fetchChannels()
+        presenter.viewIsReady()
+        themesService.viewIsReady()
         
         setupNavigationBar()
         setupTableView()
@@ -32,22 +30,28 @@ class ChannelsListViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
-        setupTheme()
-        fetchChannels()
+        presenter.reloadData()
     }
-
+    
+    init(output: ChannelsListViewOutput, themesService: ThemesServiceInput) {
+        self.presenter = output
+        self.themesService = themesService
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Properties
     
-    var currentTheme: UIUserInterfaceStyle = .light
-    
+    private let presenter: ChannelsListViewOutput
+    private let themesService: ThemesServiceInput
+
     private lazy var channelsTableView = UITableView()
     private lazy var dataSource = ChannelsListDataSource(channelsTableView)
 
-    private var coreDataChannels: [ChannelItem] = []
-
     private let refreshControl = UIRefreshControl()
-
-    private var userDataRequest: Cancellable?
         
     // MARK: - UI Elements
     
@@ -65,7 +69,7 @@ class ChannelsListViewController: UIViewController {
                 return
             }
             
-            self.createChannel(textField.text)
+            self.presenter.createChannel(textField.text)
             textField.text = ""
         }
         
@@ -88,11 +92,6 @@ class ChannelsListViewController: UIViewController {
     }()
     
     // MARK: - Setup
-    
-    private func setupTheme() {
-        addChannelAlert.overrideUserInterfaceStyle = currentTheme
-        errorAlert.overrideUserInterfaceStyle = currentTheme
-    }
     
     private func setupNavigationBar() {
         view.backgroundColor = .systemBackground
@@ -121,71 +120,23 @@ class ChannelsListViewController: UIViewController {
         channelsTableView.delegate = self
         
         channelsTableView.refreshControl = refreshControl
-        refreshControl.addTarget(self, action: #selector(fetchChannels), for: .valueChanged)
-    }
-    
-    private func setupDataSource(with channels: [ChannelItem]) {
-        var snapshot = dataSource.snapshot()
-                
-        snapshot.deleteAllItems()
-        snapshot.appendSections(ChannelSections.allCases)
-        snapshot.appendItems(channels, toSection: .all)
-        
-        dataSource.apply(snapshot)
+        refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
     }
     
     // MARK: - Helpers
     
-    private func saveChannelsToCoreData(_ channels: [ChannelItem]) {
-        for channel in channels {
-            guard coreDataChannels.contains(channel) else {
-                coreDataChannels.append(channel)
-                sharedChannelsDataSource.saveChannelItem(channel)
-                continue
-            }
-        }
-    }
-    
-    @objc private func fetchChannels() {
-        sharedChannelService.getChannels { [weak self] result in
-            guard let self else { return }
-            
-            switch result {
-            case .success(let channels):
-                self.setupDataSource(with: channels)
-                self.saveChannelsToCoreData(channels)
-            case .failure(_):
-                self.setupDataSource(with: self.coreDataChannels)
-                self.present(self.errorAlert, animated: true)
-            }
-            
-            self.refreshControl.endRefreshing()
-        }
-    }
-    
-    @objc private func createChannel(_ channelName: String?) {
-        guard let channelName = channelName else { return }
-        
-        sharedChannelService.createChannel(channelName) { [weak self] result in
-            guard let self else { return }
-            
-            switch result {
-            case .success(_):
-                self.fetchChannels()
-            case .failure(_):
-                self.present(self.errorAlert, animated: true)
-            }
-        }
-    }
-    
     @objc private func addChannelTapped() {
         present(addChannelAlert, animated: true)
+    }
+    
+    @objc private func refreshData() {
+        presenter.reloadData()
     }
 }
 
 // MARK: - Data source
 
-final class ChannelsListDataSource: UITableViewDiffableDataSource<ChannelSections, ChannelItem> {
+final class ChannelsListDataSource: UITableViewDiffableDataSource<Int, ChannelItem> {
     init(_ tableView: UITableView) {
         super.init(tableView: tableView) { tableView, indexPath, itemIdentifier in
             guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath) as? ChannelsListTableViewCell else {
@@ -213,7 +164,36 @@ final class ChannelsListDataSource: UITableViewDiffableDataSource<ChannelSection
     }
 }
 
-// MARK: - Delegate
+// MARK: - MVP extensions
+
+extension ChannelsListViewController: ChannelsListViewInput {
+    func showData(_ channels: [ChannelItem]) {
+        var snapshot = dataSource.snapshot()
+        
+        snapshot.deleteAllItems()
+        snapshot.appendSections([0])
+        snapshot.appendItems(channels, toSection: 0)
+        
+        dataSource.apply(snapshot)
+    }
+    
+    func showAlert() {
+        present(errorAlert, animated: true)
+    }
+    
+    func endRefresh() {
+        refreshControl.endRefreshing()
+    }
+}
+
+extension ChannelsListViewController: ThemesServiceOutput {
+    func setupTheme(_ theme: UIUserInterfaceStyle) {
+        addChannelAlert.overrideUserInterfaceStyle = theme
+        errorAlert.overrideUserInterfaceStyle = theme
+    }
+}
+
+// MARK: - Delegates
 
 extension ChannelsListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat { Constants.headerHeight }
@@ -223,19 +203,9 @@ extension ChannelsListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        if let channelItem = dataSource.itemIdentifier(for: indexPath) {
-            let chatScreen = ChatViewController(channelId: channelItem.id)
-            chatScreen.title = channelItem.name
-            chatScreen.errorAlert.overrideUserInterfaceStyle = currentTheme
-            
-            navigationController?.pushViewController(chatScreen, animated: true)
-        } else {
-            present(self.errorAlert, animated: true)
-        }
+        presenter.didSelectItem(at: indexPath.row)
     }
 }
-
-// MARK: - Delegates
 
 extension ChannelsListViewController: UITextFieldDelegate {
     func textFieldDidChangeSelection(_ textField: UITextField) {

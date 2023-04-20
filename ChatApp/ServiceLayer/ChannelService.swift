@@ -14,6 +14,8 @@ public enum ChannelServiceError: Error {
 }
 
 class ChannelService {
+    static let shared = ChannelService()
+    
     private let chatService = ChatService(host: "167.235.86.234", port: 8080)
     private let backgroundQueue = DispatchQueue.global(qos: .userInitiated)
     private let defaults = UserDefaults.standard
@@ -27,7 +29,7 @@ class ChannelService {
     private var userName: String?
     var userId: String
     
-    init() {
+    private init() {
         if let id = defaults.string(forKey: "userId") {
             userId = id
         } else {
@@ -39,7 +41,7 @@ class ChannelService {
     }
     
     private func getUserName() {
-        self.userDataRequest = sharedCombineService.getProfileDataPublisher
+        self.userDataRequest = CombineService.shared.getProfileDataPublisher
             .map { $0.nickname ?? "" }
             .assign(to: \.userName, on: self)
     }
@@ -124,5 +126,3 @@ class ChannelService {
             })
     }
 }
-
-let sharedChannelService = ChannelService()

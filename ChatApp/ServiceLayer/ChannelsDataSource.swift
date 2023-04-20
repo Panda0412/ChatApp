@@ -8,6 +8,8 @@
 import Foundation
 
 class ChannelsDataSource {
+    static let shared = ChannelsDataSource()
+    
     private let coreDataService = CoreDataService()
     
     func saveChannelItem(_ channel: ChannelItem) {
@@ -111,5 +113,3 @@ class ChannelsDataSource {
         }
     }
 }
-
-let sharedChannelsDataSource = ChannelsDataSource()

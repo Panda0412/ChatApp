@@ -64,10 +64,6 @@ struct UserProfileViewModel: Codable {
 
 // MARK: - Channels Table
 
-enum ChannelSections: Hashable, CaseIterable {
-    case all
-}
-
 struct ChannelItem: Hashable {
     let id: String
     let name: String

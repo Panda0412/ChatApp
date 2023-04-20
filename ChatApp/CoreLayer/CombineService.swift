@@ -16,6 +16,8 @@ public enum CombineServiceError: Error {
 }
 
 class CombineService {
+    static let shared = CombineService()
+    
     private let filePath: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("profileData")
     private let backgroundQueue = DispatchQueue.global(qos: .userInitiated)
     private var isSavingCancelled = false
@@ -95,5 +97,3 @@ class CombineService {
         isSavingCancelled = true
     }
 }
-
-let sharedCombineService = CombineService()

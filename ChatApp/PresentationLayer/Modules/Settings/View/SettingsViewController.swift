@@ -1,5 +1,5 @@
 //
-//  ThemesViewController.swift
+//  SettingsViewController.swift
 //  ChatApp
 //
 //  Created by Anastasiia Bugaeva on 14.03.2023.
@@ -20,17 +20,28 @@ enum TailDirection {
     case left
 }
 
-class ThemesViewController: UIViewController {
+class SettingsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        themesService.viewIsReady()
+        
         setupUI()
+    }
+    
+    init(themesService: ThemesServiceInput) {
+        self.themesService = themesService
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Properties
     
-    weak var delegate: ThemesPickerDelegate?
+    private let themesService: ThemesServiceInput
     
     // MARK: - UI Elements
 
@@ -178,11 +189,7 @@ class ThemesViewController: UIViewController {
                 
         button.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .selected)
         button.setImage(UIImage(systemName: "circle")?.withTintColor(.systemGray2, renderingMode: .alwaysOriginal), for: .normal)
-        
-        button.isSelected = theme == delegate?.currentTheme
-
-        button.isUserInteractionEnabled = !button.isSelected
-        
+                
         button.addTarget(self, action: #selector(themeButtonAction(sender:)), for: .touchUpInside)
         
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -225,8 +232,8 @@ class ThemesViewController: UIViewController {
     
     // MARK: - Helpers
     
-    @objc private func themeButtonAction(sender: ThemeButton) {        
-        switch sender.theme {
+    private func setupButtonsState(for theme: UIUserInterfaceStyle) {
+        switch theme {
         case .light:
             lightThemeButton.isSelected = true
             lightThemeButton.isUserInteractionEnabled = false
@@ -239,8 +246,11 @@ class ThemesViewController: UIViewController {
             lightThemeButton.isUserInteractionEnabled = true
         default: break
         }
-        
-        delegate?.changeUserInterfaceStyle(theme: sender.theme)
+    }
+    
+    @objc private func themeButtonAction(sender: ThemeButton) {        
+        setupButtonsState(for: sender.theme)
+        themesService.changeTheme(to: sender.theme)
     }
     
     private func lightThemeTapGestureRecognizer() -> ThemeTapGestureRecognizer {
@@ -251,4 +261,10 @@ class ThemesViewController: UIViewController {
         ThemeTapGestureRecognizer(target: self, action: #selector(themeButtonAction(sender:)), theme: .dark)
     }
 
+}
+
+extension SettingsViewController: ThemesServiceOutput {
+    func setupTheme(_ theme: UIUserInterfaceStyle) {
+        setupButtonsState(for: theme)
+    }
 }

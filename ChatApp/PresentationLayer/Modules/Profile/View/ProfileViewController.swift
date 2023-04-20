@@ -24,54 +24,28 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
 
-        fetchUserData()
+        presenter.viewIsReady()
+        themesService.viewIsReady()
+        
         setupUI()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setupTheme()
+    init(output: ProfileViewOutput, themesService: ThemesServiceInput) {
+        self.presenter = output
+        self.themesService = themesService
+        super.init(nibName: nil, bundle: nil)
     }
     
-    // MARK: - State
-    
-    enum State {
-        case initial
-        case loading
-        case success
-        case error
-        case content(UserProfileViewModel)
-    }
-    
-    var state: State = .initial {
-        didSet {
-            switch state {
-            case .loading:
-                navigationItem.setRightBarButton(activityIndicatorBarItem, animated: true)
-                activityIndicator.startAnimating()
-                nicknameTextField.isEnabled = false
-                descriptionTextField.isEnabled = false
-                addPhotoButton.isEnabled = false
-            case .success:
-                present(successAlert, animated: true)
-            case .error:
-                present(errorAlert, animated: true)
-            case .content(let user):
-                activityIndicator.stopAnimating()
-                addPhotoButton.isEnabled = true
-                currentUserData = user
-                configure(with: user)
-            default: break
-            }
-        }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Properties
     
-    var currentTheme: UIUserInterfaceStyle = .light
+    private let presenter: ProfileViewOutput
+    private let themesService: ThemesServiceInput
     
-    private var userDataRequest: Cancellable?
-    private var saveDataRequest: AnyCancellable?
+    var currentTheme: UIUserInterfaceStyle = .light
 
     private var currentUserData = UserProfileViewModel()
 
@@ -269,13 +243,6 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     
     // MARK: - Setup
     
-    private func setupTheme() {
-        navigationController?.overrideUserInterfaceStyle = currentTheme
-        avatarActionSheet.overrideUserInterfaceStyle = currentTheme
-        successAlert.overrideUserInterfaceStyle = currentTheme
-        errorAlert.overrideUserInterfaceStyle = currentTheme
-    }
-    
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
@@ -350,7 +317,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     }
     
     @objc private func cancelEditMode() {
-        sharedCombineService.cancel()
+        CombineService.shared.cancel()
         
         nicknameTextField.text = currentUserData.nickname
         descriptionTextField.text = currentUserData.description
@@ -383,36 +350,13 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     }
     
     @objc private func saveData() {
-        state = .loading
-        
-        saveDataRequest = sharedCombineService.saveProfileDataPublisher(user: UserProfileViewModel(
+        let user = UserProfileViewModel(
             nickname: nicknameTextField.text,
             description: descriptionTextField.text,
             image: avatarView.avatarImageView.image
-        ))
-            .subscribe(on: DispatchQueue.global(qos: .userInitiated))
-            .receive(on: DispatchQueue.main)
-            .decode(type: UserProfileViewModel.self, decoder: JSONDecoder())
-            .sink(
-                receiveCompletion: { [weak self] result in
-                    guard let self else { return }
-                    
-                    switch result {
-                    case .finished: break
-                    case .failure(let error):
-                        self.state = .content(self.currentUserData)
-                        guard let combineServiceError = error as? CombineServiceError, combineServiceError == CombineServiceError.cancel else {
-                            self.state = .error
-                            break
-                        }
-                    }
-                },
-                receiveValue: { [weak self] user in
-                    guard let self else { return }
-                    
-                    self.state = .content(user)
-                    self.state = .success
-                })
+        )
+        
+        presenter.saveUserData(user)
     }
 
     @objc private func presentAddPhotoActionSheet() {
@@ -435,15 +379,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         present(picker, animated: true)
     }
     
-    private func fetchUserData() {
-        userDataRequest = sharedCombineService.getProfileDataPublisher
-            .map(State.content)
-            .assign(to: \.state, on: self)
-    }
-    
     func configure(with model: UserProfileViewModel) {
-        currentUserData = model
-        
         if let name = model.nickname {
             nicknameLabel.text = name == "" ? "No name" : name
             nicknameTextField.text = name
@@ -458,6 +394,42 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         if let avatar = model.image?.image {
             avatarView.setAvatarImage(image: avatar)
         }
+    }
+}
+
+// MARK: - MVP extensions
+
+extension ProfileViewController: ProfileViewInput {
+    func setIsLoading() {
+        navigationItem.setRightBarButton(activityIndicatorBarItem, animated: true)
+        activityIndicator.startAnimating()
+        nicknameTextField.isEnabled = false
+        descriptionTextField.isEnabled = false
+        addPhotoButton.isEnabled = false
+    }
+    
+    func showData(_ user: UserProfileViewModel) {
+        activityIndicator.stopAnimating()
+        addPhotoButton.isEnabled = true
+        currentUserData = user
+        configure(with: user)
+    }
+    
+    func showAlert(for type: AlertType) {
+        switch type {
+        case .success:
+            present(successAlert, animated: true)
+        case .error:
+            present(errorAlert, animated: true)
+        }
+    }
+}
+
+extension ProfileViewController: ThemesServiceOutput {
+    func setupTheme(_ theme: UIUserInterfaceStyle) {
+        avatarActionSheet.overrideUserInterfaceStyle = theme
+        successAlert.overrideUserInterfaceStyle = theme
+        errorAlert.overrideUserInterfaceStyle = theme
     }
 }
 

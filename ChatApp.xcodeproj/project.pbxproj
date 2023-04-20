@@ -13,6 +13,19 @@
 		CD05BB7A29B50FE600B77E86 /* ChannelsListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD05BB7929B50FE600B77E86 /* ChannelsListTableViewCell.swift */; };
 		CD05BB7D29B6592400B77E86 /* models.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD05BB7C29B6592400B77E86 /* models.swift */; };
 		CD05BB7F29B6593100B77E86 /* protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD05BB7E29B6593100B77E86 /* protocols.swift */; };
+		CD18576429EED76B0085F3E0 /* SettingsModuleAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18576329EED76B0085F3E0 /* SettingsModuleAssembly.swift */; };
+		CD18577229EED8970085F3E0 /* ChannelsListModuleAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18577129EED8970085F3E0 /* ChannelsListModuleAssembly.swift */; };
+		CD18577429EED8A40085F3E0 /* ChatModuleAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18577329EED8A40085F3E0 /* ChatModuleAssembly.swift */; };
+		CD18577629EED8B70085F3E0 /* ProfileModuleAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18577529EED8B70085F3E0 /* ProfileModuleAssembly.swift */; };
+		CD18577A29EEDB1F0085F3E0 /* ChannelsListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18577929EEDB1F0085F3E0 /* ChannelsListPresenter.swift */; };
+		CD18577C29EEDB460085F3E0 /* ChatPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18577B29EEDB460085F3E0 /* ChatPresenter.swift */; };
+		CD18577E29EEDB640085F3E0 /* ProfilePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18577D29EEDB640085F3E0 /* ProfilePresenter.swift */; };
+		CD18578029EEE2DF0085F3E0 /* profileViewProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18577F29EEE2DF0085F3E0 /* profileViewProtocols.swift */; };
+		CD18578229EEE3CE0085F3E0 /* сhannelsListViewProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18578129EEE3CE0085F3E0 /* сhannelsListViewProtocols.swift */; };
+		CD18578429EEE4440085F3E0 /* chatViewProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18578329EEE4440085F3E0 /* chatViewProtocols.swift */; };
+		CD18578A29F075960085F3E0 /* profileViewAlertType.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18578929F075960085F3E0 /* profileViewAlertType.swift */; };
+		CD44B38429F199EF005A5641 /* ThemesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD44B38329F199EF005A5641 /* ThemesService.swift */; };
+		CD44B38629F19A0D005A5641 /* themesServiceProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD44B38529F19A0D005A5641 /* themesServiceProtocols.swift */; };
 		CD4F2EEB29B76FB300E0DB4D /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEA29B76FB300E0DB4D /* ChatViewController.swift */; };
 		CD4F2EED29B7B6DB00E0DB4D /* CustomNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEC29B7B6DB00E0DB4D /* CustomNavigationBar.swift */; };
 		CD4F2EEF29B8895200E0DB4D /* ChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEE29B8895200E0DB4D /* ChatTableViewCell.swift */; };
@@ -23,7 +36,7 @@
 		CD88C0D729E8917500F2BC56 /* ChannelsDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CD88C0D529E8917500F2BC56 /* ChannelsDataModel.xcdatamodeld */; };
 		CD88C0D929E892D000F2BC56 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD88C0D829E892D000F2BC56 /* CoreDataService.swift */; };
 		CD88C0DB29E896BE00F2BC56 /* ChannelsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD88C0DA29E896BE00F2BC56 /* ChannelsDataSource.swift */; };
-		CD97B39129C0744C008DF3FC /* ThemesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD97B39029C0744C008DF3FC /* ThemesViewController.swift */; };
+		CD97B39129C0744C008DF3FC /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD97B39029C0744C008DF3FC /* SettingsViewController.swift */; };
 		CD97B39529C2257D008DF3FC /* subclasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD97B39429C2257D008DF3FC /* subclasses.swift */; };
 		CDAE911C29A3996C002F2452 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDAE911B29A3996C002F2452 /* AppDelegate.swift */; };
 		CDAE912329A3996C002F2452 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CDAE912129A3996C002F2452 /* Main.storyboard */; };
@@ -40,6 +53,19 @@
 		CD05BB7929B50FE600B77E86 /* ChannelsListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelsListTableViewCell.swift; sourceTree = "<group>"; };
 		CD05BB7C29B6592400B77E86 /* models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = models.swift; sourceTree = "<group>"; };
 		CD05BB7E29B6593100B77E86 /* protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = protocols.swift; sourceTree = "<group>"; };
+		CD18576329EED76B0085F3E0 /* SettingsModuleAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModuleAssembly.swift; sourceTree = "<group>"; };
+		CD18577129EED8970085F3E0 /* ChannelsListModuleAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelsListModuleAssembly.swift; sourceTree = "<group>"; };
+		CD18577329EED8A40085F3E0 /* ChatModuleAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatModuleAssembly.swift; sourceTree = "<group>"; };
+		CD18577529EED8B70085F3E0 /* ProfileModuleAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModuleAssembly.swift; sourceTree = "<group>"; };
+		CD18577929EEDB1F0085F3E0 /* ChannelsListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelsListPresenter.swift; sourceTree = "<group>"; };
+		CD18577B29EEDB460085F3E0 /* ChatPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatPresenter.swift; sourceTree = "<group>"; };
+		CD18577D29EEDB640085F3E0 /* ProfilePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePresenter.swift; sourceTree = "<group>"; };
+		CD18577F29EEE2DF0085F3E0 /* profileViewProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = profileViewProtocols.swift; sourceTree = "<group>"; };
+		CD18578129EEE3CE0085F3E0 /* сhannelsListViewProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "сhannelsListViewProtocols.swift"; sourceTree = "<group>"; };
+		CD18578329EEE4440085F3E0 /* chatViewProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chatViewProtocols.swift; sourceTree = "<group>"; };
+		CD18578929F075960085F3E0 /* profileViewAlertType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = profileViewAlertType.swift; sourceTree = "<group>"; };
+		CD44B38329F199EF005A5641 /* ThemesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemesService.swift; sourceTree = "<group>"; };
+		CD44B38529F19A0D005A5641 /* themesServiceProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = themesServiceProtocols.swift; sourceTree = "<group>"; };
 		CD4F2EEA29B76FB300E0DB4D /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		CD4F2EEC29B7B6DB00E0DB4D /* CustomNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationBar.swift; sourceTree = "<group>"; };
 		CD4F2EEE29B8895200E0DB4D /* ChatTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableViewCell.swift; sourceTree = "<group>"; };
@@ -50,7 +76,7 @@
 		CD88C0D629E8917500F2BC56 /* ChannelsDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ChannelsDataModel.xcdatamodel; sourceTree = "<group>"; };
 		CD88C0D829E892D000F2BC56 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
 		CD88C0DA29E896BE00F2BC56 /* ChannelsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelsDataSource.swift; sourceTree = "<group>"; };
-		CD97B39029C0744C008DF3FC /* ThemesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemesViewController.swift; sourceTree = "<group>"; };
+		CD97B39029C0744C008DF3FC /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		CD97B39429C2257D008DF3FC /* subclasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = subclasses.swift; sourceTree = "<group>"; };
 		CDAE911829A3996C002F2452 /* ChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDAE911B29A3996C002F2452 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -91,16 +117,15 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		CD05BB7529B4D74100B77E86 /* Views */ = {
+		CD05BB7529B4D74100B77E86 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				CDDDAFC929AD11D2006ED745 /* ProfileViewController.swift */,
-				CD05BB7329B4D31800B77E86 /* ChannelsListViewController.swift */,
-				CD4F2EEA29B76FB300E0DB4D /* ChatViewController.swift */,
-				CD97B39029C0744C008DF3FC /* ThemesViewController.swift */,
-				CD88C0D129E4CDB400F2BC56 /* TabBarViewController.swift */,
+				CD18576B29EED82C0085F3E0 /* ChannelsList */,
+				CD18576C29EED8390085F3E0 /* Chat */,
+				CD18576529EED7CF0085F3E0 /* Settings */,
+				CD18576829EED8070085F3E0 /* Profile */,
 			);
-			path = Views;
+			path = Modules;
 			sourceTree = "<group>";
 		};
 		CD05BB7629B4D76000B77E86 /* UIElements */ = {
@@ -124,16 +149,156 @@
 			path = utils;
 			sourceTree = "<group>";
 		};
-		CD34F9A229D42B74009633DA /* DataService */ = {
+		CD18575E29EED5780085F3E0 /* PresentationLayer */ = {
+			isa = PBXGroup;
+			children = (
+				CD05BB7529B4D74100B77E86 /* Modules */,
+				CD05BB7629B4D76000B77E86 /* UIElements */,
+			);
+			path = PresentationLayer;
+			sourceTree = "<group>";
+		};
+		CD18575F29EED5880085F3E0 /* ServiceLayer */ = {
+			isa = PBXGroup;
+			children = (
+				CD44B38229F199D3005A5641 /* ThemesService */,
+				CD88C0D329E6AA8C00F2BC56 /* ChannelService.swift */,
+				CD88C0DA29E896BE00F2BC56 /* ChannelsDataSource.swift */,
+			);
+			path = ServiceLayer;
+			sourceTree = "<group>";
+		};
+		CD18576029EED5910085F3E0 /* CoreLayer */ = {
 			isa = PBXGroup;
 			children = (
 				CD88C0CC29DE043300F2BC56 /* CombineService.swift */,
-				CD88C0D329E6AA8C00F2BC56 /* ChannelService.swift */,
 				CD88C0D529E8917500F2BC56 /* ChannelsDataModel.xcdatamodeld */,
 				CD88C0D829E892D000F2BC56 /* CoreDataService.swift */,
-				CD88C0DA29E896BE00F2BC56 /* ChannelsDataSource.swift */,
 			);
-			path = DataService;
+			path = CoreLayer;
+			sourceTree = "<group>";
+		};
+		CD18576229EED6CC0085F3E0 /* Assembly */ = {
+			isa = PBXGroup;
+			children = (
+				CD18577129EED8970085F3E0 /* ChannelsListModuleAssembly.swift */,
+				CD18577329EED8A40085F3E0 /* ChatModuleAssembly.swift */,
+				CD18576329EED76B0085F3E0 /* SettingsModuleAssembly.swift */,
+				CD18577529EED8B70085F3E0 /* ProfileModuleAssembly.swift */,
+			);
+			path = Assembly;
+			sourceTree = "<group>";
+		};
+		CD18576529EED7CF0085F3E0 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				CD18576729EED7E60085F3E0 /* View */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		CD18576729EED7E60085F3E0 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				CD97B39029C0744C008DF3FC /* SettingsViewController.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		CD18576829EED8070085F3E0 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				CD18576A29EED8190085F3E0 /* View */,
+				CD18576929EED8130085F3E0 /* Presenter */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		CD18576929EED8130085F3E0 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				CD18577D29EEDB640085F3E0 /* ProfilePresenter.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		CD18576A29EED8190085F3E0 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				CDDDAFC929AD11D2006ED745 /* ProfileViewController.swift */,
+				CD18577F29EEE2DF0085F3E0 /* profileViewProtocols.swift */,
+				CD18578929F075960085F3E0 /* profileViewAlertType.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		CD18576B29EED82C0085F3E0 /* ChannelsList */ = {
+			isa = PBXGroup;
+			children = (
+				CD18576F29EED8550085F3E0 /* View */,
+				CD18576D29EED8490085F3E0 /* Presenter */,
+			);
+			path = ChannelsList;
+			sourceTree = "<group>";
+		};
+		CD18576C29EED8390085F3E0 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				CD18577029EED8590085F3E0 /* View */,
+				CD18576E29EED84E0085F3E0 /* Presenter */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		CD18576D29EED8490085F3E0 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				CD18577929EEDB1F0085F3E0 /* ChannelsListPresenter.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		CD18576E29EED84E0085F3E0 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				CD18577B29EEDB460085F3E0 /* ChatPresenter.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		CD18576F29EED8550085F3E0 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				CD05BB7329B4D31800B77E86 /* ChannelsListViewController.swift */,
+				CD18578129EEE3CE0085F3E0 /* сhannelsListViewProtocols.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		CD18577029EED8590085F3E0 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				CD4F2EEA29B76FB300E0DB4D /* ChatViewController.swift */,
+				CD18578329EEE4440085F3E0 /* chatViewProtocols.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		CD44B38229F199D3005A5641 /* ThemesService */ = {
+			isa = PBXGroup;
+			children = (
+				CD44B38329F199EF005A5641 /* ThemesService.swift */,
+				CD44B38529F19A0D005A5641 /* themesServiceProtocols.swift */,
+			);
+			path = ThemesService;
+			sourceTree = "<group>";
+		};
+		CD44B38929F1B228005A5641 /* TabBarCoordinator */ = {
+			isa = PBXGroup;
+			children = (
+				CD88C0D129E4CDB400F2BC56 /* TabBarViewController.swift */,
+			);
+			path = TabBarCoordinator;
 			sourceTree = "<group>";
 		};
 		CDAE910F29A3996C002F2452 = {
@@ -158,9 +323,11 @@
 		CDAE911A29A3996C002F2452 /* ChatApp */ = {
 			isa = PBXGroup;
 			children = (
-				CD05BB7529B4D74100B77E86 /* Views */,
-				CD05BB7629B4D76000B77E86 /* UIElements */,
-				CD34F9A229D42B74009633DA /* DataService */,
+				CD44B38929F1B228005A5641 /* TabBarCoordinator */,
+				CD18576229EED6CC0085F3E0 /* Assembly */,
+				CD18575E29EED5780085F3E0 /* PresentationLayer */,
+				CD18575F29EED5880085F3E0 /* ServiceLayer */,
+				CD18576029EED5910085F3E0 /* CoreLayer */,
 				CD05BB8029B6620600B77E86 /* utils */,
 				CDAE911B29A3996C002F2452 /* AppDelegate.swift */,
 				CDAE912129A3996C002F2452 /* Main.storyboard */,
@@ -308,22 +475,35 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD88C0D929E892D000F2BC56 /* CoreDataService.swift in Sources */,
+				CD18578429EEE4440085F3E0 /* chatViewProtocols.swift in Sources */,
+				CD44B38629F19A0D005A5641 /* themesServiceProtocols.swift in Sources */,
 				CD05BB7D29B6592400B77E86 /* models.swift in Sources */,
 				CD05BB7A29B50FE600B77E86 /* ChannelsListTableViewCell.swift in Sources */,
+				CD44B38429F199EF005A5641 /* ThemesService.swift in Sources */,
 				CD4F2EEB29B76FB300E0DB4D /* ChatViewController.swift in Sources */,
 				CD4F2EED29B7B6DB00E0DB4D /* CustomNavigationBar.swift in Sources */,
+				CD18577A29EEDB1F0085F3E0 /* ChannelsListPresenter.swift in Sources */,
+				CD18576429EED76B0085F3E0 /* SettingsModuleAssembly.swift in Sources */,
 				CD88C0D229E4CDB400F2BC56 /* TabBarViewController.swift in Sources */,
+				CD18578229EEE3CE0085F3E0 /* сhannelsListViewProtocols.swift in Sources */,
 				CD88C0DB29E896BE00F2BC56 /* ChannelsDataSource.swift in Sources */,
+				CD18578A29F075960085F3E0 /* profileViewAlertType.swift in Sources */,
 				CD4F2EEF29B8895200E0DB4D /* ChatTableViewCell.swift in Sources */,
 				CDDDAFCA29AD11D2006ED745 /* ProfileViewController.swift in Sources */,
+				CD18577E29EEDB640085F3E0 /* ProfilePresenter.swift in Sources */,
 				CD05BB7429B4D31800B77E86 /* ChannelsListViewController.swift in Sources */,
+				CD18577429EED8A40085F3E0 /* ChatModuleAssembly.swift in Sources */,
+				CD18578029EEE2DF0085F3E0 /* profileViewProtocols.swift in Sources */,
 				CD88C0D429E6AA8C00F2BC56 /* ChannelService.swift in Sources */,
 				CD05BB7829B4D78A00B77E86 /* AvatarView.swift in Sources */,
-				CD97B39129C0744C008DF3FC /* ThemesViewController.swift in Sources */,
+				CD18577229EED8970085F3E0 /* ChannelsListModuleAssembly.swift in Sources */,
+				CD18577629EED8B70085F3E0 /* ProfileModuleAssembly.swift in Sources */,
+				CD97B39129C0744C008DF3FC /* SettingsViewController.swift in Sources */,
 				CDAE911C29A3996C002F2452 /* AppDelegate.swift in Sources */,
 				CD05BB7F29B6593100B77E86 /* protocols.swift in Sources */,
 				CD88C0D729E8917500F2BC56 /* ChannelsDataModel.xcdatamodeld in Sources */,
 				CD88C0CD29DE043300F2BC56 /* CombineService.swift in Sources */,
+				CD18577C29EEDB460085F3E0 /* ChatPresenter.swift in Sources */,
 				CD97B39529C2257D008DF3FC /* subclasses.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
