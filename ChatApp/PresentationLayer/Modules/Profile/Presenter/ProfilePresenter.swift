@@ -11,12 +11,17 @@ import Combine
 final class ProfilePresenter {
     
     weak var viewInput: ProfileViewInput?
+    private let combineService: CombineServiceProtocol
     private var userDataRequest: Cancellable?
     private var saveDataRequest: Cancellable?
     private var currentUserData = UserProfileViewModel()
     
+    init(combineService: CombineServiceProtocol) {
+        self.combineService = combineService
+    }
+    
     private func fetchUserData() {
-        userDataRequest = CombineService.shared.getProfileDataPublisher
+        userDataRequest = combineService.getProfileDataPublisher
             .sink { [weak self] user in
                 guard let self else { return }
                 self.currentUserData = user
@@ -27,7 +32,7 @@ final class ProfilePresenter {
     internal func saveData(_ user: UserProfileViewModel) {
         viewInput?.setIsLoading()
 
-        saveDataRequest = CombineService.shared.saveProfileDataPublisher(user: user)
+        saveDataRequest = combineService.saveProfileDataPublisher(user: user)
             .subscribe(on: DispatchQueue.global(qos: .userInitiated))
             .receive(on: DispatchQueue.main)
             .decode(type: UserProfileViewModel.self, decoder: JSONDecoder())
@@ -62,5 +67,9 @@ extension ProfilePresenter: ProfileViewOutput {
     
     func saveUserData(_ user: UserProfileViewModel) {
         saveData(user)
+    }
+    
+    func cancelSaving() {
+        combineService.cancel()
     }
 }

@@ -36,6 +36,9 @@
 		CD44894A29F1D2AB00694AC0 /* ChannelServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD44894929F1D2AB00694AC0 /* ChannelServiceError.swift */; };
 		CD44894C29F1D2DA00694AC0 /* ChannelServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD44894B29F1D2DA00694AC0 /* ChannelServiceProtocol.swift */; };
 		CD44894F29F1DA1A00694AC0 /* ChannelsDataSourceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD44894E29F1DA1A00694AC0 /* ChannelsDataSourceProtocol.swift */; };
+		CD44895229F1DC2200694AC0 /* CombineServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD44895129F1DC2200694AC0 /* CombineServiceError.swift */; };
+		CD44895429F1DC3B00694AC0 /* CombineServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD44895329F1DC3B00694AC0 /* CombineServiceProtocol.swift */; };
+		CD44895729F1DE6700694AC0 /* CoreDataServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD44895629F1DE6700694AC0 /* CoreDataServiceProtocol.swift */; };
 		CD44B38429F199EF005A5641 /* ThemesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD44B38329F199EF005A5641 /* ThemesService.swift */; };
 		CD44B38629F19A0D005A5641 /* themesServiceProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD44B38529F19A0D005A5641 /* themesServiceProtocols.swift */; };
 		CD4F2EEB29B76FB300E0DB4D /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4F2EEA29B76FB300E0DB4D /* ChatViewController.swift */; };
@@ -87,6 +90,9 @@
 		CD44894929F1D2AB00694AC0 /* ChannelServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelServiceError.swift; sourceTree = "<group>"; };
 		CD44894B29F1D2DA00694AC0 /* ChannelServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelServiceProtocol.swift; sourceTree = "<group>"; };
 		CD44894E29F1DA1A00694AC0 /* ChannelsDataSourceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelsDataSourceProtocol.swift; sourceTree = "<group>"; };
+		CD44895129F1DC2200694AC0 /* CombineServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineServiceError.swift; sourceTree = "<group>"; };
+		CD44895329F1DC3B00694AC0 /* CombineServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineServiceProtocol.swift; sourceTree = "<group>"; };
+		CD44895629F1DE6700694AC0 /* CoreDataServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataServiceProtocol.swift; sourceTree = "<group>"; };
 		CD44B38329F199EF005A5641 /* ThemesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemesService.swift; sourceTree = "<group>"; };
 		CD44B38529F19A0D005A5641 /* themesServiceProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = themesServiceProtocols.swift; sourceTree = "<group>"; };
 		CD4F2EEA29B76FB300E0DB4D /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
@@ -186,9 +192,9 @@
 		CD18576029EED5910085F3E0 /* CoreLayer */ = {
 			isa = PBXGroup;
 			children = (
-				CD88C0CC29DE043300F2BC56 /* CombineService.swift */,
 				CD88C0D529E8917500F2BC56 /* ChannelsDataModel.xcdatamodeld */,
-				CD88C0D829E892D000F2BC56 /* CoreDataService.swift */,
+				CD44895529F1DE5400694AC0 /* CoreDataService */,
+				CD44895029F1DC1300694AC0 /* CombineService */,
 			);
 			path = CoreLayer;
 			sourceTree = "<group>";
@@ -371,6 +377,25 @@
 				CD44894E29F1DA1A00694AC0 /* ChannelsDataSourceProtocol.swift */,
 			);
 			path = ChannelsDataSource;
+			sourceTree = "<group>";
+		};
+		CD44895029F1DC1300694AC0 /* CombineService */ = {
+			isa = PBXGroup;
+			children = (
+				CD88C0CC29DE043300F2BC56 /* CombineService.swift */,
+				CD44895129F1DC2200694AC0 /* CombineServiceError.swift */,
+				CD44895329F1DC3B00694AC0 /* CombineServiceProtocol.swift */,
+			);
+			path = CombineService;
+			sourceTree = "<group>";
+		};
+		CD44895529F1DE5400694AC0 /* CoreDataService */ = {
+			isa = PBXGroup;
+			children = (
+				CD88C0D829E892D000F2BC56 /* CoreDataService.swift */,
+				CD44895629F1DE6700694AC0 /* CoreDataServiceProtocol.swift */,
+			);
+			path = CoreDataService;
 			sourceTree = "<group>";
 		};
 		CD44B38229F199D3005A5641 /* ThemesService */ = {
@@ -570,6 +595,7 @@
 				CD44893829F1D07600694AC0 /* AvatarImage.swift in Sources */,
 				CD44B38629F19A0D005A5641 /* themesServiceProtocols.swift in Sources */,
 				CD44894729F1D1C300694AC0 /* MessageCellModel.swift in Sources */,
+				CD44895429F1DC3B00694AC0 /* CombineServiceProtocol.swift in Sources */,
 				CD05BB7A29B50FE600B77E86 /* ChannelsListTableViewCell.swift in Sources */,
 				CD44894A29F1D2AB00694AC0 /* ChannelServiceError.swift in Sources */,
 				CD44B38429F199EF005A5641 /* ThemesService.swift in Sources */,
@@ -586,6 +612,7 @@
 				CD44893D29F1D11700694AC0 /* ChannelItem.swift in Sources */,
 				CDDDAFCA29AD11D2006ED745 /* ProfileViewController.swift in Sources */,
 				CD44893A29F1D0A600694AC0 /* UserProfileViewModel.swift in Sources */,
+				CD44895229F1DC2200694AC0 /* CombineServiceError.swift in Sources */,
 				CD18577E29EEDB640085F3E0 /* ProfilePresenter.swift in Sources */,
 				CD05BB7429B4D31800B77E86 /* ChannelsListViewController.swift in Sources */,
 				CD18577429EED8A40085F3E0 /* ChatModuleAssembly.swift in Sources */,
@@ -601,6 +628,7 @@
 				CD44893229F1CFA300694AC0 /* ConfigurableViewProtocol.swift in Sources */,
 				CD88C0D729E8917500F2BC56 /* ChannelsDataModel.xcdatamodeld in Sources */,
 				CD44892F29F1CF2300694AC0 /* ThemeTapGestureRecognizer.swift in Sources */,
+				CD44895729F1DE6700694AC0 /* CoreDataServiceProtocol.swift in Sources */,
 				CD44893F29F1D14200694AC0 /* ChannelCellModel.swift in Sources */,
 				CD88C0CD29DE043300F2BC56 /* CombineService.swift in Sources */,
 				CD18577C29EEDB460085F3E0 /* ChatPresenter.swift in Sources */,

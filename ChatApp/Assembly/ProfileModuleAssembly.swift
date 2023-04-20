@@ -16,7 +16,7 @@ final class ProfileModuleAssembly {
     }
     
     func makeProfileModule() -> UIViewController {
-        let presenter = ProfilePresenter()
+        let presenter = ProfilePresenter(combineService: CombineService.shared)
         let viewController = ProfileViewController(output: presenter, themesService: themesService)
         
         presenter.viewInput = viewController

@@ -8,7 +8,7 @@
 import CoreData
 import Foundation
 
-class CoreDataService {
+class CoreDataService: CoreDataServiceProtocol {
     private lazy var persistentContainer: NSPersistentContainer = {
         let persistentContainer = NSPersistentContainer(name: "ChannelsDataModel")
         

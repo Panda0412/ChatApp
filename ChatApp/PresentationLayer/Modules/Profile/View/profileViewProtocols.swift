@@ -10,6 +10,7 @@ import Foundation
 protocol ProfileViewOutput {
     func viewIsReady()
     func saveUserData(_: UserProfileViewModel)
+    func cancelSaving()
 }
 
 protocol ProfileViewInput: AnyObject {

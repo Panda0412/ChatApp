@@ -317,7 +317,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     }
     
     @objc private func cancelEditMode() {
-        CombineService.shared.cancel()
+        presenter.cancelSaving()
         
         nicknameTextField.text = currentUserData.nickname
         descriptionTextField.text = currentUserData.description

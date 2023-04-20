@@ -9,13 +9,7 @@ import Combine
 import UIKit
 import Foundation
 
-public enum CombineServiceError: Error {
-    case writingError
-    case readingError
-    case cancel
-}
-
-class CombineService {
+class CombineService: CombineServiceProtocol {
     static let shared = CombineService()
     
     private let filePath: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("profileData")
@@ -34,7 +28,7 @@ class CombineService {
             .eraseToAnyPublisher()
     }
     
-    init() {
+    private init() {
         backgroundQueue.async {
             self.getProfileData { [weak self] result in
                 guard let self else { return }

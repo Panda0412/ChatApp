@@ -13,6 +13,7 @@ class ChannelService: ChannelServiceProtocol {
     static let shared = ChannelService()
     
     private let chatService = ChatService(host: "167.235.86.234", port: 8080)
+    private let combineService: CombineServiceProtocol
     private let backgroundQueue = DispatchQueue.global(qos: .userInitiated)
     private let defaults = UserDefaults.standard
 
@@ -33,11 +34,13 @@ class ChannelService: ChannelServiceProtocol {
             defaults.set(userId, forKey: "userId")
         }
         
+        self.combineService = CombineService.shared
+        
         getUserName()
     }
     
     private func getUserName() {
-        self.userDataRequest = CombineService.shared.getProfileDataPublisher
+        self.userDataRequest = combineService.getProfileDataPublisher
             .map { $0.nickname ?? "" }
             .assign(to: \.userName, on: self)
     }

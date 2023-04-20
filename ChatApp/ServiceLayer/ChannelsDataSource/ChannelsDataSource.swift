@@ -10,9 +10,11 @@ import Foundation
 class ChannelsDataSource: ChannelsDataSourceProtocol {
     static let shared = ChannelsDataSource()
     
-    private let coreDataService = CoreDataService()
+    private let coreDataService: CoreDataServiceProtocol
     
-    private init() {}
+    private init() {
+        coreDataService = CoreDataService()
+    }
     
     func saveChannelItem(_ channel: ChannelItem) {
         coreDataService.save { context in
