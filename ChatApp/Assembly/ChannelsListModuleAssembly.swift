@@ -16,7 +16,7 @@ final class ChannelsListModuleAssembly {
     }
     
     func makeChannelsListModule() -> UIViewController {
-        let presenter = ChannelsListPresenter()
+        let presenter = ChannelsListPresenter(channelService: ChannelService.shared, channelsDataSource: ChannelsDataSource.shared)
         let viewController = ChannelsListViewController(output: presenter, themesService: themesService)
         
         presenter.viewInput = viewController

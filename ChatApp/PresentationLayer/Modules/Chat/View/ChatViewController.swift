@@ -250,31 +250,6 @@ class ChatViewController: UIViewController {
     }
 }
 
-// MARK: - Data source
-
-final class ChatDataSource: UITableViewDiffableDataSource<MessageSection, MessageItem> {
-    init(_ tableView: UITableView) {
-        super.init(tableView: tableView) { tableView, indexPath, itemIdentifier in
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath) as? ChatTableViewCell else {
-                return UITableViewCell()
-            }
-
-            let model = MessageCellModel(
-                userName: itemIdentifier.userName,
-                message: itemIdentifier.text,
-                date: itemIdentifier.date,
-                isIncoming: itemIdentifier.userID != ChannelService.shared.userId,
-                isBubbleTailNeeded: itemIdentifier.isBubbleTailNeeded,
-                isNicknameNeeded: itemIdentifier.isNicknameNeeded
-            )
-            
-            cell.configure(with: model)
-            
-            return cell
-        }
-    }
-}
-
 extension ChatViewController: ChatViewInput {
     func showData(_ sections: [MessageSection], animated: Bool) {
         chatSections = sections
@@ -301,6 +276,31 @@ extension ChatViewController: ChatViewInput {
         messageTextField.text = ""
     }
     
+}
+
+// MARK: - Data source
+
+final class ChatDataSource: UITableViewDiffableDataSource<MessageSection, MessageItem> {
+    init(_ tableView: UITableView) {
+        super.init(tableView: tableView) { tableView, indexPath, itemIdentifier in
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath) as? ChatTableViewCell else {
+                return UITableViewCell()
+            }
+
+            let model = MessageCellModel(
+                userName: itemIdentifier.userName,
+                message: itemIdentifier.text,
+                date: itemIdentifier.date,
+                isIncoming: itemIdentifier.userID != ChannelService.shared.userId,
+                isBubbleTailNeeded: itemIdentifier.isBubbleTailNeeded,
+                isNicknameNeeded: itemIdentifier.isNicknameNeeded
+            )
+            
+            cell.configure(with: model)
+            
+            return cell
+        }
+    }
 }
 
 // MARK: - Delegates

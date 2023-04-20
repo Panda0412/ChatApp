@@ -11,14 +11,19 @@ final class ChatPresenter {
     
     weak var viewInput: ChatViewInput?
     private var channelId: String
+    private let channelService: ChannelServiceProtocol
+    private let channelsDataSource: ChannelsDataSourceProtocol
     
     private var coreDataMessages = [MessageItem]()
     private var coreDataSections = [MessageSection]()
     private var networkSections = [MessageSection]()
     
-    init(channelId: String) {
+    init(channelId: String, channelService: ChannelServiceProtocol, channelsDataSource: ChannelsDataSourceProtocol) {
         self.channelId = channelId
-        coreDataMessages = ChannelsDataSource.shared.getMessages(for: channelId)
+        self.channelService = channelService
+        self.channelsDataSource = channelsDataSource
+        
+        coreDataMessages = channelsDataSource.getMessages(for: channelId)
         coreDataSections = makeSections(from: coreDataMessages)
     }
     
@@ -37,7 +42,7 @@ final class ChatPresenter {
             var currentMessage = message
             let nextMessage = index != messages.count - 1 ? messages[index + 1] : nil
             
-            let isIncoming = currentMessage.userID != ChannelService.shared.userId
+            let isIncoming = currentMessage.userID != channelService.userId
             
             if let prevMessage = prevMessage,
                 currentMessage.userID != prevMessage.userID ||
@@ -72,20 +77,17 @@ final class ChatPresenter {
     }
     
     private func fetchMessages() {
-        ChannelService.shared.getChannelMessages(for: channelId) { [weak self] result in
+        channelService.getChannelMessages(for: channelId) { [weak self] result in
             guard let self else { return }
             
             switch result {
             case .success(let messages):
                 self.networkSections = self.makeSections(from: messages)
-//                self.setupDataSource(with: self.chatSections)
                 self.viewInput?.showData(self.networkSections, animated: false)
                 self.saveMessagesToCoreData(messages)
             case .failure(_):
                 self.viewInput?.showData(self.coreDataSections, animated: false)
                 self.viewInput?.showAlert()
-//                self.setupDataSource(with: self.coreDataSections)
-//                self.present(self.errorAlert, animated: true)
             }
         }
     }
@@ -94,7 +96,7 @@ final class ChatPresenter {
         for message in messages {
             guard coreDataMessages.contains(message) else {
                 coreDataMessages.append(message)
-                ChannelsDataSource.shared.saveMessageItem(message, in: channelId)
+                channelsDataSource.saveMessageItem(message, in: channelId)
                 continue
             }
         }
@@ -103,7 +105,7 @@ final class ChatPresenter {
     }
     
     private func send(messageText: String) {
-        ChannelService.shared.sendMessage(messageText, for: channelId) { [weak self] result in
+        channelService.sendMessage(messageText, for: channelId) { [weak self] result in
             guard let self else { return }
             
             switch result {
@@ -112,7 +114,7 @@ final class ChatPresenter {
                     
                 message.isBubbleTailNeeded = true
                 
-                ChannelsDataSource.shared.saveMessageItem(message, in: self.channelId)
+                self.channelsDataSource.saveMessageItem(message, in: self.channelId)
                 self.coreDataMessages.append(message)
                 self.coreDataSections = self.makeSections(from: self.coreDataMessages)
                 
@@ -154,5 +156,9 @@ extension ChatPresenter: ChatViewOutput {
     
     func sendMessage(_ message: String) {
         send(messageText: message)
+    }
+    
+    func isNotMyId(_ id: String) -> Bool {
+        return id != channelService.userId
     }
 }

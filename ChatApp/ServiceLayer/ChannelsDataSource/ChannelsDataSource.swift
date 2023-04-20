@@ -7,10 +7,12 @@
 
 import Foundation
 
-class ChannelsDataSource {
+class ChannelsDataSource: ChannelsDataSourceProtocol {
     static let shared = ChannelsDataSource()
     
     private let coreDataService = CoreDataService()
+    
+    private init() {}
     
     func saveChannelItem(_ channel: ChannelItem) {
         coreDataService.save { context in

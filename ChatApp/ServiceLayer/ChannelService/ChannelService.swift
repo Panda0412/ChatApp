@@ -9,11 +9,7 @@ import UIKit
 import Combine
 import TFSChatTransport
 
-public enum ChannelServiceError: Error {
-    case userNameError
-}
-
-class ChannelService {
+class ChannelService: ChannelServiceProtocol {
     static let shared = ChannelService()
     
     private let chatService = ChatService(host: "167.235.86.234", port: 8080)

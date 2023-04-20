@@ -9,7 +9,7 @@ import UIKit
 
 final class ChatModuleAssembly {
     func makeChatModule(for channel: ChannelItem) -> UIViewController {
-        let presenter = ChatPresenter(channelId: channel.id)
+        let presenter = ChatPresenter(channelId: channel.id, channelService: ChannelService.shared, channelsDataSource: ChannelsDataSource.shared)
         let viewController = ChatViewController(output: presenter)
         
         viewController.title = channel.name

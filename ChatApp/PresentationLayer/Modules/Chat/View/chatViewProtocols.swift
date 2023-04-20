@@ -10,6 +10,7 @@ import Foundation
 protocol ChatViewOutput {
     func viewIsReady()
     func sendMessage(_: String)
+    func isNotMyId(_: String) -> Bool
 }
 
 protocol ChatViewInput: AnyObject {

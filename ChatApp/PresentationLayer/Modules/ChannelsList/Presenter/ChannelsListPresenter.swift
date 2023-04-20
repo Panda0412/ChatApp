@@ -10,11 +10,19 @@ import Foundation
 final class ChannelsListPresenter {
     
     weak var viewInput: ChannelsListViewInput?
+    private let channelService: ChannelServiceProtocol
+    private let channelsDataSource: ChannelsDataSourceProtocol
     private var channels = [ChannelItem]()
-    private var coreDataChannels = ChannelsDataSource.shared.getChannels()
+    private var coreDataChannels: [ChannelItem]
+    
+    init(channelService: ChannelServiceProtocol, channelsDataSource: ChannelsDataSourceProtocol) {
+        self.channelService = channelService
+        self.channelsDataSource = channelsDataSource
+        coreDataChannels = channelsDataSource.getChannels()
+    }
     
     private func fetchChannels() {
-        ChannelService.shared.getChannels { [weak self] result in
+        channelService.getChannels { [weak self] result in
             guard let self else { return }
             
             switch result {
@@ -35,7 +43,7 @@ final class ChannelsListPresenter {
         for channel in channels {
             guard coreDataChannels.contains(channel) else {
                 coreDataChannels.append(channel)
-                ChannelsDataSource.shared.saveChannelItem(channel)
+                channelsDataSource.saveChannelItem(channel)
                 continue
             }
         }
@@ -63,7 +71,7 @@ extension ChannelsListPresenter: ChannelsListViewOutput {
     func createChannel(_ channelName: String?) {
         guard let channelName = channelName else { return }
         
-        ChannelService.shared.createChannel(channelName) { [weak self] result in
+        channelService.createChannel(channelName) { [weak self] result in
             guard let self else { return }
             
             switch result {
