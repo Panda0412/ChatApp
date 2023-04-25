@@ -14,6 +14,7 @@ final class ChannelsListPresenter {
     private let channelsDataSource: ChannelsDataSourceProtocol
     private var channels = [ChannelItem]()
     private var coreDataChannels: [ChannelItem]
+    private var needCleanCoreData = true
     
     init(channelService: ChannelServiceProtocol, channelsDataSource: ChannelsDataSourceProtocol) {
         self.channelService = channelService
@@ -29,6 +30,11 @@ final class ChannelsListPresenter {
             case .success(let channels):
                 self.channels = channels
                 self.viewInput?.showData(channels)
+                if self.needCleanCoreData {
+                    self.channelsDataSource.cleanData()
+                    self.coreDataChannels = self.channelsDataSource.getChannels()
+                    self.needCleanCoreData = false
+                }
                 self.saveChannelsToCoreData(channels)
             case .failure(_):
                 self.viewInput?.showData(self.coreDataChannels)
@@ -61,9 +67,15 @@ extension ChannelsListPresenter: ChannelsListViewOutput {
     }
     
     func didSelectItem(at index: Int) {
-        guard channels.indices.contains(index) else { return }
+        var selectedChannel: ChannelItem
         
-        let chatScreen = ChatModuleAssembly().makeChatModule(for: channels[index])
+        if channels.indices.contains(index) {
+            selectedChannel = channels[index]
+        } else if coreDataChannels.indices.contains(index) {
+            selectedChannel = coreDataChannels[index]
+        } else { return }
+        
+        let chatScreen = ChatModuleAssembly().makeChatModule(for: selectedChannel)
         
         viewInput?.navigationController?.pushViewController(chatScreen, animated: true)
     }

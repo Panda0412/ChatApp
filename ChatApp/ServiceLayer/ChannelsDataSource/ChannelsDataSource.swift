@@ -16,6 +16,10 @@ class ChannelsDataSource: ChannelsDataSourceProtocol {
         coreDataService = CoreDataService()
     }
     
+    func cleanData() {
+        coreDataService.cleanCoreDataRecords()
+    }
+    
     func saveChannelItem(_ channel: ChannelItem) {
         coreDataService.save { context in
             let channelManagedObject = ChannelManagedObject(context: context)

@@ -24,6 +24,16 @@ class CoreDataService: CoreDataServiceProtocol {
         persistentContainer.viewContext
     }
     
+    func cleanCoreDataRecords() {
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "ChannelManagedObject")
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        do {
+            try persistentContainer.persistentStoreCoordinator.execute(deleteRequest, with: persistentContainer.newBackgroundContext())
+        } catch let error as NSError {
+            print("Batch", error)
+        }
+    }
+    
     func fetchChannels() throws -> [ChannelManagedObject] {
         let fetchRequest = ChannelManagedObject.fetchRequest()
         return try viewContext.fetch(fetchRequest)
