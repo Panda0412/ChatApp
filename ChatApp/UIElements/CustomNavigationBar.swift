@@ -8,7 +8,9 @@
 import UIKit
 
 private enum Constants {
-    static let statusBarHeight: CGFloat = UIApplication.shared.statusBarFrame.height + 2
+    static let statusBarHeight: CGFloat = (UIApplication.shared.windows
+        .filter { $0.isKeyWindow }.first?
+        .windowScene?.statusBarManager?.statusBarFrame.height ?? 0) + 2
     static let customNavBarHeight: CGFloat = 88
     static let padding: CGFloat = -20
     static let avatarSize: CGFloat = 50
@@ -75,7 +77,7 @@ class CustomNavigationBar: UIView {
         
         NSLayoutConstraint.activate([
             buttonImage.centerXAnchor.constraint(equalTo: button.centerXAnchor),
-            buttonImage.centerYAnchor.constraint(equalTo: button.centerYAnchor),
+            buttonImage.centerYAnchor.constraint(equalTo: button.centerYAnchor)
         ])
         
         return button

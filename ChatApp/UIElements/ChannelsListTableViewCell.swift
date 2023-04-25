@@ -1,5 +1,5 @@
 //
-//  ConversationsTableViewCell.swift
+//  ChannelsListTableViewCell.swift
 //  ChatApp
 //
 //  Created by Anastasiia Bugaeva on 05.03.2023.
@@ -17,7 +17,7 @@ private enum Constants {
     static let largeTextFontSize: CGFloat = 17
 }
 
-class ConversationsListTableViewCell: UITableViewCell, ConfigurableViewProtocol {
+class ChannelsListTableViewCell: UITableViewCell, ConfigurableViewProtocol {
     
     // MARK: - Init
 
@@ -38,34 +38,6 @@ class ConversationsListTableViewCell: UITableViewCell, ConfigurableViewProtocol 
     // MARK: - UI Elements
     
     private lazy var avatarView = AvatarView()
-    
-    private lazy var onlineIndicator: UIView = {
-        // Да, я пробовала через бордер, но выглядело очень криво, из-под бордера торчали зелёные пиксели по краям, пришлось переделать на две вьюшки
-        
-        let indicatorView = UIView()
-        let indicator = UIView()
-
-        indicatorView.backgroundColor = .systemBackground
-        indicator.backgroundColor = .systemGreen
-        indicatorView.layer.cornerRadius = Constants.onlineIndicatorSize / 2
-        indicator.layer.cornerRadius = (Constants.onlineIndicatorSize - 4) / 2
-        
-        indicatorView.translatesAutoresizingMaskIntoConstraints = false
-        indicator.translatesAutoresizingMaskIntoConstraints = false
-        
-        indicatorView.addSubview(indicator)
-        
-        NSLayoutConstraint.activate([
-            indicatorView.heightAnchor.constraint(equalToConstant: Constants.onlineIndicatorSize),
-            indicatorView.widthAnchor.constraint(equalToConstant: Constants.onlineIndicatorSize),
-            indicator.heightAnchor.constraint(equalToConstant: Constants.onlineIndicatorSize - 4),
-            indicator.widthAnchor.constraint(equalToConstant: Constants.onlineIndicatorSize - 4),
-            indicator.centerYAnchor.constraint(equalTo: indicatorView.centerYAnchor),
-            indicator.centerXAnchor.constraint(equalTo: indicatorView.centerXAnchor)
-        ])
-        
-        return indicatorView
-    }()
     
     private lazy var messageBlockView: UIStackView = {
         let stack = UIStackView()
@@ -118,8 +90,6 @@ class ConversationsListTableViewCell: UITableViewCell, ConfigurableViewProtocol 
         
     override func prepareForReuse() {
         super.prepareForReuse()
-        
-        onlineIndicator.removeFromSuperview()
     }
     
     private func setupUI() {
@@ -159,32 +129,27 @@ class ConversationsListTableViewCell: UITableViewCell, ConfigurableViewProtocol 
         ])
     }
     
-    func configure(with model: ConversationCellModel) {
+    func configure(with model: ChannelCellModel) {
         avatarView.configure(with: AvatarModel(size: Constants.avatarSize, nickname: model.nickname))
         
         nameLabel.text = model.nickname
         
-        if model.isOnline {
-            avatarView.addSubview(onlineIndicator)
-                    
-            NSLayoutConstraint.activate([
-                onlineIndicator.topAnchor.constraint(equalTo: avatarView.topAnchor, constant: -2),
-                onlineIndicator.trailingAnchor.constraint(equalTo: avatarView.trailingAnchor, constant: 2)
-            ])
-        }
-        
-        if let message = model.message {
+        if let message = model.message, message != "" {
             messageLabel.text = message
-            messageLabel.font = model.hasUnreadMessages ? .boldSystemFont(ofSize: Constants.mediumTextFontSize) : .systemFont(ofSize: Constants.mediumTextFontSize)
-            messageLabel.textColor = model.hasUnreadMessages ? .label : .secondaryLabel
+            messageLabel.font = .systemFont(ofSize: Constants.mediumTextFontSize)
+            messageLabel.textColor = .secondaryLabel
         } else {
-            messageLabel.text = "No messages yet"
+            messageLabel.text = model.message == "" ? "Empty message" : "No messages yet"
             messageLabel.font = .italicSystemFont(ofSize: Constants.mediumTextFontSize)
             messageLabel.textColor = .secondaryLabel
         }
         
-        dateFormatter.dateFormat = isDateToday(model.date) ? "HH:mm" : "dd MMM"
-        dateLabel.text = dateFormatter.string(from: model.date)
+        if let date = model.date {
+            dateFormatter.dateFormat = isDateToday(date) ? "HH:mm" : "dd MMM"
+            dateLabel.text = dateFormatter.string(from: date)
+        } else {
+            dateLabel.text = ""
+        }
     }
     
     // MARK: - Helpers
