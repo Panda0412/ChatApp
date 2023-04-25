@@ -18,5 +18,6 @@ protocol ChannelsListViewOutput {
 protocol ChannelsListViewInput: UIViewController {
     func showData(_: [ChannelItem])
     func showAlert()
+    func setPrompt(_: String?)
     func endRefresh()
 }

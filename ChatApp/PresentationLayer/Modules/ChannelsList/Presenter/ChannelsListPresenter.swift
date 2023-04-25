@@ -15,6 +15,7 @@ final class ChannelsListPresenter {
     private var channels = [ChannelItem]()
     private var coreDataChannels: [ChannelItem]
     private var needCleanCoreData = true
+    private var needShowAlert = true
     
     init(channelService: ChannelServiceProtocol, channelsDataSource: ChannelsDataSourceProtocol) {
         self.channelService = channelService
@@ -30,6 +31,7 @@ final class ChannelsListPresenter {
             case .success(let channels):
                 self.channels = channels
                 self.viewInput?.showData(channels)
+                self.viewInput?.setPrompt(nil)
                 if self.needCleanCoreData {
                     self.channelsDataSource.cleanData()
                     self.coreDataChannels = self.channelsDataSource.getChannels()
@@ -38,7 +40,11 @@ final class ChannelsListPresenter {
                 self.saveChannelsToCoreData(channels)
             case .failure(_):
                 self.viewInput?.showData(self.coreDataChannels)
-                self.viewInput?.showAlert()
+                if self.needShowAlert {
+                    self.viewInput?.showAlert()
+                    self.needShowAlert = false
+                }
+                self.viewInput?.setPrompt("No internet connection")
             }
             
             self.viewInput?.endRefresh()
