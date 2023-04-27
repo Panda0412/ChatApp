@@ -40,7 +40,7 @@ class ChannelService: ChannelServiceProtocol {
     }
     
     private func getUserName() {
-        self.userDataRequest = combineService.getProfileDataPublisher
+        userDataRequest = combineService.getProfileDataPublisher
             .map { $0.nickname ?? "" }
             .assign(to: \.userName, on: self)
     }
@@ -57,14 +57,11 @@ class ChannelService: ChannelServiceProtocol {
                 }
             }, receiveValue: { channels in
                 let sortedChannels = channels.sorted { channel, nextChannel in
-                    guard let channelDate = channel.lastActivity else {
-                        return false
+                    if let channelDate = channel.lastActivity, let nextChannelDate = nextChannel.lastActivity {
+                        return channelDate > nextChannelDate
                     }
-                    guard let nextChannelDate = nextChannel.lastActivity else {
-                        return true
-                    }
-                    
-                    return channelDate > nextChannelDate
+
+                    return channel.lastActivity != nil
                 }
                 
                 completion(.success(sortedChannels.map { ChannelItem(from: $0) }))

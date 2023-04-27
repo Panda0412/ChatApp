@@ -193,9 +193,15 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         let openPhotoLibraryAction = UIAlertAction(title: "Выбрать из галереи", style: .default) { [self] _ in
             addAvatar()
         }
+        let loadNetworkPhotosAction = UIAlertAction(title: "Загрузить из интернета", style: .default) { [self] _ in
+            
+            let networkPhotosCollection = NetworkPhotosCollectionModuleAssembly().makeNetworkPhotosCollectionModule(profile: self)
+            
+            present(UINavigationController(rootViewController: networkPhotosCollection), animated: true)
+        }
         let cancelAction = UIAlertAction(title: "Отмена", style: .cancel)
         
-        [makePhotoAction, openPhotoLibraryAction, cancelAction].forEach { actionSheet.addAction($0) }
+        [makePhotoAction, openPhotoLibraryAction, loadNetworkPhotosAction, cancelAction].forEach { actionSheet.addAction($0) }
         
         return actionSheet
     }()
@@ -430,6 +436,18 @@ extension ProfileViewController: ThemesServiceOutput {
         avatarActionSheet.overrideUserInterfaceStyle = theme
         successAlert.overrideUserInterfaceStyle = theme
         errorAlert.overrideUserInterfaceStyle = theme
+    }
+}
+
+extension ProfileViewController: NetworkPhotosCollectionPresenterOutput {
+    func setupAvatar(_ avatar: UIImage?) {
+        dismiss(animated: true)
+        
+        guard let avatar else { return }
+        
+        avatarView.setAvatarImage(image: avatar)
+        switchToEditMode()
+        navigationItem.setRightBarButton(saveButton, animated: true)
     }
 }
 

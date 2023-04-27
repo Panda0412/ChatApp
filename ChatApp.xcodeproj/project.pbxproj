@@ -52,6 +52,14 @@
 		CD88C0D929E892D000F2BC56 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD88C0D829E892D000F2BC56 /* CoreDataService.swift */; };
 		CD88C0DB29E896BE00F2BC56 /* ChannelsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD88C0DA29E896BE00F2BC56 /* ChannelsDataSource.swift */; };
 		CD97B39129C0744C008DF3FC /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD97B39029C0744C008DF3FC /* SettingsViewController.swift */; };
+		CDA9E2D829F8747600D188B5 /* NetworkPhotosCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9E2D729F8747600D188B5 /* NetworkPhotosCollectionViewController.swift */; };
+		CDA9E2DB29F9B36B00D188B5 /* NetworkPhotosCollectionPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9E2DA29F9B36B00D188B5 /* NetworkPhotosCollectionPresenter.swift */; };
+		CDA9E2DD29F9B39400D188B5 /* networkPhotosCollectionViewProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9E2DC29F9B39400D188B5 /* networkPhotosCollectionViewProtocols.swift */; };
+		CDA9E2DF29F9B46C00D188B5 /* NetworkPhotosCollectionModuleAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9E2DE29F9B46C00D188B5 /* NetworkPhotosCollectionModuleAssembly.swift */; };
+		CDA9E2E129F9D55300D188B5 /* NetworkImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9E2E029F9D55200D188B5 /* NetworkImage.swift */; };
+		CDA9E35729FBDE0E00D188B5 /* PhotosCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9E35629FBDE0E00D188B5 /* PhotosCollectionViewCell.swift */; };
+		CDA9E35A29FBE0E300D188B5 /* UIColor+HexInit.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9E35929FBE0E300D188B5 /* UIColor+HexInit.swift */; };
+		CDA9E35C29FC150800D188B5 /* NetworkPhotosCollectionPresenterOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9E35B29FC150800D188B5 /* NetworkPhotosCollectionPresenterOutput.swift */; };
 		CDAE911C29A3996C002F2452 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDAE911B29A3996C002F2452 /* AppDelegate.swift */; };
 		CDAE912329A3996C002F2452 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CDAE912129A3996C002F2452 /* Main.storyboard */; };
 		CDAE912529A3996D002F2452 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CDAE912429A3996D002F2452 /* Assets.xcassets */; };
@@ -106,6 +114,14 @@
 		CD88C0D829E892D000F2BC56 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
 		CD88C0DA29E896BE00F2BC56 /* ChannelsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelsDataSource.swift; sourceTree = "<group>"; };
 		CD97B39029C0744C008DF3FC /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		CDA9E2D729F8747600D188B5 /* NetworkPhotosCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPhotosCollectionViewController.swift; sourceTree = "<group>"; };
+		CDA9E2DA29F9B36B00D188B5 /* NetworkPhotosCollectionPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPhotosCollectionPresenter.swift; sourceTree = "<group>"; };
+		CDA9E2DC29F9B39400D188B5 /* networkPhotosCollectionViewProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = networkPhotosCollectionViewProtocols.swift; sourceTree = "<group>"; };
+		CDA9E2DE29F9B46C00D188B5 /* NetworkPhotosCollectionModuleAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPhotosCollectionModuleAssembly.swift; sourceTree = "<group>"; };
+		CDA9E2E029F9D55200D188B5 /* NetworkImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkImage.swift; sourceTree = "<group>"; };
+		CDA9E35629FBDE0E00D188B5 /* PhotosCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosCollectionViewCell.swift; sourceTree = "<group>"; };
+		CDA9E35929FBE0E300D188B5 /* UIColor+HexInit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+HexInit.swift"; sourceTree = "<group>"; };
+		CDA9E35B29FC150800D188B5 /* NetworkPhotosCollectionPresenterOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkPhotosCollectionPresenterOutput.swift; sourceTree = "<group>"; };
 		CDAE911829A3996C002F2452 /* ChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDAE911B29A3996C002F2452 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CDAE912229A3996C002F2452 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -152,6 +168,7 @@
 				CD18576C29EED8390085F3E0 /* Chat */,
 				CD18576529EED7CF0085F3E0 /* Settings */,
 				CD18576829EED8070085F3E0 /* Profile */,
+				CDA9E2D529F8740200D188B5 /* NetworkPhotosCollectionView */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -165,6 +182,7 @@
 				CD4F2EEC29B7B6DB00E0DB4D /* CustomNavigationBar.swift */,
 				CD44892C29F1CE8300694AC0 /* ThemeButton.swift */,
 				CD44892E29F1CF2300694AC0 /* ThemeTapGestureRecognizer.swift */,
+				CDA9E35629FBDE0E00D188B5 /* PhotosCollectionViewCell.swift */,
 			);
 			path = UIElements;
 			sourceTree = "<group>";
@@ -175,6 +193,7 @@
 				CD05BB7529B4D74100B77E86 /* Modules */,
 				CD05BB7629B4D76000B77E86 /* UIElements */,
 				CD44893029F1CF7800694AC0 /* CommonProtocols */,
+				CDA9E35829FBE0AD00D188B5 /* Extensions */,
 			);
 			path = PresentationLayer;
 			sourceTree = "<group>";
@@ -206,6 +225,7 @@
 				CD18577329EED8A40085F3E0 /* ChatModuleAssembly.swift */,
 				CD18576329EED76B0085F3E0 /* SettingsModuleAssembly.swift */,
 				CD18577529EED8B70085F3E0 /* ProfileModuleAssembly.swift */,
+				CDA9E2DE29F9B46C00D188B5 /* NetworkPhotosCollectionModuleAssembly.swift */,
 			);
 			path = Assembly;
 			sourceTree = "<group>";
@@ -329,6 +349,7 @@
 			children = (
 				CD44893729F1D07600694AC0 /* AvatarImage.swift */,
 				CD44893929F1D0A600694AC0 /* UserProfileViewModel.swift */,
+				CDA9E2E029F9D55200D188B5 /* NetworkImage.swift */,
 			);
 			path = ProfileModels;
 			sourceTree = "<group>";
@@ -413,6 +434,41 @@
 				CD88C0D129E4CDB400F2BC56 /* TabBarViewController.swift */,
 			);
 			path = TabBarCoordinator;
+			sourceTree = "<group>";
+		};
+		CDA9E2D529F8740200D188B5 /* NetworkPhotosCollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				CDA9E2D629F8746500D188B5 /* View */,
+				CDA9E2D929F9B35200D188B5 /* Presenter */,
+			);
+			path = NetworkPhotosCollectionView;
+			sourceTree = "<group>";
+		};
+		CDA9E2D629F8746500D188B5 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				CDA9E2D729F8747600D188B5 /* NetworkPhotosCollectionViewController.swift */,
+				CDA9E2DC29F9B39400D188B5 /* networkPhotosCollectionViewProtocols.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		CDA9E2D929F9B35200D188B5 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				CDA9E2DA29F9B36B00D188B5 /* NetworkPhotosCollectionPresenter.swift */,
+				CDA9E35B29FC150800D188B5 /* NetworkPhotosCollectionPresenterOutput.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		CDA9E35829FBE0AD00D188B5 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				CDA9E35929FBE0E300D188B5 /* UIColor+HexInit.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		CDAE910F29A3996C002F2452 = {
@@ -614,10 +670,13 @@
 				CD44893A29F1D0A600694AC0 /* UserProfileViewModel.swift in Sources */,
 				CD44895229F1DC2200694AC0 /* CombineServiceError.swift in Sources */,
 				CD18577E29EEDB640085F3E0 /* ProfilePresenter.swift in Sources */,
+				CDA9E2E129F9D55300D188B5 /* NetworkImage.swift in Sources */,
 				CD05BB7429B4D31800B77E86 /* ChannelsListViewController.swift in Sources */,
+				CDA9E2DF29F9B46C00D188B5 /* NetworkPhotosCollectionModuleAssembly.swift in Sources */,
 				CD18577429EED8A40085F3E0 /* ChatModuleAssembly.swift in Sources */,
 				CD18578029EEE2DF0085F3E0 /* profileViewProtocols.swift in Sources */,
 				CD88C0D429E6AA8C00F2BC56 /* ChannelService.swift in Sources */,
+				CDA9E2D829F8747600D188B5 /* NetworkPhotosCollectionViewController.swift in Sources */,
 				CD05BB7829B4D78A00B77E86 /* AvatarView.swift in Sources */,
 				CD18577229EED8970085F3E0 /* ChannelsListModuleAssembly.swift in Sources */,
 				CD44893529F1D02600694AC0 /* AvatarModel.swift in Sources */,
@@ -627,9 +686,14 @@
 				CD44892D29F1CE8300694AC0 /* ThemeButton.swift in Sources */,
 				CD44893229F1CFA300694AC0 /* ConfigurableViewProtocol.swift in Sources */,
 				CD88C0D729E8917500F2BC56 /* ChannelsDataModel.xcdatamodeld in Sources */,
+				CDA9E35729FBDE0E00D188B5 /* PhotosCollectionViewCell.swift in Sources */,
 				CD44892F29F1CF2300694AC0 /* ThemeTapGestureRecognizer.swift in Sources */,
+				CDA9E2DD29F9B39400D188B5 /* networkPhotosCollectionViewProtocols.swift in Sources */,
+				CDA9E35A29FBE0E300D188B5 /* UIColor+HexInit.swift in Sources */,
 				CD44895729F1DE6700694AC0 /* CoreDataServiceProtocol.swift in Sources */,
 				CD44893F29F1D14200694AC0 /* ChannelCellModel.swift in Sources */,
+				CDA9E35C29FC150800D188B5 /* NetworkPhotosCollectionPresenterOutput.swift in Sources */,
+				CDA9E2DB29F9B36B00D188B5 /* NetworkPhotosCollectionPresenter.swift in Sources */,
 				CD88C0CD29DE043300F2BC56 /* CombineService.swift in Sources */,
 				CD18577C29EEDB460085F3E0 /* ChatPresenter.swift in Sources */,
 				CD44894C29F1D2DA00694AC0 /* ChannelServiceProtocol.swift in Sources */,
