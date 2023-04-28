@@ -22,6 +22,7 @@
 		CD18578229EEE3CE0085F3E0 /* сhannelsListViewProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18578129EEE3CE0085F3E0 /* сhannelsListViewProtocols.swift */; };
 		CD18578429EEE4440085F3E0 /* chatViewProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18578329EEE4440085F3E0 /* chatViewProtocols.swift */; };
 		CD18578A29F075960085F3E0 /* profileViewAlertType.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD18578929F075960085F3E0 /* profileViewAlertType.swift */; };
+		CD306F8929FC3B6600A616F4 /* ChatEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD306F8829FC3B6600A616F4 /* ChatEvent.swift */; };
 		CD44892D29F1CE8300694AC0 /* ThemeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD44892C29F1CE8300694AC0 /* ThemeButton.swift */; };
 		CD44892F29F1CF2300694AC0 /* ThemeTapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD44892E29F1CF2300694AC0 /* ThemeTapGestureRecognizer.swift */; };
 		CD44893229F1CFA300694AC0 /* ConfigurableViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD44893129F1CFA300694AC0 /* ConfigurableViewProtocol.swift */; };
@@ -84,6 +85,7 @@
 		CD18578129EEE3CE0085F3E0 /* сhannelsListViewProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "сhannelsListViewProtocols.swift"; sourceTree = "<group>"; };
 		CD18578329EEE4440085F3E0 /* chatViewProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chatViewProtocols.swift; sourceTree = "<group>"; };
 		CD18578929F075960085F3E0 /* profileViewAlertType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = profileViewAlertType.swift; sourceTree = "<group>"; };
+		CD306F8829FC3B6600A616F4 /* ChatEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEvent.swift; sourceTree = "<group>"; };
 		CD44892C29F1CE8300694AC0 /* ThemeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeButton.swift; sourceTree = "<group>"; };
 		CD44892E29F1CF2300694AC0 /* ThemeTapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeTapGestureRecognizer.swift; sourceTree = "<group>"; };
 		CD44893129F1CFA300694AC0 /* ConfigurableViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurableViewProtocol.swift; sourceTree = "<group>"; };
@@ -359,6 +361,7 @@
 			children = (
 				CD44893C29F1D11700694AC0 /* ChannelItem.swift */,
 				CD44893E29F1D14200694AC0 /* ChannelCellModel.swift */,
+				CD306F8829FC3B6600A616F4 /* ChatEvent.swift */,
 			);
 			path = ChannelsListModels;
 			sourceTree = "<group>";
@@ -648,6 +651,7 @@
 				CD44894329F1D18A00694AC0 /* MessageSection.swift in Sources */,
 				CD44894529F1D19D00694AC0 /* MessageItem.swift in Sources */,
 				CD18578429EEE4440085F3E0 /* chatViewProtocols.swift in Sources */,
+				CD306F8929FC3B6600A616F4 /* ChatEvent.swift in Sources */,
 				CD44893829F1D07600694AC0 /* AvatarImage.swift in Sources */,
 				CD44B38629F19A0D005A5641 /* themesServiceProtocols.swift in Sources */,
 				CD44894729F1D1C300694AC0 /* MessageCellModel.swift in Sources */,

@@ -20,6 +20,7 @@ disabled_rules:
   - weak_delegate
   - class_delegate_protocol
   - empty_enum_arguments
+  - no_fallthrough_only
 
 opt_in_rules:
   - overridden_super_call

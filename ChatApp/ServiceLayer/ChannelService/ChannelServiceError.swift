@@ -9,4 +9,6 @@ import Foundation
 
 public enum ChannelServiceError: Error {
     case userNameError
+    case sseLostConnection
+    case loadChannelInfoError
 }

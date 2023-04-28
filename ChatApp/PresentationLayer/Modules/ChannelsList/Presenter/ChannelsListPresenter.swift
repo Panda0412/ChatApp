@@ -60,11 +60,49 @@ final class ChannelsListPresenter {
             }
         }
     }
+    
+    private func subscribe() {
+        channelService.subscribe { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+            case .success(let event):
+                switch event.eventType {
+                case .add:
+                    if let channel = event.channel {
+                        self.channels.append(channel)
+                    }
+                case .update:
+                    if let channel = event.channel {
+                        if let index = self.channels.firstIndex(where: { $0.id == channel.id }) {
+                            self.channels.remove(at: index)
+                            self.channels.insert(channel, at: 0)
+                        }
+                    }
+                case .delete:
+                    if let index = self.channels.firstIndex(where: { $0.id == event.channelID }) {
+                        self.channels.remove(at: index)
+                    }
+                }
+                
+                DispatchQueue.main.async {
+                    self.viewInput?.showData(self.channels)
+                }
+            case .failure(let error):
+                if error == ChannelServiceError.sseLostConnection {
+                    DispatchQueue.main.async {
+                        self.viewInput?.setPrompt("Lost SSE connection")
+                    }
+                }
+            }
+        }
+    }
 }
 
 extension ChannelsListPresenter: ChannelsListViewOutput {
     func viewIsReady() {
         viewInput?.showData(coreDataChannels)
+        subscribe()
         fetchChannels()
     }
     
