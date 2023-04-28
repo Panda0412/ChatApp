@@ -17,7 +17,6 @@ class ChannelsDataSource: ChannelsDataSourceProtocol {
     }
     
     func cleanData() {
-        print("clean")
         coreDataService.cleanCoreDataRecords()
     }
     

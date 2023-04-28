@@ -133,7 +133,6 @@ final class ChatPresenter {
                 case .update:
                     self.fetchMessages(animated: true)
                 case .delete:
-                    print("chat delete", self.isDeleted)
                     if !self.isDeleted {
                         self.isDeleted = true
                         DispatchQueue.main.async {
