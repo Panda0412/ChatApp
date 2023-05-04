@@ -47,12 +47,12 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     private let themesService: ThemesServiceInput
     
     var currentTheme: UIUserInterfaceStyle = .light
-
     private var currentUserData = UserProfileViewModel()
-
+    
+    private var isButtonAnimated = false
+    
     private let activityIndicator = UIActivityIndicatorView(style: .medium)
     
-    private lazy var editBarButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(switchToEditMode))
     private lazy var cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelEditMode))
     private lazy var saveButton = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveData))
     private lazy var activityIndicatorBarItem = UIBarButtonItem(customView: activityIndicator)
@@ -184,6 +184,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         button.titleLabel?.font = .boldSystemFont(ofSize: 17)
         
         button.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(animateEditButton)))
+        button.addTarget(self, action: #selector(switchToEditMode), for: .touchUpInside)
         
         return button
     }()
@@ -267,7 +268,6 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         view.backgroundColor = .systemBackground
         
         navigationItem.setLeftBarButton(nil, animated: true)
-        navigationItem.setRightBarButton(editBarButton, animated: true)
         
         [avatarView,
          addPhotoButton,
@@ -308,36 +308,37 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         view.endEditing(true)
     }
     
-    @objc private func animateEditButton() {
-        print("long tap")
+    @objc private func animateEditButton(_ gestureRecognizer: UILongPressGestureRecognizer) {
+        guard gestureRecognizer.state == .began else { return }
         
         let translation: CGFloat = 5
         let rotationAngle = CGFloat.pi * 0.1
-        let center = editButton.layer.position
         
-        let rotationAnimation = CAKeyframeAnimation(keyPath: "transform.rotation")
+        if !isButtonAnimated {
+            self.editButton.transform = CGAffineTransform(rotationAngle: rotationAngle)
+                .concatenating(CGAffineTransform(translationX: translation, y: translation))
+        }
         
-        rotationAnimation.values = [0, rotationAngle, 0, -rotationAngle, 0]
-        rotationAnimation.keyTimes = [0, 0.25, 0.5, 0.75, 1]
+        UIView.animateKeyframes(withDuration: 0.3, delay: 0, options: [.repeat, .allowUserInteraction], animations: {
+            
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.5, animations: {
+                self.editButton.transform = CGAffineTransform(rotationAngle: -rotationAngle)
+                    .concatenating(CGAffineTransform(translationX: -translation, y: -translation))
+            })
+            
+            UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 1, animations: {
+                self.editButton.transform = CGAffineTransform(rotationAngle: rotationAngle)
+                    .concatenating(CGAffineTransform(translationX: translation, y: translation))
+            })
+        })
         
-        let translationAnimation = CAKeyframeAnimation(keyPath: #keyPath(CALayer.position))
+        if isButtonAnimated {
+            UIView.animate(withDuration: 0.5, delay: 0, options: .beginFromCurrentState) {
+                self.editButton.transform = CGAffineTransform.identity
+            }
+        }
         
-        translationAnimation.values = [
-            CGPoint(x: center.x - translation / 2, y: center.y - translation / 2),
-            center,
-            CGPoint(x: center.x + translation, y: center.y + translation),
-            center,
-            CGPoint(x: center.x - translation, y: center.y - translation),
-            CGPoint(x: center.x - translation / 2, y: center.y - translation / 2)
-        ]
-        translationAnimation.keyTimes = [0, 0.125, 0.375, 0.625, 0.875, 1]
-        
-        let animationGroup = CAAnimationGroup()
-        animationGroup.duration = 0.3
-        animationGroup.repeatCount = .infinity
-        animationGroup.animations = [rotationAnimation, translationAnimation]
-        
-        editButton.layer.add(animationGroup, forKey: "rotationAndTranslation")
+        isButtonAnimated.toggle()
     }
     
     @objc private func switchToEditMode() {
@@ -352,13 +353,13 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         nicknameTextField.becomeFirstResponder()
         
         UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1) {
-            [self.nicknameLabel, self.descriptionLabel].forEach {
+            [self.nicknameLabel, self.descriptionLabel, self.editButton].forEach {
                 $0.alpha = 0
             }
         }
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1) {
-            [self.nicknameLabel, self.descriptionLabel].forEach {
+            [self.nicknameLabel, self.descriptionLabel, self.editButton].forEach {
                 $0.isHidden = true
             }
             
@@ -381,7 +382,6 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         title = "My profile"
         
         navigationItem.setLeftBarButton(nil, animated: true)
-        navigationItem.setRightBarButton(editBarButton, animated: true)
         
         UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1) {
             [self.nicknameTextField, self.descriptionTextField].forEach {
@@ -395,7 +395,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
                 $0.resignFirstResponder()
             }
 
-            [self.nicknameLabel, self.descriptionLabel].forEach {
+            [self.nicknameLabel, self.descriptionLabel, self.editButton].forEach {
                 $0.alpha = 1
                 $0.isHidden = false
             }
