@@ -1,5 +1,5 @@
 //
-//  ChatService.swift
+//  ChannelService.swift
 //  ChatApp
 //
 //  Created by Anastasiia Bugaeva on 12.04.2023.
@@ -10,9 +10,9 @@ import Combine
 import TFSChatTransport
 
 class ChannelService: ChannelServiceProtocol {
-    static let shared = ChannelService()
+    static let shared = ChannelService(chatService: ChatService(host: "167.235.86.234", port: 8080))
     
-    private let chatService = ChatService(host: "167.235.86.234", port: 8080)
+    private let chatService: ChatServiceProtocol
     private let sseService = SSEService(host: "167.235.86.234", port: 8080)
     private let combineService: CombineServiceProtocol
     private let backgroundQueue = DispatchQueue.global(qos: .userInitiated)
@@ -29,7 +29,9 @@ class ChannelService: ChannelServiceProtocol {
     private var userName: String?
     var userId: String
     
-    private init() {
+    init(chatService: ChatServiceProtocol) {
+        self.chatService = chatService
+        
         if let id = defaults.string(forKey: "userId") {
             userId = id
         } else {
@@ -91,7 +93,7 @@ class ChannelService: ChannelServiceProtocol {
     }
     
     func createChannel(_ channelName: String, completion: @escaping (Result<ChannelItem, Error>) -> Void) {
-        createChannelRequest = chatService.createChannel(name: channelName)
+        createChannelRequest = chatService.createChannel(name: channelName, logoUrl: nil)
             .subscribe(on: backgroundQueue)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { result in
@@ -147,7 +149,7 @@ class ChannelService: ChannelServiceProtocol {
             })
     }
     
-    private func getInfoForChannel(with id: String, completion: @escaping (Result<ChannelItem, Error>) -> Void) {
+    func getInfoForChannel(with id: String, completion: @escaping (Result<ChannelItem, Error>) -> Void) {
         channelInfoRequest = chatService.loadChannel(id: id)
             .sink(receiveCompletion: { result in
             switch result {
