@@ -158,6 +158,8 @@
 		CDC3D42E2A0D6099001C0FFA /* ChatServiceProtocolMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceProtocolMock.swift; sourceTree = "<group>"; };
 		CDC3D4342A0D8970001C0FFA /* ChatAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChatAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDC3D4402A0D8B41001C0FFA /* ProfileScreenUITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileScreenUITest.swift; sourceTree = "<group>"; };
+		CDC3D4442A0D962C001C0FFA /* UITestPlan.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UITestPlan.xctestplan; sourceTree = "<group>"; };
+		CDC3D4452A0D9639001C0FFA /* UnitTestPlan.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnitTestPlan.xctestplan; sourceTree = "<group>"; };
 		CDDDAFC929AD11D2006ED745 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -530,6 +532,7 @@
 			children = (
 				CD88C0CF29E4541F00F2BC56 /* .swiftlint.yml */,
 				CDAE911A29A3996C002F2452 /* ChatApp */,
+				CDC3D4432A0D95F8001C0FFA /* TestPlans */,
 				CD7915502A0BC58400CD0E0E /* ChatAppUnitTests */,
 				CDC3D4352A0D8970001C0FFA /* ChatAppUITests */,
 				CDAE911929A3996C002F2452 /* Products */,
@@ -596,6 +599,15 @@
 				CDC3D4402A0D8B41001C0FFA /* ProfileScreenUITest.swift */,
 			);
 			path = Modules;
+			sourceTree = "<group>";
+		};
+		CDC3D4432A0D95F8001C0FFA /* TestPlans */ = {
+			isa = PBXGroup;
+			children = (
+				CDC3D4452A0D9639001C0FFA /* UnitTestPlan.xctestplan */,
+				CDC3D4442A0D962C001C0FFA /* UITestPlan.xctestplan */,
+			);
+			path = TestPlans;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
