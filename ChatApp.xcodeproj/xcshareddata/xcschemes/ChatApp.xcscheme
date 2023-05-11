@@ -39,6 +39,17 @@
                ReferencedContainer = "container:ChatApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CDC3D4332A0D8970001C0FFA"
+               BuildableName = "ChatAppUITests.xctest"
+               BlueprintName = "ChatAppUITests"
+               ReferencedContainer = "container:ChatApp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
