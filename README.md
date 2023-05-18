@@ -1,1 +1,1 @@
-[![Last build_and_test result](https://github.com/TFS-iOS/chat-app-Panda0412/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/TFS-iOS/chat-app-Panda0412/actions/workflows/build_and_test.yml)
+[![Build application and run tests](https://github.com/TFS-iOS/chat-app-Panda0412/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/TFS-iOS/chat-app-Panda0412/actions/workflows/build_and_test.yml)
