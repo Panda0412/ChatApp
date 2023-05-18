@@ -17,7 +17,6 @@ jobs:
         if: success()
         with:
           severity: info
-          description: Test Succeeded!
           details: Test Succeeded!
           webhookUrl: ${{ secrets.DISCORD }}
           username: Github for Panda0412
@@ -29,7 +28,6 @@ jobs:
         if: failure()
         with:
           severity: error
-          description: Test Failed!
           details: Test Failed!
           webhookUrl: ${{ secrets.DISCORD }}
           username: Github for Panda0412
@@ -40,7 +38,6 @@ jobs:
         if: cancelled()
         with:
           severity: warn
-          description: Test Cancelled!
           details: Test Cancelled!
           webhookUrl: ${{ secrets.DISCORD }}
           username: Github for Panda0412
