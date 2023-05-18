@@ -14,6 +14,8 @@ final class ChannelsListPresenter {
     private let channelsDataSource: ChannelsDataSourceProtocol
     private var channels = [ChannelItem]()
     private var coreDataChannels: [ChannelItem]
+    private var needCleanCoreData = true
+    private var needShowAlert = true
     
     init(channelService: ChannelServiceProtocol, channelsDataSource: ChannelsDataSourceProtocol) {
         self.channelService = channelService
@@ -29,10 +31,20 @@ final class ChannelsListPresenter {
             case .success(let channels):
                 self.channels = channels
                 self.viewInput?.showData(channels)
+                self.viewInput?.setPrompt(nil)
+                if self.needCleanCoreData {
+                    self.channelsDataSource.cleanData()
+                    self.coreDataChannels = self.channelsDataSource.getChannels()
+                    self.needCleanCoreData = false
+                }
                 self.saveChannelsToCoreData(channels)
             case .failure(_):
                 self.viewInput?.showData(self.coreDataChannels)
-                self.viewInput?.showAlert()
+                if self.needShowAlert {
+                    self.viewInput?.showAlert()
+                    self.needShowAlert = false
+                }
+                self.viewInput?.setPrompt("No internet connection")
             }
             
             self.viewInput?.endRefresh()
@@ -48,11 +60,49 @@ final class ChannelsListPresenter {
             }
         }
     }
+    
+    private func subscribe() {
+        channelService.subscribe { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+            case .success(let event):
+                switch event.eventType {
+                case .add:
+                    if let channel = event.channel {
+                        self.channels.append(channel)
+                    }
+                case .update:
+                    if let channel = event.channel {
+                        if let index = self.channels.firstIndex(where: { $0.id == channel.id }) {
+                            self.channels.remove(at: index)
+                            self.channels.insert(channel, at: 0)
+                        }
+                    }
+                case .delete:
+                    if let index = self.channels.firstIndex(where: { $0.id == event.channelID }) {
+                        self.channels.remove(at: index)
+                    }
+                }
+                
+                DispatchQueue.main.async {
+                    self.viewInput?.showData(self.channels)
+                }
+            case .failure(let error):
+                if error == ChannelServiceError.sseLostConnection {
+                    DispatchQueue.main.async {
+                        self.viewInput?.setPrompt("Lost SSE connection")
+                    }
+                }
+            }
+        }
+    }
 }
 
 extension ChannelsListPresenter: ChannelsListViewOutput {
     func viewIsReady() {
         viewInput?.showData(coreDataChannels)
+        subscribe()
         fetchChannels()
     }
     
@@ -61,9 +111,15 @@ extension ChannelsListPresenter: ChannelsListViewOutput {
     }
     
     func didSelectItem(at index: Int) {
-        guard channels.indices.contains(index) else { return }
+        var selectedChannel: ChannelItem
         
-        let chatScreen = ChatModuleAssembly().makeChatModule(for: channels[index])
+        if channels.indices.contains(index) {
+            selectedChannel = channels[index]
+        } else if coreDataChannels.indices.contains(index) {
+            selectedChannel = coreDataChannels[index]
+        } else { return }
+        
+        let chatScreen = ChatModuleAssembly().makeChatModule(for: selectedChannel)
         
         viewInput?.navigationController?.pushViewController(chatScreen, animated: true)
     }

@@ -13,4 +13,5 @@ protocol ChannelServiceProtocol {
     func getChannelMessages(for channelId: String, completion: @escaping (Result<[MessageItem], Error>) -> Void)
     func createChannel(_ channelName: String, completion: @escaping (Result<ChannelItem, Error>) -> Void)
     func sendMessage(_ message: String, for channelId: String, completion: @escaping (Result<MessageItem, Error>) -> Void)
+    func subscribe(completion: @escaping (Result<ChannelEvent, ChannelServiceError>) -> Void)
 }

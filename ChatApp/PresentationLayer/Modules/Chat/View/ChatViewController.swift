@@ -142,6 +142,18 @@ class ChatViewController: UIViewController {
         return alert
     }()
     
+    lazy var deleteAlert: UIAlertController = {
+        let alert = UIAlertController(title: "Ooops!", message: "This chat has been deleted", preferredStyle: .alert)
+        
+        let dismissAction = UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            self?.goBack()
+        }
+
+        alert.addAction(dismissAction)
+
+        return alert
+    }()
+    
     // MARK: - Setup
     
     private func setupNavigationBar() {
@@ -276,6 +288,9 @@ extension ChatViewController: ChatViewInput {
         messageTextField.text = ""
     }
     
+    func showDeleteAlert() {
+        present(deleteAlert, animated: true)
+    }
 }
 
 // MARK: - Data source

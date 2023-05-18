@@ -8,6 +8,7 @@
 import Foundation
 
 protocol ChannelsDataSourceProtocol {
+    func cleanData()
     func saveChannelItem(_ channel: ChannelItem)
     func saveMessageItem(_ message: MessageItem, in channelId: String)
     func getChannels() -> [ChannelItem]

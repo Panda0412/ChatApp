@@ -13,6 +13,7 @@ class ChannelService: ChannelServiceProtocol {
     static let shared = ChannelService()
     
     private let chatService = ChatService(host: "167.235.86.234", port: 8080)
+    private let sseService = SSEService(host: "167.235.86.234", port: 8080)
     private let combineService: CombineServiceProtocol
     private let backgroundQueue = DispatchQueue.global(qos: .userInitiated)
     private let defaults = UserDefaults.standard
@@ -22,7 +23,9 @@ class ChannelService: ChannelServiceProtocol {
     private var createChannelRequest: Cancellable?
     private var sendMessagesRequest: Cancellable?
     private var userDataRequest: Cancellable?
-    
+    private var sseRequest: Cancellable?
+    private var channelInfoRequest: Cancellable?
+
     private var userName: String?
     var userId: String
     
@@ -40,7 +43,7 @@ class ChannelService: ChannelServiceProtocol {
     }
     
     private func getUserName() {
-        self.userDataRequest = combineService.getProfileDataPublisher
+        userDataRequest = combineService.getProfileDataPublisher
             .map { $0.nickname ?? "" }
             .assign(to: \.userName, on: self)
     }
@@ -57,14 +60,11 @@ class ChannelService: ChannelServiceProtocol {
                 }
             }, receiveValue: { channels in
                 let sortedChannels = channels.sorted { channel, nextChannel in
-                    guard let channelDate = channel.lastActivity else {
-                        return false
+                    if let channelDate = channel.lastActivity, let nextChannelDate = nextChannel.lastActivity {
+                        return channelDate > nextChannelDate
                     }
-                    guard let nextChannelDate = nextChannel.lastActivity else {
-                        return true
-                    }
-                    
-                    return channelDate > nextChannelDate
+
+                    return channel.lastActivity != nil
                 }
                 
                 completion(.success(sortedChannels.map { ChannelItem(from: $0) }))
@@ -123,5 +123,40 @@ class ChannelService: ChannelServiceProtocol {
             }, receiveValue: { message in
                 completion(.success(MessageItem(from: message)))
             })
+    }
+    
+    func subscribe(completion: @escaping (Result<ChannelEvent, ChannelServiceError>) -> Void) {
+        sseRequest = sseService.subscribeOnEvents()
+            .sink(receiveCompletion: { _ in
+                completion(.failure(ChannelServiceError.sseLostConnection))
+            }, receiveValue: { event in                
+                switch event.eventType {
+                case .add: fallthrough
+                case .update:
+                    self.getInfoForChannel(with: event.resourceID) { result in
+                        switch result {
+                        case .success(let channel):
+                                completion(.success(ChannelEvent(eventType: event.eventType, channelID: event.resourceID, channel: channel)))
+                        case .failure(_):
+                            completion(.failure(ChannelServiceError.loadChannelInfoError))
+                        }
+                    }
+                case .delete:
+                    completion(.success(ChannelEvent(eventType: event.eventType, channelID: event.resourceID, channel: nil)))
+            }
+            })
+    }
+    
+    private func getInfoForChannel(with id: String, completion: @escaping (Result<ChannelItem, Error>) -> Void) {
+        channelInfoRequest = chatService.loadChannel(id: id)
+            .sink(receiveCompletion: { result in
+            switch result {
+            case .finished: break
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }, receiveValue: { channel in
+            completion(.success(ChannelItem(from: channel)))
+        })
     }
 }

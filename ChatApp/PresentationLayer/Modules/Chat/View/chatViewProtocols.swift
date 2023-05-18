@@ -16,5 +16,6 @@ protocol ChatViewOutput {
 protocol ChatViewInput: AnyObject {
     func showData(_: [MessageSection], animated: Bool)
     func showAlert()
+    func showDeleteAlert()
     func clearTextField()
 }

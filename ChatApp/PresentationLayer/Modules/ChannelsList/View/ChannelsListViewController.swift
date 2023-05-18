@@ -181,6 +181,11 @@ extension ChannelsListViewController: ChannelsListViewInput {
         present(errorAlert, animated: true)
     }
     
+    func setPrompt(_ message: String?) {
+        navigationItem.prompt = message
+        navigationItem.rightBarButtonItem?.isEnabled = message == nil
+    }
+    
     func endRefresh() {
         refreshControl.endRefreshing()
     }

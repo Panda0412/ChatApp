@@ -9,6 +9,7 @@ import Foundation
 import CoreData
 
 protocol CoreDataServiceProtocol {
+    func cleanCoreDataRecords()
     func fetchChannels() throws -> [ChannelManagedObject]
     func fetchMessages(for channelId: String) throws -> [MessageManagedObject]
     func save(completion: @escaping (NSManagedObjectContext) throws -> Void)

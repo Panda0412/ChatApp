@@ -18,6 +18,8 @@ final class ChatPresenter {
     private var coreDataSections = [MessageSection]()
     private var networkSections = [MessageSection]()
     
+    private var isDeleted = false
+    
     init(channelId: String, channelService: ChannelServiceProtocol, channelsDataSource: ChannelsDataSourceProtocol) {
         self.channelId = channelId
         self.channelService = channelService
@@ -76,14 +78,14 @@ final class ChatPresenter {
         return sections
     }
     
-    private func fetchMessages() {
+    private func fetchMessages(animated: Bool) {
         channelService.getChannelMessages(for: channelId) { [weak self] result in
             guard let self else { return }
             
             switch result {
             case .success(let messages):
                 self.networkSections = self.makeSections(from: messages)
-                self.viewInput?.showData(self.networkSections, animated: false)
+                self.viewInput?.showData(self.networkSections, animated: animated)
                 self.saveMessagesToCoreData(messages)
             case .failure(_):
                 self.viewInput?.showData(self.coreDataSections, animated: false)
@@ -109,49 +111,81 @@ final class ChatPresenter {
             guard let self else { return }
             
             switch result {
-            case .success(var message):
+            case .success(let message):
                 self.viewInput?.clearTextField()
-                    
-                message.isBubbleTailNeeded = true
-                
-                self.channelsDataSource.saveMessageItem(message, in: self.channelId)
-                self.coreDataMessages.append(message)
-                self.coreDataSections = self.makeSections(from: self.coreDataMessages)
-                
-                let lastSectionIndex = self.networkSections.count - 1
-                
-                guard lastSectionIndex != -1 else {
-                    self.networkSections.append(MessageSection(date: message.date, messages: [message]))
-                    self.viewInput?.showData(self.networkSections, animated: true)
-                    return
-                }
-                
-                let formatter = DateFormatter()
-                formatter.dateFormat = "dd MMM yyyy"
-                
-                let lastMessageIndex = self.networkSections[lastSectionIndex].messages.count - 1
-                
-                if self.networkSections[lastSectionIndex].messages[lastMessageIndex].userID == message.userID {
-                    self.networkSections[lastSectionIndex].messages[lastMessageIndex].isBubbleTailNeeded = false
-                }
-                
-                if formatter.string(from: self.networkSections[lastSectionIndex].date) == formatter.string(from: message.date) {
-                    self.networkSections[lastSectionIndex].messages.append(message)
-                } else {
-                    self.networkSections.append(MessageSection(date: message.date, messages: [message]))
-                }
-                
-                self.viewInput?.showData(self.networkSections, animated: true)
+                self.appendMessage(message)
             case .failure(_):
                 self.viewInput?.showAlert()
             }
         }
     }
+    
+    private func subscribe() {
+        channelService.subscribe { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+            case .success(let event):
+                guard event.channelID == self.channelId else { break }
+                
+                switch event.eventType {
+                case .add: break
+                case .update:
+                    self.fetchMessages(animated: true)
+                case .delete:
+                    if !self.isDeleted {
+                        self.isDeleted = true
+                        DispatchQueue.main.async {
+                            self.viewInput?.showDeleteAlert()
+                        }
+                    }
+                }
+            case .failure(_):
+                break
+            }
+        }
+    }
+    
+    private func appendMessage(_ newMessage: MessageItem) {
+        var message = newMessage
+        
+        message.isBubbleTailNeeded = true
+        
+        self.channelsDataSource.saveMessageItem(message, in: self.channelId)
+        self.coreDataMessages.append(message)
+        self.coreDataSections = self.makeSections(from: self.coreDataMessages)
+        
+        let lastSectionIndex = self.networkSections.count - 1
+        
+        guard lastSectionIndex != -1 else {
+            self.networkSections.append(MessageSection(date: message.date, messages: [message]))
+            self.viewInput?.showData(self.networkSections, animated: true)
+            return
+        }
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMM yyyy"
+        
+        let lastMessageIndex = self.networkSections[lastSectionIndex].messages.count - 1
+        
+        if self.networkSections[lastSectionIndex].messages[lastMessageIndex].userID == message.userID {
+            self.networkSections[lastSectionIndex].messages[lastMessageIndex].isBubbleTailNeeded = false
+        }
+        
+        if formatter.string(from: self.networkSections[lastSectionIndex].date) == formatter.string(from: message.date) {
+            self.networkSections[lastSectionIndex].messages.append(message)
+        } else {
+            self.networkSections.append(MessageSection(date: message.date, messages: [message]))
+        }
+        
+        self.viewInput?.showData(self.networkSections, animated: true)
+    }
 }
 
 extension ChatPresenter: ChatViewOutput {
     func viewIsReady() {
-        fetchMessages()
+        fetchMessages(animated: false)
+        subscribe()
     }
     
     func sendMessage(_ message: String) {
