@@ -17,7 +17,7 @@ jobs:
         if: success()
         with:
           severity: info
-          details: Test Succeeded!
+          details: Test Succeeded 🥰️️️️️️
           webhookUrl: ${{ secrets.DISCORD }}
           username: Github for Panda0412
           avatarUrl: https://i.pinimg.com/originals/0b/a8/9f/0ba89f9538d1a307e1b6d7fe8dbb4702.png
@@ -28,7 +28,7 @@ jobs:
         if: failure()
         with:
           severity: error
-          details: Test Failed!
+          details: Test Failed 🥺️️️️️️
           webhookUrl: ${{ secrets.DISCORD }}
           username: Github for Panda0412
           avatarUrl: https://i.pinimg.com/originals/0b/a8/9f/0ba89f9538d1a307e1b6d7fe8dbb4702.png
@@ -38,7 +38,7 @@ jobs:
         if: cancelled()
         with:
           severity: warn
-          details: Test Cancelled!
+          details: Test Cancelled! Кто и зачем позвал Галю???
           webhookUrl: ${{ secrets.DISCORD }}
           username: Github for Panda0412
           avatarUrl: https://i.pinimg.com/originals/0b/a8/9f/0ba89f9538d1a307e1b6d7fe8dbb4702.png
