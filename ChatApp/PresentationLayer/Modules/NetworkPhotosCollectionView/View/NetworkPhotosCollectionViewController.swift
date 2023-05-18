@@ -40,6 +40,21 @@ class NetworkPhotosCollectionViewController: UIViewController {
     
     private let activityIndicator = UIActivityIndicatorView(style: .large)
     
+    // MARK: - UI Elements
+    
+    private lazy var errorAlert: UIAlertController = {
+        let alert = UIAlertController(title: "Ooops!", message: "Something went wrong :c", preferredStyle: .alert)
+        
+        let dismissAction = UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            guard let self else { return }
+            self.closeModal()
+        }
+
+        alert.addAction(dismissAction)
+
+        return alert
+    }()
+    
     // MARK: - Setup
     
     private func setupCollectionView() {
@@ -143,5 +158,9 @@ extension NetworkPhotosCollectionViewController: NetworkPhotosCollectionViewInpu
         activityIndicator.stopAnimating()
         activityIndicator.removeFromSuperview()
         setupCollectionView()
+    }
+
+    func showAlert() {
+        present(errorAlert, animated: true)
     }
 }
