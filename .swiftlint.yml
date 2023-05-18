@@ -3,6 +3,7 @@ excluded:
   - ChatAppUnitTests
   - ChatAppUITests
   - DerivedData
+  - vendor
 
 warning_threshold: 1
 
