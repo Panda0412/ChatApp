@@ -4,7 +4,7 @@ platform :ios do
   desc "Install dependencies and build with scan"
   lane :custom_build_for_testing do
     cocoapods
-    scan
+    scan(build_for_testing: true)
   end
 
   desc "Run tests on the compiled application"
