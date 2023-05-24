@@ -10,6 +10,7 @@ import UIKit
 
 private enum Constants {
     static let avatarSize: CGFloat = 150
+    static let margin: CGFloat = 32
 }
 
 enum TextFieldPurpose {
@@ -46,12 +47,12 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     private let themesService: ThemesServiceInput
     
     var currentTheme: UIUserInterfaceStyle = .light
-
     private var currentUserData = UserProfileViewModel()
-
+    
+    private var isButtonAnimated = false
+    
     private let activityIndicator = UIActivityIndicatorView(style: .medium)
     
-    private lazy var editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(switchToEditMode))
     private lazy var cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelEditMode))
     private lazy var saveButton = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveData))
     private lazy var activityIndicatorBarItem = UIBarButtonItem(customView: activityIndicator)
@@ -174,6 +175,20 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         return field
     }
     
+    private lazy var editButton: UIButton = {
+        let button = UIButton()
+        
+        button.backgroundColor = .systemBlue
+        button.setTitle("Edit Profile", for: .normal)
+        button.layer.cornerRadius = 14
+        button.titleLabel?.font = .boldSystemFont(ofSize: 17)
+        
+        button.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(animateEditButton)))
+        button.addTarget(self, action: #selector(switchToEditMode), for: .touchUpInside)
+        
+        return button
+    }()
+    
     private lazy var stackView: UIStackView = {
         let stack = UIStackView()
         
@@ -253,7 +268,6 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         view.backgroundColor = .systemBackground
         
         navigationItem.setLeftBarButton(nil, animated: true)
-        navigationItem.setRightBarButton(editButton, animated: true)
         
         [avatarView,
          addPhotoButton,
@@ -262,6 +276,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
          descriptionLabel,
          nicknameTextField,
          descriptionTextField,
+         editButton,
          stackView].forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
         
         [nicknameLabel, descriptionLabel, nicknameTextField, descriptionTextField].forEach { infoBlockView.addArrangedSubview($0) }
@@ -269,18 +284,21 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         nicknameTextField.isHidden = true
         descriptionTextField.isHidden = true
         
-        [avatarView, addPhotoButton, infoBlockView].forEach { stackView.addArrangedSubview($0) }
+        [avatarView, addPhotoButton, infoBlockView, editButton].forEach { stackView.addArrangedSubview($0) }
         
         view.addSubview(stackView)
         
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
+            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.margin),
             stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             avatarView.heightAnchor.constraint(equalToConstant: Constants.avatarSize),
             avatarView.widthAnchor.constraint(equalToConstant: Constants.avatarSize),
             nicknameTextField.widthAnchor.constraint(equalTo: stackView.widthAnchor),
-            descriptionTextField.widthAnchor.constraint(equalTo: stackView.widthAnchor)
+            descriptionTextField.widthAnchor.constraint(equalTo: stackView.widthAnchor),
+            editButton.leadingAnchor.constraint(equalTo: stackView.leadingAnchor, constant: Constants.margin),
+            editButton.trailingAnchor.constraint(equalTo: stackView.trailingAnchor, constant: -Constants.margin),
+            editButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
@@ -288,6 +306,39 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
     
     @objc private func dismissKeyboard() {
         view.endEditing(true)
+    }
+    
+    @objc private func animateEditButton(_ gestureRecognizer: UILongPressGestureRecognizer) {
+        guard gestureRecognizer.state == .began else { return }
+        
+        let translation: CGFloat = 5
+        let rotationAngle = CGFloat.pi * 0.1
+        
+        if !isButtonAnimated {
+            self.editButton.transform = CGAffineTransform(rotationAngle: rotationAngle)
+                .concatenating(CGAffineTransform(translationX: translation, y: translation))
+        }
+        
+        UIView.animateKeyframes(withDuration: 0.3, delay: 0, options: [.repeat, .allowUserInteraction], animations: {
+            
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.5, animations: {
+                self.editButton.transform = CGAffineTransform(rotationAngle: -rotationAngle)
+                    .concatenating(CGAffineTransform(translationX: -translation, y: -translation))
+            })
+            
+            UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 1, animations: {
+                self.editButton.transform = CGAffineTransform(rotationAngle: rotationAngle)
+                    .concatenating(CGAffineTransform(translationX: translation, y: translation))
+            })
+        })
+        
+        if isButtonAnimated {
+            UIView.animate(withDuration: 0.5, delay: 0, options: .beginFromCurrentState) {
+                self.editButton.transform = CGAffineTransform.identity
+            }
+        }
+        
+        isButtonAnimated.toggle()
     }
     
     @objc private func switchToEditMode() {
@@ -302,13 +353,13 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         nicknameTextField.becomeFirstResponder()
         
         UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1) {
-            [self.nicknameLabel, self.descriptionLabel].forEach {
+            [self.nicknameLabel, self.descriptionLabel, self.editButton].forEach {
                 $0.alpha = 0
             }
         }
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1) {
-            [self.nicknameLabel, self.descriptionLabel].forEach {
+            [self.nicknameLabel, self.descriptionLabel, self.editButton].forEach {
                 $0.isHidden = true
             }
             
@@ -331,7 +382,6 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         title = "My profile"
         
         navigationItem.setLeftBarButton(nil, animated: true)
-        navigationItem.setRightBarButton(editButton, animated: true)
         
         UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1) {
             [self.nicknameTextField, self.descriptionTextField].forEach {
@@ -345,7 +395,7 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
                 $0.resignFirstResponder()
             }
 
-            [self.nicknameLabel, self.descriptionLabel].forEach {
+            [self.nicknameLabel, self.descriptionLabel, self.editButton].forEach {
                 $0.alpha = 1
                 $0.isHidden = false
             }
