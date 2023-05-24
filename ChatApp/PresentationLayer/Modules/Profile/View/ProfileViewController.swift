@@ -288,6 +288,10 @@ class ProfileViewController: UIViewController, ConfigurableViewProtocol {
         
         view.addSubview(stackView)
         
+        avatarView.isAccessibilityElement = true
+        avatarView.accessibilityIdentifier = "Avatar"
+        nicknameLabel.accessibilityIdentifier = "Nickname"
+        
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.margin),
