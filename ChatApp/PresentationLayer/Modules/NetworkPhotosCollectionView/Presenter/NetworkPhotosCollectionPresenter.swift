@@ -12,7 +12,8 @@ final class NetworkPhotosCollectionPresenter {
     weak var viewInput: NetworkPhotosCollectionViewInput?
     weak var profile: NetworkPhotosCollectionPresenterOutput?
     private let session: URLSession
-    private let urlString = "https://api.unsplash.com/photos?client_id=J_h0tjocreY-Yck4n_YG8ZE0LLtcIaf-JUzf1etTxNE&per_page=30&order_by=popular"
+    private let clientId = Bundle.main.object(forInfoDictionaryKey: "ClientId") as? String
+    private let baseUrl = Bundle.main.object(forInfoDictionaryKey: "BaseUrl") as? String
     
     init(session: URLSession = .shared) {
         self.session = session
@@ -21,17 +22,25 @@ final class NetworkPhotosCollectionPresenter {
     private func loadImageList() {
         var images = [NetworkImage]()
         
+        guard let clientId, let baseUrl else {
+            viewInput?.showAlert()
+            return
+        }
+        
         for i in 1...5 {
-            guard let url = URL(string: urlString + "&page=\(i * 2)") else { return }
+            guard let url = URL(string: "\(baseUrl)&client_id=\(clientId)&page=\(i * 2)") else {
+                viewInput?.showAlert()
+                return
+            }
             let request = URLRequest(url: url)
             
             session.dataTask(with: request) { [weak self] data, _, error in
-                guard error == nil else {
-                    print("error=\(String(describing: error))")
+                guard let self else { return }
+                
+                guard error == nil, let data else {
+                    self.viewInput?.showAlert()
                     return
                 }
-                
-                guard let data, let self else { return }
                 
                 do {
                     let networkImages = try JSONDecoder().decode([NetworkImage].self, from: data)
@@ -45,22 +54,24 @@ final class NetworkPhotosCollectionPresenter {
                     }
                 } catch {
                     print(error.localizedDescription)
+                    self.viewInput?.showAlert()
                 }
             }.resume()
         }
     }
     
     private func loadImage(for imageItem: NetworkImage, completion: @escaping (Result<Data, Error>) -> Void) {
-        guard let url = URL(string: imageItem.url) else { return }
+        guard let url = URL(string: imageItem.url) else {
+            viewInput?.showAlert()
+            return
+        }
         let request = URLRequest(url: url)
                 
-        session.dataTask(with: request) { data, _, error in
-            guard error == nil else {
-                print("error=\(String(describing: error))")
+        session.dataTask(with: request) { [weak self] data, _, error in
+            guard error == nil, let data else {
+                self?.viewInput?.showAlert()
                 return
             }
-            
-            guard let data else { return }
             
             DispatchQueue.main.async {
                 completion(.success(data))

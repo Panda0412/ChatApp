@@ -1,0 +1,12 @@
+//
+//  Config.xcconfig
+//  ChatApp
+//
+//  Created by Anastasiia Bugaeva on 17.05.2023.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+CLIENT_ID=
+BASE_URL=

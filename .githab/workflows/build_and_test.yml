@@ -1,0 +1,14 @@
+name: build_and_test
+on: [push]
+
+jobs:
+  build_and_test:
+    runs-on: [self-hosted]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1
+          bundler-cache: true
+      - name: Build application and run tests
+        run: bundle exec fastlane custom_build_and_test

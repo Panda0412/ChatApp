@@ -15,4 +15,5 @@ protocol NetworkPhotosCollectionViewOutput {
 
 protocol NetworkPhotosCollectionViewInput: AnyObject {
     func showData(_: [NetworkImage])
+    func showAlert()
 }
